@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>MASH Track Command Center — Medford Raiders 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#cc0000;--dk:#0a0a0a;--card:#131313;--bdr:rgba(255,255,255,0.06);--gold:#d4a843;--grn:#22c55e;--blu:#4a9eff;--mut:#555}
+body{font-family:'Barlow',sans-serif;background:var(--dk);color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:inherit;border:none}button:hover{opacity:.85}
+input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#333}::placeholder{color:#444}
+a{color:var(--red);text-decoration:none}a:hover{text-decoration:underline}
+
+.topbar{background:linear-gradient(135deg,#1a0000,var(--dk));border-bottom:2px solid var(--red);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.brand{font-family:'Oswald',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.12em;text-transform:uppercase}
+.brand span{color:var(--red)}
+.topright{font-size:.58rem;color:#444;text-align:right}
+
+.nav{display:flex;overflow-x:auto;background:#111;border-bottom:1px solid var(--bdr);position:sticky;top:44px;z-index:99}
+.nav button{padding:10px 14px;background:transparent;color:#666;border-bottom:2px solid transparent;font-weight:700;font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;flex-shrink:0}
+.nav button.active{background:rgba(204,0,0,.12);color:#fff;border-bottom-color:var(--red)}
+
+.sec{padding:14px 16px;max-width:960px;margin:0 auto}
+.label{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.2em;color:var(--red);margin-bottom:4px}
+.card{background:var(--card);border:1px solid var(--bdr);padding:12px 14px;margin-bottom:6px}
+.card-r{background:var(--card);border:1px solid rgba(204,0,0,.25);border-left:3px solid var(--red);padding:12px 14px;margin-bottom:6px}
+.big{font-family:'Oswald',sans-serif;font-size:1.6rem;font-weight:800;line-height:1}
+.sm{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.5}
+.badge{display:inline-block;font-size:.5rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 6px;margin-left:4px}
+.badge-r{background:rgba(204,0,0,.2);color:#ff4444;border:1px solid rgba(204,0,0,.4)}
+.badge-g{background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3)}
+.badge-y{background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.3)}
+.badge-b{background:rgba(74,158,255,.15);color:var(--blu);border:1px solid rgba(74,158,255,.3)}
+.badge-m{background:rgba(255,255,255,.05);color:#888;border:1px solid rgba(255,255,255,.08)}
+
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr)}
+.grid4>div{background:#111;padding:10px 12px;text-align:center}
+.grid4 .val{font-family:'Oswald',sans-serif;font-weight:800;font-size:1.5rem;line-height:1}
+.grid4 .lbl{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--mut);margin-top:3px}
+
+.btn{padding:8px 16px;background:var(--red);color:#fff;font-weight:800;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em}
+.btn-o{padding:8px 16px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.15);font-weight:600;font-size:.68rem;text-transform:uppercase}
+.btn-s{padding:5px 10px;background:rgba(255,255,255,.04);color:#888;font-weight:700;font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;border:1px solid rgba(255,255,255,.08)}
+.btn-s.active{background:var(--red);color:#fff;border-color:var(--red)}
+
+.chk{width:15px;height:15px;border:2px solid var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.55rem;font-weight:800;cursor:pointer}
+.chk.done{background:var(--grn);border-color:var(--grn);color:#000}
+
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-g{background:var(--grn)}.dot-r{background:var(--red)}.dot-y{background:var(--gold)}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--bdr)}
+.cal-hdr{background:#111;padding:6px;text-align:center;font-size:.6rem;font-weight:700;text-transform:uppercase;color:var(--mut)}
+.cal-day{background:var(--card);padding:6px;min-height:70px;font-size:.65rem;position:relative}
+.cal-day.today{border:1px solid var(--red)}
+.cal-day.past{opacity:.3}
+.cal-num{font-weight:700;font-size:.72rem;margin-bottom:3px}
+.cal-evt{padding:2px 4px;margin-bottom:2px;font-size:.55rem;font-weight:600;line-height:1.3;border-radius:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-meet{background:rgba(204,0,0,.25);color:#ff6666;border-left:2px solid var(--red)}
+.cal-deadline{background:rgba(212,168,67,.2);color:var(--gold);border-left:2px solid var(--gold)}
+.cal-practice{background:rgba(34,197,94,.1);color:rgba(34,197,94,.5);border-left:2px solid rgba(34,197,94,.3)}
+.cal-conflict{background:rgba(74,158,255,.15);color:var(--blu);border-left:2px solid var(--blu)}
+
+.hidden{display:none}
+@media(max-width:600px){.grid4{grid-template-columns:repeat(2,1fr)}.cal-day{min-height:50px}.cal-evt{font-size:.5rem}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span>MASH</span> Command Center</div>
+  <div class="topright">2026 Season · Medford Raiders</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="app"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// MASH TRACK COMMAND CENTER — STANDALONE v1
+// stokhausmedia.com/mash
+// ═══════════════════════════════════════════════
+
+const TODAY=new Date();const TSTR=TODAY.toISOString().slice(0,10);
+const SEASON_START=new Date('2026-03-09');const SEASON_END=new Date('2026-06-06');
+const MS_DAY=86400000;
+
+// ── DATA ──
+const MEETS=[
+{id:1,date:'2026-03-24',name:'Marshfield Invitational',loc:'Marshfield HS',g:'B',type:'away',bus:'2:30',dismiss:'2:20',start:'4:30 PM',entries:'wi.milesplit.com',deadline:'ASAP',hasLineup:1},
+{id:2,date:'2026-03-26',name:'Marshfield Invitational',loc:'Marshfield HS',g:'G',type:'away',bus:'2:30',dismiss:'2:20',start:'4:45 PM',entries:'wi.milesplit.com',deadline:'Wed 3/25 @ 5PM',hasLineup:1},
+{id:3,date:'2026-03-27',name:'Northern Badger Classic',loc:'UW-Stout',g:'B/G',type:'away',bus:'12:30',dismiss:'12:20',start:'3:00 PM',entries:'pttiming.com',deadline:'Wed 3/25 @ NOON'},
+{id:4,date:'2026-04-02',name:'Stout Elite Meet',loc:'UW-Stout',g:'B/G',type:'away',bus:'12:30',dismiss:'12:20',start:'3:00 PM',entries:'pttiming.com',deadline:'Sun 3/29 @ midnight'},
+{id:5,date:'2026-04-09',name:'Medford Home Invite',loc:'Raider Field',g:'B/G',type:'home',start:'4:00 PM'},
+{id:6,date:'2026-04-14',name:'Stratford Invitational',loc:'Stratford HS',g:'B/G',type:'away',bus:'2:15',dismiss:'2:05',start:'4:00 PM'},
+{id:7,date:'2026-04-23',name:'Medford Home Invite',loc:'Raider Field',g:'B/G',type:'home',start:'4:00 PM'},
+{id:8,date:'2026-05-01',name:'Spencer Invitational',loc:'Spencer HS',g:'B/G',type:'away',bus:'2:30',dismiss:'2:20',start:'4:15 PM'},
+{id:9,date:'2026-05-05',name:'Lakeland Meet',loc:'Lakeland Union',g:'B/G',type:'away',bus:'1:15',dismiss:'1:05',start:'4:00 PM'},
+{id:10,date:'2026-05-08',name:'Merrill Invitational',loc:'Merrill HS',g:'B/G',type:'away',start:'5:00 PM'},
+{id:11,date:'2026-05-12',name:'Marathon Meet',loc:'Marathon HS',g:'B/G',type:'away',bus:'2:30',dismiss:'2:20',start:'4:30 PM'},
+{id:12,date:'2026-05-15',name:'Marshfield Invitational',loc:'Marshfield HS',g:'B/G',type:'away',bus:'2:00',dismiss:'1:50',start:'4:00 PM'},
+{id:13,date:'2026-05-19',name:'GNC Conference',loc:'Rhinelander',g:'B/G',type:'conf',bus:'1:15',dismiss:'1:05',start:'4:00 PM'},
+{id:14,date:'2026-05-26',name:'WIAA Regional',loc:'Raider Field',g:'B/G',type:'regional',start:'4:00 PM'},
+{id:15,date:'2026-05-29',name:'WIAA Sectional',loc:'Rice Lake',g:'B/G',type:'sectional',bus:'1:00',dismiss:'12:50',start:'4:00 PM'},
+];
+
+const DEADLINES=[
+{date:'2026-03-23',text:'PV Weigh-Ins + Boys Milesplit'},
+{date:'2026-03-25',text:'Northern Badger @ NOON'},
+{date:'2026-03-25',text:'Girls Milesplit @ 5PM'},
+{date:'2026-03-29',text:'Stout Elite @ midnight'},
+];
+
+const CONFLICTS=[
+{date:'2026-04-06',text:'Eisfeldt leaves 4PM'},
+{start:'2026-05-13',end:'2026-05-17',text:'Eisfeldt unavailable'},
+];
+
+const ACTIONS=[
+{id:1,t:'⚠️ PV weigh-ins Mon 3/23 — Katie coordinating, James + Pilgrim sign',d:'2026-03-23',p:'h'},
+{id:2,t:'📋 Enter Marshfield BOYS on wi.milesplit.com',d:'2026-03-23',p:'h'},
+{id:3,t:'📋 Enter Marshfield GIRLS on wi.milesplit.com — deadline Wed 5PM',d:'2026-03-25',p:'h'},
+{id:4,t:'📋 Enter Northern Badger on pttiming.com — deadline Wed NOON',d:'2026-03-25',p:'h'},
+{id:5,t:'💰 Northern Badger payment via Athletic.net at submission',d:'2026-03-25',p:'m'},
+{id:6,t:'📋 Enter Stout Elite on pttiming.com — verified seeds required',d:'2026-03-29',p:'m'},
+{id:7,t:'🏋️ Confirm split-meet coaching: Eisfeldt Tue, Klapatauskas Thu',d:'2026-03-23',p:'h'},
+{id:8,t:'📎 Jersey distribution — Katie handling',d:'2026-03-23',p:'m'},
+{id:9,t:'⚠️ Bring first aid kit + consent forms to Marshfield',d:'2026-03-24',p:'m'},
+{id:10,t:'📎 Report scores to Casey Hartl < 8:30 AM after each meet',d:'2026-03-25',p:'m'},
+];
+
+const BOYS_LINEUP=[
+{e:'4x800 Relay',a:['Judah Wipf V','Angus Hamland V','Nevyn Gripentrog V','Peyton Reid V'],s:'set'},
+{e:'60yd HH',a:['Luke Klapatauskas V','Will Daniels V'],s:'set'},
+{e:'60yd Dash',a:['Erik Paul V','Colton Long V','+ 7 JV'],s:'set'},
+{e:'Mile Run',a:['Angus Hamland V','Ethan Jacobsen V'],s:'new',n:'★ WAS EMPTY'},
+{e:'440yd Dash',a:['Sawyer Hoops V','Draven Dums JV','Manny Espinoza JV'],s:'chg',n:'Jasper → field'},
+{e:'2x160 Relay V',a:['Klapatauskas, Long, Brushaber, Zuleger'],s:'set'},
+{e:'880yd Run',a:['Judah Wipf V','Angus Hamland V','Gripentrog JV'],s:'set'},
+{e:'220yd Dash',a:['Axel Brushaber V','Levi Zuleger V','+ 5 JV'],s:'set'},
+{e:'4x440 Mile Relay',a:['Hoops, Reid, Daniels, Wipf'],s:'chg',n:'Reid+Wipf replace Jasper'},
+{e:'Shot Put',a:['Logan Langdon V','Jon Bartnik V','+ 7 JV'],s:'set'},
+{e:'Long Jump',a:['Jasper Stokes V','Ethan Jacobsen V'],s:'new',n:'★ WAS EMPTY'},
+{e:'Triple Jump',a:['Jasper Stokes V','Alan Scheel JV'],s:'new',n:'★ WAS EMPTY'},
+{e:'High Jump',a:['Jasper Stokes V','Christopher Dunn JV'],s:'new',n:'★ WAS EMPTY — starts 4\'8"'},
+{e:'Pole Vault',a:['Jordan Lavin V 12\'','Max Losiewicz V 10\'6"','Bentley Cooley JV 9\''],s:'act',n:'⚠ Weigh-ins MON'},
+];
+
+const GIRLS_LINEUP=[
+{e:'4x800 Relay',a:['Richter, Dassow, Kahn, Salzer'],s:'new',n:'★ WAS EMPTY'},
+{e:'60yd HH',a:['Cora Semrau V'],s:'rev',n:'Only 1 entry'},
+{e:'60yd Dash',a:['Jordyn Grant V','Alexis Zuleger V','+ 5 JV'],s:'set'},
+{e:'Mile Run',a:['Lindsay Kahn V','Melanie Richter V'],s:'chg'},
+{e:'440yd Dash',a:['Rothmeier V','Dassow V','Salzer JV','Klingbeil JV'],s:'set'},
+{e:'8 Lap Relay',a:['Rothmeier, Salamin, Ulrich, Sigmund'],s:'new',n:'★ Girls-only event'},
+{e:'2x160 Relay',a:['Grant, Zuleger, Ulrich, Salzer'],s:'set'},
+{e:'880yd Run',a:['Willow Dassow V','Melanie Richter V'],s:'set'},
+{e:'220yd Dash',a:['Alexis Zuleger V','+ 4 JV'],s:'chg',n:'Jordyn → LJ'},
+{e:'4x440 Mile Relay',a:['Rothmeier, Dassow, Salzer, Zuleger'],s:'new',n:'★ WAS EMPTY'},
+{e:'Shot Put',a:['Rivalee Stokes V','Naomi Thomas V','+ 4 JV'],s:'set'},
+{e:'Triple Jump',a:['Jordyn Grant V'],s:'set'},
+{e:'Long Jump',a:['Jordyn Grant V','Cora Semrau V'],s:'new',n:'★ WAS EMPTY'},
+{e:'High Jump',a:['Adalyn Dittrich V','Ellie Eckert JV'],s:'new',n:'★ WAS EMPTY — starts 3\'6"'},
+{e:'Pole Vault',a:[],s:'none',n:'No girls vaulting — zero for safety'},
+];
+
+const ATHLETES=[
+['Drayton Britz',9,'B','sprint'],['Xander Cynor',9,'B','sprint'],['Paxton Hamland',9,'B','throws'],['Parker Judnic',9,'B','sprint'],['Max Losiewicz',9,'B','jumps'],['Landon Preuss',9,'B','sprint'],['Logan Schmidt',9,'B','throws'],
+['Emmanuel Espinoza',10,'B','sprint'],['Angus Hamland',10,'B','distance'],['Sawyer Hoops',10,'B','sprint'],['Ethan Jacobsen',10,'B','distance'],['Colton Long',10,'B','sprint'],['Tristan Newberry',10,'B','sprint'],['Jasper Stokes',10,'B','jumps'],['Jaden Thao',10,'B','sprint'],['Judah Wipf',10,'B','distance'],['Levi Zuleger',10,'B','sprint'],
+['Axel Brushaber',11,'B','sprint'],['Draven Dums',11,'B','sprint'],['Christopher Dunn',11,'B','sprint'],['Parker Fogo',11,'B','throws'],['Nevyn Gripentrog',11,'B','distance'],['Logan Langdon',11,'B','throws'],['Jordan Lavin',11,'B','jumps'],['Alan Scheel',11,'B','sprint'],
+['Reuben Barnhart',12,'B','throws'],['Jonathan Bartnik',12,'B','throws'],['Will Daniels',12,'B','hurdles'],['Ryker Hallam',12,'B','sprint'],['Evan Pagel',12,'B','distance'],
+['Savannah Hebert',9,'G','throws'],['Coraline Neitzel',9,'G','sprint'],['Melanie Richter',9,'G','distance'],['Mariah Salzer',9,'G','sprint'],['Avary Sigmund',9,'G','sprint'],
+['Chelsea Dick',10,'G','sprint'],['Jordyn Grant',10,'G','sprint'],['Isabella Leischer',10,'G','sprint'],['Alessia Salamin',10,'G','sprint'],['Cora Semrau',10,'G','hurdles'],['Naomi Thomas',10,'G','throws'],
+['Willow Dassow',11,'G','distance'],['Ellie Eckert',11,'G','sprint'],['Avery Losiewicz',11,'G','sprint'],['Mya Matthias',11,'G','throws'],['Chloe Pipkorn',11,'G','throws'],['Lucy Ulrich',11,'G','sprint'],
+['Esmeralda Anderson',12,'G','sprint'],['Autumn Cooley',12,'G','sprint'],['Adalyn Dittrich',12,'G','sprint'],['Lindsay Kahn',12,'G','distance'],['Aliyah Pilgrim',12,'G','sprint'],['Rivalee Stokes',12,'G','throws'],['Alexis Zuleger',12,'G','sprint'],
+];
+
+// ── STATE ──
+const _pd=new Date();while(_pd.getDay()===0||_pd.getDay()===6)_pd.setDate(_pd.getDate()+1);const _pds=_pd.toISOString().slice(0,10);
+let state={tab:'today',done:[],statuses:{},meetView:null,calMonth:TODAY.getMonth(),calYear:TODAY.getFullYear(),athFilter:'all',athSearch:'',pracDate:_pds};
+try{const s=localStorage.getItem('mash-cc');if(s){const d=JSON.parse(s);if(d.done)state.done=d.done;if(d.statuses)state.statuses=d.statuses;}}catch(e){}
+function save(){try{localStorage.setItem('mash-cc',JSON.stringify({done:state.done,statuses:state.statuses}));}catch(e){}}
+
+// ── HELPERS ──
+const $=id=>document.getElementById(id);
+const nextMeet=MEETS.find(m=>new Date(m.date)>=TODAY);
+const daysTo=m=>Math.ceil((new Date(m.date)-TODAY)/MS_DAY);
+const seasonPct=Math.max(0,Math.min(100,Math.round(((TODAY-SEASON_START)/(SEASON_END-SEASON_START))*100)));
+function fmtDate(d){const dt=new Date(d+'T12:00:00');return dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});}
+function statusColor(s){return s==='available'?'dot-g':s==='injured'||s==='unavailable'?'dot-r':'dot-y';}
+function getStatus(name){return state.statuses[name]||'available';}
+const KNOWN_STATUS={'Evan Pagel':'limited','Sawyer Hoops':'modified','Colton Long':'modified','Autumn Cooley':'limited','Aliyah Pilgrim':'unavailable','Avery Losiewicz':'injured','Rivalee Stokes':'limited'};
+
+function lineupBadge(s){
+  if(s==='new')return '<span class="badge badge-r">Gap Filled</span>';
+  if(s==='chg')return '<span class="badge badge-b">Modified</span>';
+  if(s==='act')return '<span class="badge badge-y">Action</span>';
+  if(s==='rev')return '<span class="badge badge-y">Review</span>';
+  if(s==='none')return '<span class="badge badge-m">No Entry</span>';
+  return '';
+}
+function lineupBorder(s){
+  if(s==='new')return 'border-left:3px solid var(--red)';
+  if(s==='chg')return 'border-left:3px solid var(--blu)';
+  if(s==='act')return 'border-left:3px solid var(--gold)';
+  if(s==='none')return 'border-left:3px solid #444';
+  return 'border-left:3px solid rgba(255,255,255,.08)';
+}
+
+// ── TABS ──
+const TABS=[['today','⚡ Today'],['calendar','📅 Calendar'],['meets','🏟️ Meets'],['athletes','👤 Athletes'],['practice','📋 Practice'],['ai','🤖 AI Coach']];
+
+function renderNav(){
+  $('nav').innerHTML=TABS.map(([k,l])=>`<button class="${state.tab===k?'active':''}" onclick="setTab('${k}')">${l}</button>`).join('');
+}
+function setTab(t){state.tab=t;renderNav();render();}
+
+// ── RENDER ──
+function render(){
+  const app=$('app');
+  if(state.tab==='today')app.innerHTML=renderToday();
+  else if(state.tab==='calendar')app.innerHTML=renderCalendar();
+  else if(state.tab==='meets')app.innerHTML=renderMeets();
+  else if(state.tab==='athletes')app.innerHTML=renderAthletes();
+  else if(state.tab==='practice')app.innerHTML=renderPractice();
+  else if(state.tab==='ai')app.innerHTML=renderAI();
+}
+
+// ── TODAY ──
+function renderToday(){
+  const nm=nextMeet;const dt=nm?daysTo(nm):'-';
+  const alerts=ATHLETES.filter(a=>{const s=state.statuses[a[0]]||KNOWN_STATUS[a[0]]||'available';return s!=='available';});
+  const remaining=ACTIONS.filter(a=>!state.done.includes(a.id)).length;
+  return `<div class="sec">
+    <div class="label">Command Center</div>
+    <div style="font-weight:800;font-size:1.2rem;text-transform:uppercase">${TODAY.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
+    <div class="sm">${nm?nm.name+' ('+nm.g+') in '+dt+'d':''}</div>
+    <div class="grid4" style="margin:12px 0">
+      <div><div class="val" style="color:var(--red)">${dt}d</div><div class="lbl">Next Meet</div></div>
+      <div><div class="val">${ATHLETES.length}</div><div class="lbl">Roster</div></div>
+      <div><div class="val" style="color:${alerts.length?'var(--red)':'var(--grn)'}">${alerts.length}</div><div class="lbl">Alerts</div></div>
+      <div><div class="val">${seasonPct}%</div><div class="lbl">Season</div></div>
+    </div>
+    <div class="label" style="margin-top:14px">Action Items (${remaining} remaining)</div>
+    ${ACTIONS.sort((a,b)=>new Date(a.d)-new Date(b.d)).map(a=>{
+      const d=state.done.includes(a.id);
+      return `<div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--card);border:1px solid var(--bdr);border-left:3px solid ${a.p==='h'?'var(--red)':'var(--gold)'};margin-bottom:4px;opacity:${d?.35:1};cursor:pointer" onclick="toggleDone(${a.id})">
+        <div class="chk ${d?'done':''}">${d?'✓':''}</div>
+        <div style="flex:1"><div style="font-size:.8rem;font-weight:600;line-height:1.3;${d?'text-decoration:line-through':''}">${a.t}</div>
+        <div style="font-size:.6rem;color:${a.p==='h'?'#ff4444':'var(--gold)'};font-weight:700;margin-top:2px">Due: ${a.d}</div></div>
+      </div>`;
+    }).join('')}
+    ${alerts.length?`<div class="label" style="margin-top:14px">Athlete Alerts</div>
+    ${alerts.map(a=>{const s=state.statuses[a[0]]||KNOWN_STATUS[a[0]];return `<div class="card-r" style="display:flex;align-items:center;gap:8px;padding:8px 12px">
+      <div class="dot ${statusColor(s)}"></div>
+      <span style="font-weight:600;font-size:.82rem">${a[0]}</span>
+      <span style="font-size:.7rem;color:var(--mut)">${a[2]} · Gr ${a[1]}</span>
+      <span class="badge badge-${s==='injured'||s==='unavailable'?'r':'y'}" style="margin-left:auto">${s}</span>
+    </div>`;}).join('')}`:''}
+  </div>`;
+}
+
+// ── CALENDAR ──
+function renderCalendar(){
+  const m=state.calMonth;const y=state.calYear;
+  const first=new Date(y,m,1);const last=new Date(y,m+1,0);
+  const startDay=first.getDay();const daysInMonth=last.getDate();
+  const monthName=first.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+  // Build events map
+  const evts={};
+  MEETS.forEach(mt=>{if(mt.date.startsWith(`${y}-${String(m+1).padStart(2,'0')}`)){const d=parseInt(mt.date.slice(8));if(!evts[d])evts[d]=[];evts[d].push({type:'meet',text:mt.name+' ('+mt.g+')',cls:'cal-meet'});}});
+  DEADLINES.forEach(dl=>{if(dl.date.startsWith(`${y}-${String(m+1).padStart(2,'0')}`)){const d=parseInt(dl.date.slice(8));if(!evts[d])evts[d]=[];evts[d].push({type:'deadline',text:'⏰ '+dl.text,cls:'cal-deadline'});}});
+  CONFLICTS.forEach(c=>{
+    if(c.date&&c.date.startsWith(`${y}-${String(m+1).padStart(2,'0')}`)){const d=parseInt(c.date.slice(8));if(!evts[d])evts[d]=[];evts[d].push({type:'conflict',text:c.text,cls:'cal-conflict'});}
+    if(c.start){for(let dt=new Date(c.start);dt<=new Date(c.end);dt.setDate(dt.getDate()+1)){if(dt.getMonth()===m&&dt.getFullYear()===y){const d=dt.getDate();if(!evts[d])evts[d]=[];if(!evts[d].find(e=>e.text===c.text))evts[d].push({type:'conflict',text:c.text,cls:'cal-conflict'});}}}
+  });
+  // Practice days (weekdays without meets)
+  for(let d=1;d<=daysInMonth;d++){
+    const dt=new Date(y,m,d);const dow=dt.getDay();
+    if(dow>0&&dow<6&&(!evts[d]||!evts[d].find(e=>e.type==='meet'))){
+      const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      if(new Date(ds)>=SEASON_START&&new Date(ds)<=SEASON_END){
+        if(!evts[d])evts[d]=[];
+        // Check if split meet day
+        const splitMeet=MEETS.find(mt=>mt.date===ds&&(mt.g==='B'||mt.g==='G'));
+        if(splitMeet){evts[d].push({type:'practice',text:(splitMeet.g==='B'?'Girls':'Boys')+' practice',cls:'cal-practice'});}
+        else{evts[d].push({type:'practice',text:'Practice',cls:'cal-practice'});}
+      }
+    }
+  }
+
+  const todayD=TODAY.getDate();const todayM=TODAY.getMonth();const todayY=TODAY.getFullYear();
+
+  let cells='';
+  for(let i=0;i<startDay;i++)cells+='<div class="cal-day" style="opacity:.15"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const isToday=d===todayD&&m===todayM&&y===todayY;
+    const isPast=new Date(y,m,d)<new Date(todayY,todayM,todayD);
+    cells+=`<div class="cal-day ${isToday?'today':''} ${isPast?'past':''}">
+      <div class="cal-num">${d}</div>
+      ${(evts[d]||[]).map(e=>`<div class="cal-evt ${e.cls}">${e.text}</div>`).join('')}
+    </div>`;
+  }
+
+  return `<div class="sec">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <button class="btn-o" onclick="calNav(-1)">← Prev</button>
+      <div style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.1rem;text-transform:uppercase">${monthName}</div>
+      <button class="btn-o" onclick="calNav(1)">Next →</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:.6rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(204,0,0,.25);border-left:2px solid var(--red)"></span>Meet</span>
+      <span style="font-size:.6rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(212,168,67,.2);border-left:2px solid var(--gold)"></span>Deadline</span>
+      <span style="font-size:.6rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(34,197,94,.1);border-left:2px solid rgba(34,197,94,.3)"></span>Practice</span>
+      <span style="font-size:.6rem;display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:rgba(74,158,255,.15);border-left:2px solid var(--blu)"></span>Conflict</span>
+    </div>
+    <div class="cal-grid">
+      ${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-hdr">${d}</div>`).join('')}
+      ${cells}
+    </div>
+  </div>`;
+}
+function calNav(dir){state.calMonth+=dir;if(state.calMonth>11){state.calMonth=0;state.calYear++;}if(state.calMonth<0){state.calMonth=11;state.calYear--;}render();}
+
+// ── MEETS ──
+function renderMeets(){
+  if(state.meetView){
+    const m=MEETS.find(x=>x.id===state.meetView);
+    const lineup=state.meetView===1?BOYS_LINEUP:state.meetView===2?GIRLS_LINEUP:null;
+    return `<div class="sec">
+      <button class="btn-o" onclick="state.meetView=null;render()" style="margin-bottom:12px">← Back</button>
+      <div class="card-r">
+        <div style="font-weight:800;font-size:1.1rem;text-transform:uppercase">${m.name} (${m.g})</div>
+        <div class="sm">${fmtDate(m.date)} · ${m.loc} · Start ${m.start}${m.bus?' · Bus '+m.bus:''}${m.deadline?' · Deadline: '+m.deadline:''}</div>
+      </div>
+      ${lineup?lineup.map(ev=>`<div class="card" style="${lineupBorder(ev.s)}">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+          <span style="font-weight:700;font-size:.85rem">${ev.e}</span>${lineupBadge(ev.s)}
+        </div>
+        <div style="margin-top:4px">${ev.a.length?ev.a.map(a=>`<div style="font-size:.78rem;color:rgba(255,255,255,.7);padding:2px 0">${a}</div>`).join(''):'<div style="font-size:.75rem;color:#444;font-style:italic">No athletes</div>'}</div>
+        ${ev.n?`<div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:4px;font-style:italic">${ev.n}</div>`:''}
+      </div>`).join(''):'<div class="card"><div class="sm">No lineup loaded for this meet yet.</div></div>'}
+    </div>`;
+  }
+  return `<div class="sec">
+    <div class="label">Meet Schedule</div>
+    ${MEETS.map(m=>{
+      const d=daysTo(m);const past=d<0;
+      return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;opacity:${past?.3:1}" onclick="state.meetView=${m.id};render()">
+        <div><div style="font-weight:700;font-size:.85rem">${m.name} <span style="color:var(--mut);font-weight:400">(${m.g})</span></div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4)">${fmtDate(m.date)} · ${m.loc}${m.deadline?' · <span style=color:var(--gold)>Deadline: '+m.deadline+'</span>':''}</div></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="badge badge-${m.type==='home'||m.type==='conf'||m.type==='regional'||m.type==='sectional'?'r':'m'}">${m.type}</span>
+          ${d>=0&&d<=7?'<span class="badge badge-y">'+d+'d</span>':''}
+          ${m.hasLineup?'<span class="badge badge-g">Lineup</span>':''}
+          <span style="color:var(--red)">→</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── ATHLETES ──
+function renderAthletes(){
+  const f=state.athFilter;const q=state.athSearch.toLowerCase();
+  const filtered=ATHLETES.filter(a=>{
+    if(f==='boys'&&a[2]!=='B')return false;
+    if(f==='girls'&&a[2]!=='G')return false;
+    const s=state.statuses[a[0]]||KNOWN_STATUS[a[0]]||'available';
+    if(f==='alerts'&&s==='available')return false;
+    if(q&&!a[0].toLowerCase().includes(q))return false;
+    return true;
+  });
+  return `<div class="sec">
+    <div style="display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap">
+      ${['all','boys','girls','alerts'].map(k=>`<button class="btn-s ${f===k?'active':''}" onclick="state.athFilter='${k}';render()">${k}</button>`).join('')}
+    </div>
+    <input style="background:#161616;border:1px solid rgba(255,255,255,.08);color:#fff;padding:8px 12px;font-size:.8rem;width:100%;margin-bottom:10px" placeholder="Search..." value="${state.athSearch}" oninput="state.athSearch=this.value;render()">
+    ${filtered.map(a=>{
+      const s=state.statuses[a[0]]||KNOWN_STATUS[a[0]]||'available';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--bdr);font-size:.8rem">
+        <div class="dot ${statusColor(s)}"></div>
+        <span style="font-weight:600;flex:1">${a[0]}</span>
+        <span style="color:var(--mut);font-size:.7rem">${a[2]} · ${a[1]} · ${a[3]}</span>
+        <select value="${s}" onchange="setStatus('${a[0]}',this.value)" style="background:#222;border:1px solid var(--bdr);color:#fff;padding:3px 6px;font-size:.7rem">
+          ${['available','modified','limited','injured','unavailable'].map(o=>`<option value="${o}" ${s===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:10px;font-size:.65rem;color:var(--mut)">${filtered.length} of ${ATHLETES.length} athletes</div>
+  </div>`;
+}
+
+// ── PRACTICE ──
+function renderPractice(){
+  const pd=new Date(state.pracDate+'T12:00:00');
+  const dow=pd.getDay();const isWknd=dow===0||dow===6;
+  const meetDay=MEETS.filter(m=>m.date===state.pracDate);
+  const isMeet=meetDay.length>0;
+  const nextAfter=MEETS.find(m=>new Date(m.date)>pd);
+  const dOut=nextAfter?Math.ceil((new Date(nextAfter.date)-pd)/MS_DAY):14;
+  const mode=dOut<=1?'SHARPEN':dOut<=3?'BUILD':'DEVELOP';
+  const modeColor=mode==='SHARPEN'?'var(--red)':mode==='BUILD'?'var(--gold)':'var(--grn)';
+
+  let content='';
+  if(isWknd){content='<div class="card-r"><div style="font-weight:700">Weekend — No Practice</div></div>';}
+  else if(isMeet){
+    const mt=meetDay[0];
+    content=`<div class="card-r"><div style="font-weight:700">⚡ Meet Day: ${mt.name} (${mt.g})</div>
+    ${(mt.g==='B'||mt.g==='G')?`<div style="font-size:.75rem;color:var(--gold);margin-top:4px">${mt.g==='B'?'Boys at meet — Girls at practice (Eisfeldt leads)':'Girls at meet — Boys at practice (Klapatauskas leads)'}</div>`:''}
+    <div class="sm" style="margin-top:4px">Bus: ${mt.bus||'N/A'} · Start: ${mt.start}</div></div>`;
+  } else {
+    const isWed=dow===3;
+    content=`<div class="card-r">
+      <div style="font-weight:700;font-size:.9rem">Dynamic Warm-Up</div>
+      <div style="font-size:.65rem;color:var(--gold);font-weight:700">3:30-3:45 · All Athletes${isWed?' · END BY 5:00 (Wed religious ed)':''}</div>
+      <div class="sm">800m jog · A-Skips/B-Skips · High knees/Butt kicks · 4x60m build-ups</div>
+    </div>
+    <div class="card"><div style="font-weight:700;font-size:.9rem">Sprints/Hurdles</div><div style="font-size:.65rem;color:var(--gold);font-weight:700">Dilan + Hallie</div>
+    <div class="sm">${mode==='SHARPEN'?'2x60m @ 90-95% · 2x120m race model · Relay exchanges · NO conditioning':mode==='BUILD'?'4x20m starts · 3x30m accel · 3x150m @ 85-90% · Strength circuit':'4x20m starts · 3x60m @ 95% · 4-6x150m · Weight room'}</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.9rem">Distance</div><div style="font-size:.65rem;color:var(--gold);font-weight:700">Greg</div>
+    <div class="sm">${mode==='SHARPEN'?'800-1600: 2x400 race pace · 1600-3200: 15-20 min aerobic + strides':mode==='BUILD'?'Top: 4-5x800 threshold · Mid: 3-4x600 · Dev: 20 min steady':'Varsity: 25-35 min steady · New: 20 min conversational · 4x150 strides'}</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.9rem">Jumps</div><div style="font-size:.65rem;color:var(--gold);font-weight:700">James</div>
+    <div class="sm">${mode==='SHARPEN'?'6-8 approach runs (50% jump) · 4 full jumps max · Check marks':mode==='BUILD'?'LJ/TJ: 6-8 approaches + 4-6 jumps · HJ: pop-ups + 6-8 bar · Plyo circuit':'6-8 full approach jumps · Plyo circuit · Hurdle rhythm work'}</div></div>
+    <div class="card"><div style="font-weight:700;font-size:.9rem">Throws</div><div style="font-size:.65rem;color:var(--gold);font-weight:700">Katie (float)</div>
+    <div class="sm">${mode==='SHARPEN'?'8-10 throws @ 50-75% · Stand throws · 2-3 controlled full throws':mode==='BUILD'?'Shot: standing + glide · Discus: SA drills + full · 20-25 total':'20-25 technique throws · Footwork + ring work · Thrower gym'}</div></div>`;
+  }
+
+  return `<div class="sec">
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <span class="label" style="margin:0">Date:</span>
+      <input type="date" value="${state.pracDate}" onchange="state.pracDate=this.value;render()" style="background:#161616;border:1px solid rgba(255,255,255,.08);color:#fff;padding:6px 10px;font-size:.8rem">
+      <span class="badge badge-${mode==='SHARPEN'?'r':mode==='BUILD'?'y':'g'}">${mode}</span>
+      <span style="font-size:.72rem;color:var(--mut)">${dOut}d to ${nextAfter?nextAfter.name:'—'}</span>
+    </div>
+    ${content}
+  </div>`;
+}
+
+// ── AI COACH ──
+function renderAI(){
+  return `<div class="sec" style="text-align:center;padding:40px 20px">
+    <div style="font-size:2.5rem;margin-bottom:12px">🤖</div>
+    <div style="font-family:'Oswald',sans-serif;font-weight:800;font-size:1.2rem;text-transform:uppercase;margin-bottom:8px">AI Coaching Assistant</div>
+    <div class="sm" style="max-width:420px;margin:0 auto 20px;line-height:1.6">Your AI coach lives in Claude and knows your entire program — roster, schedule, meet entries, WIAA rules, competitive blueprint, and coaching staff. Open the link below to access it.</div>
+    <a href="https://claude.ai" target="_blank" class="btn" style="display:inline-block;text-decoration:none;padding:12px 24px;font-size:.8rem">Open AI Coach in Claude →</a>
+    <div style="margin-top:24px;padding:16px;background:var(--card);border:1px solid var(--bdr);text-align:left">
+      <div class="label" style="margin-bottom:8px">What you can ask</div>
+      ${['Who should I enter in boys LJ at Northern Badger?','Generate Monday practice plan — girls at practice','What are my best relay combos for 4x400?','Which athletes are close to school records?','Draft a TeamReach message about Tuesday bus time','Marshfield girls — where can we score the most points?'].map(q=>`<div style="font-size:.78rem;color:rgba(255,255,255,.5);padding:4px 0;border-bottom:1px solid var(--bdr)">• ${q}</div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── ACTIONS ──
+function toggleDone(id){
+  if(state.done.includes(id))state.done=state.done.filter(x=>x!==id);
+  else state.done.push(id);
+  save();render();
+}
+function setStatus(name,val){state.statuses[name]=val;save();render();}
+
+// ── INIT ──
+renderNav();render();
+</script>
+</body>
+</html>
