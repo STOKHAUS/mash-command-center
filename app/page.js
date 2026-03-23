@@ -42,6 +42,8 @@ export default function Home() {
   // Practice
   const [pracPlan, setPracPlan] = useState(null);
   const [pracLoad, setPracLoad] = useState(false);
+  // Live roster from Google Sheet
+  const [liveRoster, setLiveRoster] = useState(null);
 
   const NOW = new Date();
   const nm = MEETS.find(m => new Date(m.date) >= NOW);
@@ -77,6 +79,31 @@ export default function Home() {
     }
     fetchWx();
   }, []);
+
+  // Live roster sync from Google Sheet
+  useEffect(() => {
+    fetch('/api/roster')
+      .then(r => r.json())
+      .then(data => { if (data.athletes?.length) setLiveRoster(data.athletes); })
+      .catch(() => {});
+  }, []);
+
+  // Merged roster: live sheet = who's on team, FORM_DATA = enriched profiles
+  const rosterData = (() => {
+    if (!liveRoster) return FORM_DATA; // fallback to form data
+    return liveRoster.map(lr => {
+      // Try to match with form data by name (fuzzy)
+      const ln = lr.name.toLowerCase();
+      const match = FORM_DATA.find(f => {
+        const fn = f.n.toLowerCase();
+        return fn === ln || fn.includes(ln) || ln.includes(fn)
+          || fn.split(' ')[1] === ln.split(' ')[1]; // match last name
+      });
+      if (match) return { ...match, g: lr.grade, gn: lr.gender === 'M' ? 'M' : 'F' };
+      // No form data — minimal entry
+      return { n: lr.name, g: lr.grade, gn: lr.gender === 'M' ? 'M' : 'F', p1:'', p2:'', ph:'', em:'', pr:'', inj:'', goal:'', imp:'', pg:'', rv:'', conf:'', sp:'' };
+    });
+  })();
 
   // Practice plan - fetch when tab selected
   useEffect(() => {
@@ -144,7 +171,7 @@ export default function Home() {
   };
 
   const toggleDone = id => setDone(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  const alerts = FORM_DATA.filter(a => {
+  const alerts = rosterData.filter(a => {
     const s = getSt(a.n);
     return s !== 'available';
   });
@@ -203,7 +230,7 @@ export default function Home() {
           <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)' }}>{nm ? `${nm.name} (${nm.g}) in ${dtn}d` : ''}</div>
 
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:BDR, margin:'12px 0' }}>
-            {[[dtn+'d','Next Meet',R],[FORM_DATA.length,'Athletes','#fff'],[alerts.length,'Alerts',alerts.length?R:G],[MEETS.length,'Meets','#fff']].map(([v,l,c],i) => (
+            {[[dtn+'d','Next Meet',R],[rosterData.length,'Athletes','#fff'],[alerts.length,'Alerts',alerts.length?R:G],[MEETS.length,'Meets','#fff']].map(([v,l,c],i) => (
               <div key={i} style={{ background:'#111', padding:'10px', textAlign:'center' }}>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:'1.5rem', fontWeight:800, color:c }}>{v}</div>
                 <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:3 }}>{l}</div>
@@ -392,11 +419,17 @@ export default function Home() {
       {/* ═══ ATHLETES ═══ */}
       {tab === 'athletes' && !selectedAth && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
-          <div style={{ display:'flex', gap:4, marginBottom:10, flexWrap:'wrap' }}>
-            {['all','boys','girls','alerts'].map(k => <button key={k} style={btnS(athF===k)} onClick={() => setAthF(k)}>{k}</button>)}
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+            <div style={{ display:'flex', gap:4, flexWrap:'wrap' }}>
+              {['all','boys','girls','alerts'].map(k => <button key={k} style={btnS(athF===k)} onClick={() => setAthF(k)}>{k}</button>)}
+            </div>
+            <div style={{ fontSize:'.55rem', color:liveRoster?G:'#555', fontWeight:700, textTransform:'uppercase', letterSpacing:'.08em', display:'flex', alignItems:'center', gap:4 }}>
+              <div style={{ width:6, height:6, borderRadius:'50%', background:liveRoster?G:'#555' }} />
+              {liveRoster ? `Live · ${rosterData.length}` : `Offline · ${rosterData.length}`}
+            </div>
           </div>
           <input style={{ ...input, marginBottom:10 }} placeholder="Search..." value={athQ} onChange={e => setAthQ(e.target.value)} />
-          {FORM_DATA.filter(a => {
+          {rosterData.filter(a => {
             if (athF==='boys' && a.gn!=='M') return false;
             if (athF==='girls' && a.gn!=='F') return false;
             if (athF==='alerts' && getSt(a.n)==='available') return false;
@@ -471,9 +504,9 @@ export default function Home() {
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:4 }}>Athlete Plans</div>
           <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>AI-generated meal + workout plans using each athlete's actual PRs, injuries, goals, and training phase.</div>
 
-          <select style={{ ...input, marginBottom:12 }} value="" onChange={e => { const a = FORM_DATA.find(x => x.n === e.target.value); if(a) genPlans(a); }}>
+          <select style={{ ...input, marginBottom:12 }} value="" onChange={e => { const a = rosterData.find(x => x.n === e.target.value); if(a) genPlans(a); }}>
             <option value="">Select athlete...</option>
-            {FORM_DATA.map((a, i) => <option key={i} value={a.n}>{a.n} ({a.gn}·Gr{a.g}·{a.p1||'TBD'})</option>)}
+            {rosterData.map((a, i) => <option key={i} value={a.n}>{a.n} ({a.gn}·Gr{a.g}·{a.p1||'TBD'})</option>)}
           </select>
 
           {planLoad && <div style={{ textAlign:'center', padding:30, color:R, fontWeight:700 }}>Generating plans for {planA?.n}...</div>}
