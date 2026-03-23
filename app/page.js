@@ -39,6 +39,9 @@ export default function Home() {
   // Message
   const [msgBody, setMsgBody] = useState('');
   const [copied, setCopied] = useState(false);
+  // Practice
+  const [pracPlan, setPracPlan] = useState(null);
+  const [pracLoad, setPracLoad] = useState(false);
 
   const NOW = new Date();
   const nm = MEETS.find(m => new Date(m.date) >= NOW);
@@ -74,6 +77,16 @@ export default function Home() {
     }
     fetchWx();
   }, []);
+
+  // Practice plan - fetch when tab selected
+  useEffect(() => {
+    if (tab !== 'practice' || pracPlan || pracLoad) return;
+    setPracLoad(true);
+    fetch('/api/practice')
+      .then(r => r.json())
+      .then(data => { setPracPlan(data); setPracLoad(false); })
+      .catch(() => setPracLoad(false));
+  }, [tab, pracPlan, pracLoad]);
 
   // AI Coach
   const sendAI = useCallback(async () => {
@@ -161,7 +174,7 @@ export default function Home() {
     );
   };
 
-  const tabs = [['today','⚡ Today'],['meets','🏟️ Meets'],['athletes','👤 Roster'],['plans','🍽️ Plans'],['msg','📱 Message'],['ai','🤖 AI']];
+  const tabs = [['today','⚡ Today'],['practice','📋 Practice'],['meets','🏟️ Meets'],['athletes','👤 Roster'],['plans','🍽️ Plans'],['msg','📱 Message'],['ai','🤖 AI']];
   const input = { background:'#161616', border:`1px solid rgba(255,255,255,.08)`, color:'#fff', padding:'8px 12px', fontSize:'.8rem', width:'100%' };
   const btn = { padding:'8px 16px', background:R, color:'#fff', border:'none', fontWeight:800, fontSize:'.68rem', textTransform:'uppercase', letterSpacing:'.08em', cursor:'pointer' };
   const btnO = { ...btn, background:'transparent', border:`1px solid rgba(255,255,255,.15)`, fontWeight:600 };
@@ -201,6 +214,29 @@ export default function Home() {
           <WxWidget data={wx} title="Medford (54451) — 7-Day Forecast" />
           {mWx && nm && <WxWidget data={mWx.d} title={`${nm.name} @ ${mWx.loc}`} />}
 
+          {/* BIG ACTION BUTTONS */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, margin:'14px 0' }}>
+            <button onClick={() => setTab('practice')} style={{ background:'linear-gradient(135deg,#1a0505,#2a0a0a)', border:`2px solid ${R}`, padding:'20px 16px', cursor:'pointer', textAlign:'left', transition:'all .2s', gridColumn:'1 / -1' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ fontSize:'1.8rem' }}>📋</div>
+                <div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.05rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Today's Practice Plan</div>
+                  <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)', marginTop:4, lineHeight:1.4 }}>Auto-generated daily workout · Event groups · Coach assignments</div>
+                </div>
+              </div>
+            </button>
+            <button onClick={() => setTab('plans')} style={{ background:'linear-gradient(135deg,#0a0a15,#15102a)', border:`2px solid #7c3aed`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
+              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>🍽️</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Meal & Workout Plans</div>
+              <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>Per-athlete nutrition + training</div>
+            </button>
+            <button onClick={() => setTab('ai')} style={{ background:'linear-gradient(135deg,#050a1a,#0a0a2a)', border:`2px solid ${B}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
+              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>🤖</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>AI Coach</div>
+              <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>Strategy, lineups, WIAA rules</div>
+            </button>
+          </div>
+
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:14, marginBottom:8 }}>
             Actions ({ACTIONS.filter(a => !done.includes(a.id)).length})
           </div>
@@ -216,6 +252,114 @@ export default function Home() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* ═══ PRACTICE ═══ */}
+      {tab === 'practice' && (
+        <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
+          {pracLoad && (
+            <div style={{ textAlign:'center', padding:'60px 20px' }}>
+              <div style={{ fontSize:'2rem', marginBottom:12 }}>📋</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', color:R }}>Generating Today's Practice Plan...</div>
+              <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.4)', marginTop:8 }}>Building workout based on training phase and meet schedule</div>
+            </div>
+          )}
+
+          {pracPlan && !pracPlan.isOff && !pracPlan.error && (
+            <>
+              {/* Hero */}
+              <div style={{ border:`1px solid rgba(255,255,255,.06)`, background:'radial-gradient(circle at top right,rgba(204,0,0,.12),transparent 30%),linear-gradient(135deg,#151515,#0f0f0f)', padding:'2rem', marginBottom:'1.5rem' }}>
+                <div style={{ fontSize:'.65rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.3em', color:R, marginBottom:6 }}>MASH Track & Field</div>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'clamp(1.6rem,4vw,2.4rem)', textTransform:'uppercase', lineHeight:1, marginBottom:8 }}>
+                  {pracPlan.day} <span style={{color:R}}>Practice Plan</span>
+                </div>
+                <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginBottom:'1.2rem' }}>{pracPlan.date}</div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
+                  <div style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
+                    <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>Phase</div>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.9rem' }}>{pracPlan.phase}</div>
+                  </div>
+                  <div style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
+                    <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>Next Meet</div>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.85rem' }}>{pracPlan.nextMeet || 'TBD'}</div>
+                  </div>
+                  <div style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
+                    <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>R.A.I.D.E.R.S.</div>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.9rem' }}>{pracPlan.raidersValue}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Time Blocks */}
+              {pracPlan.blocks && pracPlan.blocks.map((block, i) => (
+                <div key={i} style={{ display:'grid', gridTemplateColumns:'140px 1fr', border:`1px solid rgba(255,255,255,.06)`, background:'#1a1a1a', marginBottom:8 }}>
+                  <div style={{ background:'linear-gradient(180deg,#1e1e1e,#161616)', borderRight:`1px solid rgba(255,255,255,.06)`, padding:'1rem .8rem' }}>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.95rem', color:R, lineHeight:1.1 }}>{block.time}</div>
+                    {block.duration && <div style={{ fontSize:'.6rem', color:'#555', marginTop:4 }}>{block.duration}</div>}
+                  </div>
+                  <div style={{ padding:'1rem 1.2rem' }}>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'1rem', textTransform:'uppercase', marginBottom:6 }}>{block.title}</div>
+                    {block.content && <div style={{ fontSize:'.82rem', color:'rgba(255,255,255,.6)', lineHeight:1.6, marginBottom:6 }}>{block.content}</div>}
+                    {block.bullets && block.bullets.map((b, j) => (
+                      <div key={j} style={{ fontSize:'.82rem', color:'rgba(255,255,255,.6)', lineHeight:1.6, paddingLeft:'1rem', position:'relative' }}>
+                        <span style={{ position:'absolute', left:0, width:5, height:5, background:R, top:8 }} />{b}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Event Groups */}
+              {pracPlan.groups && pracPlan.groups.length > 0 && (
+                <>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, margin:'20px 0 10px' }}>Event Group Workouts</div>
+                  <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(250px,1fr))', gap:8 }}>
+                    {pracPlan.groups.map((g, i) => (
+                      <div key={i} style={{ background:'#1a1a1a', border:`1px solid rgba(255,255,255,.06)`, padding:'1.2rem', borderTop:`3px solid ${R}` }}>
+                        <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'1rem', textTransform:'uppercase', marginBottom:2 }}>{g.name}</div>
+                        <div style={{ fontSize:'.68rem', color:R, fontWeight:600, marginBottom:10 }}>Coach: {g.coach}</div>
+                        {g.workout && g.workout.map((w, j) => (
+                          <div key={j} style={{ fontSize:'.82rem', color:'rgba(255,255,255,.6)', lineHeight:1.6, paddingLeft:'1rem', position:'relative', marginBottom:2 }}>
+                            <span style={{ position:'absolute', left:0, width:5, height:5, background:R, top:8 }} />{w}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Closing */}
+              {pracPlan.closingMessage && (
+                <div style={{ borderLeft:`3px solid ${R}`, background:'rgba(204,0,0,.06)', padding:'1rem 1.2rem', marginTop:16 }}>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:600, fontSize:'.9rem', color:'rgba(255,255,255,.8)', lineHeight:1.5, fontStyle:'italic' }}>
+                    "{pracPlan.closingMessage}"
+                  </div>
+                </div>
+              )}
+
+              <div style={{ background:R, padding:'12px 16px', marginTop:12, textAlign:'center', fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.8rem', textTransform:'uppercase', letterSpacing:'.06em' }}>
+                1% Better Every Day · E + R = O · Go Raiders
+              </div>
+            </>
+          )}
+
+          {pracPlan && pracPlan.isOff && (
+            <div style={{ textAlign:'center', padding:'60px 20px' }}>
+              <div style={{ fontSize:'2.5rem', marginBottom:12 }}>😴</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>Rest Day — {pracPlan.day}</div>
+              <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginTop:8, maxWidth:400, margin:'8px auto 0' }}>{pracPlan.closingMessage}</div>
+            </div>
+          )}
+
+          {pracPlan && pracPlan.error && (
+            <div style={{ textAlign:'center', padding:'60px 20px' }}>
+              <div style={{ fontSize:'2rem', marginBottom:12 }}>⚠️</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', color:R }}>Plan Unavailable</div>
+              <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginTop:8 }}>{pracPlan.error}</div>
+            </div>
+          )}
         </div>
       )}
 
