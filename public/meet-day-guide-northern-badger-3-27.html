@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Meet Day Guide — Northern Badger Classic 3/27</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#cc0000;--dk:#0a0a0a;--card:#131313;--bdr:rgba(255,255,255,.06);--gold:#d4a843;--grn:#22c55e;--blu:#4a9eff;--mut:#666}
+body{font-family:'Barlow',sans-serif!important;background:var(--dk)!important;color:#fff!important;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--red)!important;text-decoration:none}
+div,span,p,strong,input{color:inherit}
+
+.topbar{background:linear-gradient(135deg,#1a0000,var(--dk))!important;border-bottom:2px solid var(--red);padding:14px 16px;text-align:center;position:sticky;top:0;z-index:100;color:#fff!important}
+.brand{font-family:'Oswald',sans-serif!important;font-weight:800;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;color:#fff!important}
+.brand span{color:var(--red)!important}
+.meet-title{font-family:'Oswald',sans-serif!important;font-weight:700;font-size:.85rem;color:rgba(255,255,255,.5)!important;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+.info-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr)!important;margin:0}
+.info-strip>div{background:#111!important;padding:10px 8px;text-align:center;color:#fff!important}
+.info-strip .val{font-family:'Oswald',sans-serif!important;font-weight:800;font-size:1.1rem;line-height:1;color:#fff!important}
+.info-strip .lbl{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)!important;margin-top:2px}
+
+.alert-bar{background:rgba(204,0,0,.12)!important;border-bottom:1px solid rgba(204,0,0,.3);padding:10px 16px;text-align:center;font-size:.72rem;font-weight:700;color:#ff6666!important;text-transform:uppercase;letter-spacing:.06em}
+
+.filter-bar{display:flex;gap:6px;padding:10px 16px;background:#0e0e0e!important;border-bottom:1px solid var(--bdr);position:sticky;top:68px;z-index:98;flex-wrap:wrap;align-items:center}
+.filter-btn{background:rgba(255,255,255,.04)!important;border:1px solid rgba(255,255,255,.1);color:#888!important;padding:5px 12px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;font-family:'Barlow',sans-serif}
+.filter-btn.active{background:var(--red)!important;color:#fff!important;border-color:var(--red)}
+.filter-btn:hover{border-color:rgba(255,255,255,.3)}
+
+.search-wrap{padding:12px 16px;position:sticky;top:108px;z-index:97;background:var(--dk)!important}
+.search{background:#161616!important;border:1px solid rgba(255,255,255,.1)!important;color:#fff!important;padding:10px 14px;font-size:.9rem;width:100%;font-family:inherit;border-radius:0}
+.search::placeholder{color:#444!important}
+.search:focus{outline:none;border-color:var(--red)!important}
+
+.sec{padding:0 16px 16px;max-width:700px;margin:0 auto;color:#fff!important}
+.label{font-size:.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.2em;color:var(--red)!important;margin:16px 0 6px}
+
+.athlete-card{background:var(--card)!important;border:1px solid var(--bdr);border-left:3px solid var(--red);margin-bottom:10px;overflow:hidden;color:#fff!important}
+.athlete-card.girls-card{border-left-color:var(--gold)}
+.athlete-card.collapsed .card-body{display:none}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;color:#fff!important}
+.card-header:hover{background:rgba(255,255,255,.02)!important}
+.ath-name{font-family:'Oswald',sans-serif!important;font-weight:700;font-size:1rem;text-transform:uppercase;color:#fff!important}
+.ath-meta{font-size:.65rem;color:var(--mut)!important;font-weight:600}
+.ath-count{font-size:.6rem;font-weight:800;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
+.count-boys{background:rgba(204,0,0,.2)!important;color:#ff4444!important}
+.count-girls{background:rgba(212,168,67,.2)!important;color:var(--gold)!important}
+.gender-tag{font-size:.5rem;font-weight:800;padding:1px 5px;text-transform:uppercase;letter-spacing:.04em;margin-left:4px}
+.tag-boys{background:rgba(204,0,0,.15)!important;color:#ff6666!important;border:1px solid rgba(204,0,0,.25)}
+.tag-girls{background:rgba(212,168,67,.15)!important;color:var(--gold)!important;border:1px solid rgba(212,168,67,.25)}
+.card-body{padding:0 14px 14px;border-top:1px solid var(--bdr);color:#fff!important}
+
+.evt-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);color:#fff!important}
+.evt-row:last-child{border-bottom:none}
+.evt-time{font-family:'Oswald',sans-serif!important;font-weight:700;font-size:.85rem;color:var(--gold)!important;min-width:62px;text-align:right}
+.evt-name{font-weight:600;font-size:.82rem;flex:1;color:#fff!important}
+.evt-seed{font-size:.72rem;color:rgba(255,255,255,.4)!important;font-weight:600}
+.evt-level{font-size:.5rem;font-weight:800;padding:1px 5px;text-transform:uppercase;letter-spacing:.04em}
+.evt-v{background:rgba(204,0,0,.2)!important;color:#ff4444!important;border:1px solid rgba(204,0,0,.3)}
+.evt-wc{background:rgba(74,158,255,.15)!important;color:var(--blu)!important;border:1px solid rgba(74,158,255,.3)}
+
+.prep-section{margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.02)!important;border:1px solid rgba(255,255,255,.04)}
+.prep-title{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--gold)!important;margin-bottom:6px}
+.prep-item{font-size:.75rem;color:rgba(255,255,255,.6)!important;line-height:1.6;padding:2px 0}
+.prep-item strong{color:rgba(255,255,255,.85)!important;font-weight:700}
+
+.timeline{margin-top:10px;padding:10px 12px;background:rgba(34,197,94,.05)!important;border:1px solid rgba(34,197,94,.1)}
+.timeline-title{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--grn)!important;margin-bottom:6px}
+.tl-row{display:flex;gap:10px;padding:3px 0;font-size:.75rem;color:rgba(255,255,255,.6)!important}
+.tl-time{font-weight:700;color:rgba(255,255,255,.8)!important;min-width:56px}
+
+.note-box{margin-top:10px;padding:10px 12px;background:rgba(204,0,0,.06)!important;border:1px solid rgba(204,0,0,.15)}
+.note-box .prep-title{color:#ff4444!important}
+
+.footer{text-align:center;padding:20px 16px;font-size:.6rem;color:var(--mut)!important;border-top:1px solid var(--bdr);margin-top:20px}
+
+@media(max-width:600px){
+.info-strip{grid-template-columns:repeat(2,1fr)}
+.info-strip .val{font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span>MASH</span> Track & Field</div>
+  <div class="meet-title">Meet Day Guide — Northern Badger Classic · UW-Stout</div>
+</div>
+
+<div class="info-strip">
+  <div><div class="val">Fri 3/27</div><div class="lbl">Date</div></div>
+  <div><div class="val" style="color:var(--red)!important">3:00 PM</div><div class="lbl">Start</div></div>
+  <div><div class="val">12:30 PM</div><div class="lbl">Bus</div></div>
+  <div><div class="val">35°F ❄️</div><div class="lbl">Weather</div></div>
+</div>
+
+<div class="alert-bar">⚠️ Indoor Meet — UW-Stout Johnson Fieldhouse · Cold + possible snow flurries — dress warm for travel · B/G Combined</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" id="f-all" onclick="setFilter('all')">All (27)</button>
+  <button class="filter-btn" id="f-boys" onclick="setFilter('boys')">Boys (16)</button>
+  <button class="filter-btn" id="f-girls" onclick="setFilter('girls')">Girls (11)</button>
+</div>
+
+<div class="search-wrap">
+  <input class="search" id="search" placeholder="Find your name..." autocomplete="off">
+</div>
+
+<div class="sec" id="content"></div>
+
+<div class="footer">
+  MASH Track & Field 2026 · Medford Raiders<br>
+  UW-Stout · Bus 12:30 PM · Dismiss 12:20 PM · Meet Start 3:00 PM<br>
+  Large School Division · PT Timing · pttiming.com
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// ATHLETE DATA — Northern Badger Classic 3/27
+// UW-Stout · Large School Division · B/G Combined
+// Source: athletic.net/pttiming entries as of 3/25
+// ═══════════════════════════════════════════════
+
+var ATHLETES = [
+  // ══════ BOYS ══════
+  {
+    name: 'Angus Hamland', gr: 10, group: 'distance', gender: 'B',
+    events: [
+      {e:'1600 Meters',lvl:'V',time:'~3:50 PM',seed:'5:14.19'}
+    ],
+    notes: 'One event \u2014 the mile is YOUR race today. Updated seed from Marshfield (was 5:32, now 5:14 after conversion). No relay to drain your legs this time. Go out controlled through 800, then build. This is the race to prove the Marshfield mile was a fluke.'
+  },
+  {
+    name: 'Axel Brushaber', gr: 11, group: 'sprint', gender: 'B',
+    events: [
+      {e:'200 Meters',lvl:'V',time:'~5:00 PM',seed:''},
+      {e:'Triple Jump',lvl:'V',time:'~3:00 PM',seed:'35\u2019 9"'}
+    ],
+    notes: 'TJ starts with field events right at 3:00 \u2014 be warmed up before the meet begins. You won JV TJ at Marshfield (36-3.5), now you\u2019re varsity here. Long break before the 200 \u2014 stay warm and loose. Attack the 200 with a strong curve.'
+  },
+  {
+    name: 'Erik Paul', gr: 10, group: 'sprint', gender: 'B',
+    events: [
+      {e:'55 Meters',lvl:'V',time:'~3:30 PM',seed:''}
+    ],
+    notes: 'One event \u2014 full focus on the 55. PR\u2019d 7.58 in the 60 at Marshfield (Tuesday). Shorter distance here \u2014 it\u2019s all about the start. Explosive drive phase, stay low, lift at 30m. Use the rest of the meet to watch and learn.'
+  },
+  {
+    name: 'Ethan Jacobsen', gr: 10, group: 'distance', gender: 'B',
+    events: [
+      {e:'400 Meters',lvl:'V',time:'~4:15 PM',seed:''}
+    ],
+    notes: 'One event today \u2014 much lighter load than your 6-event day at Marshfield. The 400 is about going out controlled through 200 and holding form home. Use the early meet to get a thorough warm-up in. No seed \u2014 run your race and establish a mark.'
+  },
+  {
+    name: 'Evan Pagel', gr: 12, group: 'distance', gender: 'B',
+    events: [
+      {e:'3200 Meters',lvl:'V',time:'~5:20 PM',seed:'11:40.56'}
+    ],
+    notes: 'Senior running the 2-mile \u2014 one event, all focus. Seed is 11:40. This is a late event \u2014 stay warm and fueled throughout the meet. Find someone to run with and settle into a rhythm early. Even splits win this race.'
+  },
+  {
+    name: 'Jasper Stokes', gr: 10, group: 'jumps', gender: 'B',
+    events: [
+      {e:'Long Jump',lvl:'V',time:'~3:00 PM',seed:'14\u2019 11.75"'},
+      {e:'4x400 Relay',lvl:'V',time:'~5:40 PM',seed:'3:33.30'}
+    ],
+    notes: '2 events today \u2014 much better than 5 at Marshfield. LJ starts right away at 3:00. Seed is 14\u201911.75 (16-5 at Marshfield was off your 18-0 capability). Focus on approach consistency \u2014 hit the board clean. Long break before the 4x400 relay at the end. Stay warm.'
+  },
+  {
+    name: 'Jonathan Bartnik', gr: 12, group: 'throws', gender: 'B',
+    events: [
+      {e:'Shot Put',lvl:'V',time:'~3:00 PM',seed:''}
+    ],
+    notes: 'PR\u2019d at Marshfield (31-11). Carry that confidence into today. One event, full focus. SP starts right at 3:00 \u2014 be warmed up. No seed listed but you\u2019re throwing well. Attack the ring.'
+  },
+  {
+    name: 'Judah Wipf', gr: 10, group: 'distance', gender: 'B',
+    events: [
+      {e:'800 Meters',lvl:'V',time:'~4:40 PM',seed:'2:18.67'},
+      {e:'4x400 Relay',lvl:'V',time:'~5:40 PM',seed:'3:33.30'}
+    ],
+    notes: 'Huge seed upgrade \u2014 2:18 after your 2:26 PR at Marshfield. The 800 is your showcase. No LJ overlap today. Go out at pace through 400 and kick hard the last 200. About an hour before the 4x400 relay \u2014 recover and refuel. You\u2019re listed as the 5th relay member (alternate) \u2014 be ready to run.'
+  },
+  {
+    name: 'Levi Zuleger', gr: 10, group: 'sprint', gender: 'B',
+    events: [
+      {e:'55 Meters',lvl:'V',time:'~3:30 PM',seed:''},
+      {e:'200 Meters',lvl:'V',time:'~5:00 PM',seed:'26.61'}
+    ],
+    notes: 'Two sprint events. The 55 is early \u2014 be warmed up and ready to explode. The 200 has a 26.61 seed, which puts you in a competitive heat. Long break between events \u2014 stay loose and hydrated. Run relaxed through the curve, then power down the straight.'
+  },
+  {
+    name: 'Logan Langdon', gr: 11, group: 'throws', gender: 'B',
+    events: [
+      {e:'Shot Put',lvl:'V',time:'~3:00 PM',seed:'34\u2019 7"'}
+    ],
+    notes: 'Top seed for our team \u2014 but you PR\u2019d 37-9.5 at Marshfield! The 34-7 seed doesn\u2019t reflect your current level. One event, full focus. SP starts at 3:00. Warm up with stands, build to glides. Attack every throw. You\u2019re capable of 38+ today.'
+  },
+  {
+    name: 'Luca Gumy', gr: 9, group: 'jumps', gender: 'B',
+    events: [
+      {e:'Long Jump',lvl:'V',time:'~3:00 PM',seed:''}
+    ],
+    notes: 'Jumping varsity at a college-hosted meet as a freshman \u2014 that\u2019s a big deal. LJ starts at 3:00. You jumped 15-3.75 at Marshfield. Focus on your approach and hitting the board. No seed pressure \u2014 compete against yourself and set a mark.'
+  },
+  {
+    name: 'Luke Klapatauskas', gr: 10, group: 'hurdles', gender: 'B',
+    events: [
+      {e:'55m Hurdles',lvl:'V',time:'~3:20 PM',seed:''},
+      {e:'Triple Jump',lvl:'V',time:'~3:00 PM',seed:'37\u2019 5.5"'}
+    ],
+    notes: 'TJ and hurdles are close together \u2014 TJ starts at 3:00, hurdles around 3:20. Communicate with TJ officials if you need to step away. You were 2nd in TJ and 4th in hurdles at Marshfield (PR 9.08). You\u2019re one of our top scorers \u2014 attack both events.'
+  },
+  {
+    name: 'Nevyn Gripentrog', gr: 11, group: 'distance', gender: 'B',
+    events: [
+      {e:'1600 Meters',lvl:'V',time:'~3:50 PM',seed:'5:50.94'}
+    ],
+    notes: 'One event \u2014 just the mile today. No relay or JV 880 to split your energy. Run with Hamland early and work together through the first 800. The last 800 is where you make your move. Seed is 5:50 \u2014 you can go under that.'
+  },
+  {
+    name: 'Peyton Reid', gr: 10, group: 'distance', gender: 'B',
+    events: [
+      {e:'800 Meters',lvl:'V',time:'~4:40 PM',seed:'2:28.03'},
+      {e:'4x400 Relay',lvl:'V',time:'~5:40 PM',seed:'3:33.30'}
+    ],
+    notes: '800 is your A-race \u2014 seed 2:28 after your 2:33 JV PR at Marshfield. Step up to varsity today. Run with Wipf if you can, don\u2019t go out too fast. About an hour between the 800 and the 4x400 relay \u2014 refuel and stay warm. Run your relay leg hard.'
+  },
+  {
+    name: 'Sawyer Hoops', gr: 10, group: 'sprint', gender: 'B',
+    events: [
+      {e:'200 Meters',lvl:'WC',time:'~5:00 PM',seed:''},
+      {e:'400 Meters',lvl:'V',time:'~4:15 PM',seed:'55.02'},
+      {e:'4x400 Relay',lvl:'V',time:'~5:40 PM',seed:'3:33.30'}
+    ],
+    notes: '3 events \u2014 the 400 is your marquee race. You PR\u2019d 1:01.42 at Marshfield (Tuesday) and your converted seed is now 55.02. Go out strong through 200, hold form, and finish. The 200 is a wildcard entry \u2014 treat it as a bonus sprint. About 40 min before the 4x400 relay. Manage your energy across all three.'
+  },
+  {
+    name: 'Will Daniels', gr: 12, group: 'hurdles', gender: 'B',
+    events: [
+      {e:'55m Hurdles',lvl:'V',time:'~3:20 PM',seed:'8.53'},
+      {e:'4x400 Relay',lvl:'V',time:'~5:40 PM',seed:'3:33.30'}
+    ],
+    notes: 'Top hurdler \u2014 8.53 seed puts you in strong position. Hurdles are early, then a long wait for the 4x400 relay at the end. Use that time to recover and stay warm. Senior season at a college facility \u2014 set the tone for the team.'
+  },
+
+  // ══════ GIRLS ══════
+  {
+    name: 'Alexis Zuleger', gr: 12, group: 'sprint', gender: 'G',
+    events: [
+      {e:'200 Meters',lvl:'V',time:'~5:00 PM',seed:'29.81'}
+    ],
+    notes: 'One event \u2014 just the 200 today. Seed is 29.81. Late race, so use the early meet to get a full warm-up in. Attack the curve and power down the straight. Senior year at a big meet \u2014 make it count.'
+  },
+  {
+    name: 'Cora Semrau', gr: 10, group: 'hurdles', gender: 'G',
+    events: [
+      {e:'55m Hurdles',lvl:'V',time:'~3:20 PM',seed:''}
+    ],
+    notes: 'One event \u2014 hurdles are early in the meet. Be fully warmed up with your lead leg and trail leg drills done before 3:00. No seed \u2014 run clean, stay aggressive over the hurdles, 3-step rhythm. This is your chance to establish a mark at a big meet.'
+  },
+  {
+    name: 'Jordyn Grant', gr: 10, group: 'sprint', gender: 'G',
+    events: [
+      {e:'55 Meters',lvl:'V',time:'~3:30 PM',seed:'8.25'},
+      {e:'Triple Jump',lvl:'V',time:'~3:00 PM',seed:'32\u2019 8.5"'}
+    ],
+    notes: 'TJ starts right at 3:00, then 55m around 3:30. TJ is your best event (30-10 at Marshfield on Tuesday, 32-8.5 seed). Get your approach marks set immediately during warm-ups. Communicate with TJ officials if the 55 overlaps. Two events is much more manageable than the 4-event load at Marshfield.'
+  },
+  {
+    name: 'Lindsay Kahn', gr: 12, group: 'distance', gender: 'G',
+    events: [
+      {e:'1600 Meters',lvl:'V',time:'~3:50 PM',seed:'5:39.86'}
+    ],
+    notes: 'One event \u2014 just the mile. Senior leader. 5:39 seed. No relay to drain your legs today. This is your race \u2014 go out at pace, settle in, and build through the second half. Find someone to tuck behind early and save your kick for the last 400.'
+  },
+  {
+    name: 'Lucy Ulrich', gr: 11, group: 'sprint', gender: 'G',
+    events: [
+      {e:'400 Meters',lvl:'V',time:'~4:15 PM',seed:''}
+    ],
+    notes: 'One event \u2014 the 400. No seed, so this is your chance to establish a mark. Go out controlled through 200 and finish strong. Use the early meet for a thorough warm-up including some 200m build-ups at race pace.'
+  },
+  {
+    name: 'Melanie Richter', gr: 9, group: 'distance', gender: 'G',
+    events: [
+      {e:'800 Meters',lvl:'V',time:'~4:40 PM',seed:'2:41.92'},
+      {e:'1600 Meters',lvl:'V',time:'~3:50 PM',seed:'6:04.51'}
+    ],
+    notes: 'Two distance events \u2014 the 1600 comes first (~3:50), then the 800 about 50 minutes later. The mile is the longer race, so run smart and save your legs. Run with Kahn if you can. The 800 is your A-race \u2014 your 2:41 seed gives you something to chase. Eat and hydrate between races.'
+  },
+  {
+    name: 'Naomi Thomas', gr: 10, group: 'throws', gender: 'G',
+    events: [
+      {e:'Shot Put',lvl:'V',time:'~3:00 PM',seed:'24\u2019 6.5"'}
+    ],
+    notes: 'SP starts right at 3:00 \u2014 be warmed up. 24-6.5 seed. Focus on your glide technique and a clean release. Stand throws first during warm-up, then build to full glides. Compete against yourself \u2014 every throw better than the last.'
+  },
+  {
+    name: 'Raylin Rothmeier', gr: 10, group: 'sprint', gender: 'G',
+    events: [
+      {e:'200 Meters',lvl:'V',time:'~5:00 PM',seed:''}
+    ],
+    notes: 'One event \u2014 the 200. Late race, so you have time to get a full warm-up in and watch some races first. No seed \u2014 run your race and set a mark. Attack the curve, hold form down the straight.'
+  },
+  {
+    name: 'Rivalee Stokes', gr: 12, group: 'throws', gender: 'G',
+    events: [
+      {e:'55 Meters',lvl:'V',time:'~3:30 PM',seed:'8.11'},
+      {e:'Shot Put',lvl:'V',time:'~3:00 PM',seed:'31\u2019 11.5"'}
+    ],
+    notes: 'Two events \u2014 SP starts at 3:00, then 55m around 3:30. SP first, so get your throws in early and strong. 31-11.5 seed is a big mark. The 55 comes quickly after \u2014 transition fast from the ring to the sprint warm-up area. Note: limited status \u2014 listen to your body and communicate with coaches.'
+  },
+  {
+    name: 'Taylor Klingbeil', gr: 10, group: 'sprint', gender: 'G',
+    events: [
+      {e:'400 Meters',lvl:'V',time:'~4:15 PM',seed:''}
+    ],
+    notes: 'One event \u2014 the 400. No seed \u2014 run to establish a mark. The 400 is about going out controlled through 200 and holding form to the finish. Use the early meet to watch the boys 400 and learn from their pacing.'
+  },
+  {
+    name: 'Willow Dassow', gr: 11, group: 'distance', gender: 'G',
+    events: [
+      {e:'800 Meters',lvl:'V',time:'~4:40 PM',seed:'2:43.84'}
+    ],
+    notes: 'One event \u2014 just the 800 today. 2:43 seed. Mid-meet race, so use the early events for a thorough warm-up with strides at race pace. Go out controlled through 400 and finish strong. Run with Richter if you can \u2014 push each other.'
+  }
+];
+
+// Group-specific prep plans
+var PREP = {
+  sprint: {
+    tonight: 'Light 10-min jog or walk. 4\u00d760m strides at 70%. No lifting. Foam roll quads and hamstrings. Early to bed \u2014 early bus tomorrow.',
+    meal: '<strong>Tonight:</strong> Pasta or rice with grilled chicken, steamed veggies. Drink 32+ oz water before bed.<br><strong>Tomorrow AM:</strong> Normal breakfast \u2014 oatmeal, toast, fruit. Nothing heavy.<br><strong>Lunch (by 11:30):</strong> PB&J or turkey sandwich, fruit, water. Eat BEFORE bus \u2014 nothing greasy.<br><strong>Bus snack (~12:30):</strong> Banana + granola bar. Sip water on the ride.',
+    warmup: 'At UW-Stout: 800m jog \u2192 A-skips/B-skips \u2192 high knees/butt kicks \u2192 leg swings (front + lateral) \u2192 4\u00d740m build-ups. Get warm 20 min before your first event.'
+  },
+  distance: {
+    tonight: 'Easy 15-min shakeout jog. 4\u00d7100m strides at 75%. Gentle stretching \u2014 hips, calves, hamstrings. Early to bed.',
+    meal: '<strong>Tonight:</strong> Carb-heavy \u2014 pasta, rice, or potatoes with lean protein. Extra water before bed.<br><strong>Tomorrow AM:</strong> Normal breakfast. Hydrate.<br><strong>Lunch (by 11:30):</strong> Balanced meal \u2014 sandwich, fruit, pretzels. Nothing new or spicy.<br><strong>Bus snack (~12:30):</strong> Banana or applesauce + small handful of pretzels.',
+    warmup: 'At UW-Stout: 10-min easy jog \u2192 dynamic stretches \u2192 4\u00d7100m strides building to race pace. Jog easy between events to stay loose.'
+  },
+  jumps: {
+    tonight: 'Light walk + dynamic stretching. 4\u00d740m acceleration build-ups. Foam roll glutes, hip flexors, calves. Visualize your approach.',
+    meal: '<strong>Tonight:</strong> Balanced plate \u2014 rice or pasta, chicken or fish, vegetables. Hydrate well.<br><strong>Tomorrow AM:</strong> Normal breakfast.<br><strong>Lunch (by 11:30):</strong> Turkey sandwich or PB&J, banana, water. Keep it simple.<br><strong>Bus snack (~12:30):</strong> Banana + small handful of trail mix. Stay hydrated.',
+    warmup: 'At UW-Stout: 800m jog \u2192 A-skips \u2192 leg swings \u2192 approach run-throughs (no jumping, just steps). Get your check marks set early \u2014 college runway may be different than what you\u2019re used to.'
+  },
+  throws: {
+    tonight: 'Light upper body stretching + foam roll shoulders, back, hips. No heavy lifting. Visualize your release point.',
+    meal: '<strong>Tonight:</strong> Protein-rich \u2014 chicken, beef, or fish with rice/potatoes and veggies. Hydrate well.<br><strong>Tomorrow AM:</strong> Solid breakfast with protein.<br><strong>Lunch (by 11:30):</strong> Sandwich with protein, fruit, water. You need fuel.<br><strong>Bus snack (~12:30):</strong> PB&J or protein bar + banana.',
+    warmup: 'At UW-Stout: Light jog \u2192 arm circles \u2192 hip rotations \u2192 5-6 easy standing throws \u2192 3-4 progressive glide throws. Find your rhythm before competition starts. Ring may feel different \u2014 get comfortable early.'
+  },
+  hurdles: {
+    tonight: 'Light 10-min jog. 4\u00d760m strides. Trail leg and lead leg drills (light). Foam roll hip flexors, hamstrings, groin.',
+    meal: '<strong>Tonight:</strong> Pasta or rice with grilled chicken, veggies. Drink 32+ oz water before bed.<br><strong>Tomorrow AM:</strong> Normal breakfast.<br><strong>Lunch (by 11:30):</strong> PB&J or sandwich, fruit, water. Nothing heavy.<br><strong>Bus snack (~12:30):</strong> Banana + granola bar.',
+    warmup: 'At UW-Stout: 800m jog \u2192 A-skips/B-skips \u2192 hurdle walk-overs (lead + trail) \u2192 3\u00d7over 2 hurdles from blocks. Get your rhythm dialed in early. Hurdles may be different spacing than practice \u2014 ask coaches.'
+  }
+};
+
+// ═══ STATE ═══
+var genderFilter = 'all';
+var expandedCards = new Set();
+var container = document.getElementById('content');
+var searchBox = document.getElementById('search');
+
+function setFilter(f) {
+  genderFilter = f;
+  document.getElementById('f-all').classList.toggle('active', f === 'all');
+  document.getElementById('f-boys').classList.toggle('active', f === 'boys');
+  document.getElementById('f-girls').classList.toggle('active', f === 'girls');
+  render(searchBox.value);
+}
+
+function render(filter) {
+  filter = filter || '';
+  var q = filter.toLowerCase().trim();
+  var filtered = ATHLETES.filter(function(a) {
+    if (genderFilter === 'boys' && a.gender !== 'B') return false;
+    if (genderFilter === 'girls' && a.gender !== 'G') return false;
+    if (q && a.name.toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px 0;color:#444;font-size:.85rem">No athletes found. Try a different name or filter.</div>';
+    return;
+  }
+
+  var html = '<div class="label">Your Meet Day Plan (' + filtered.length + ' athlete' + (filtered.length !== 1 ? 's' : '') + ')</div>';
+
+  for (var i = 0; i < filtered.length; i++) {
+    var a = filtered[i];
+    var expanded = expandedCards.has(a.name) || q.length > 0;
+    var prep = PREP[a.group] || PREP.sprint;
+    var heavy = a.events.length >= 3;
+    var isGirl = a.gender === 'G';
+
+    html += '<div class="athlete-card ' + (isGirl ? 'girls-card ' : '') + (expanded ? '' : 'collapsed') + '">';
+    html += '<div class="card-header" onclick="toggleCard(\'' + a.name.replace(/'/g, "\\'") + '\')">';
+    html += '<div><div class="ath-name">' + a.name + ' <span class="gender-tag ' + (isGirl ? 'tag-girls' : 'tag-boys') + '">' + a.gender + '</span></div>';
+    html += '<div class="ath-meta">Grade ' + a.gr + ' \u00b7 ' + a.group.charAt(0).toUpperCase() + a.group.slice(1) + '</div></div>';
+    html += '<div class="ath-count ' + (isGirl ? 'count-girls' : 'count-boys') + '">' + a.events.length + ' event' + (a.events.length !== 1 ? 's' : '') + '</div>';
+    html += '</div>';
+
+    html += '<div class="card-body">';
+    for (var j = 0; j < a.events.length; j++) {
+      var ev = a.events[j];
+      html += '<div class="evt-row">';
+      html += '<div class="evt-time">' + ev.time + '</div>';
+      html += '<div class="evt-name">' + ev.e + '</div>';
+      html += '<span class="evt-level ' + (ev.lvl === 'WC' ? 'evt-wc' : 'evt-v') + '">' + ev.lvl + '</span>';
+      if (ev.seed) html += '<div class="evt-seed">' + ev.seed + '</div>';
+      html += '</div>';
+    }
+
+    if (heavy) {
+      html += '<div class="note-box"><div class="prep-title">\u26a0\ufe0f Coach\'s Note</div><div class="prep-item">' + a.notes + '</div></div>';
+    } else {
+      html += '<div class="prep-section"><div class="prep-title">Coach\'s Note</div><div class="prep-item">' + a.notes + '</div></div>';
+    }
+
+    html += '<div class="timeline"><div class="timeline-title">Your Meet Day Timeline</div>';
+    html += '<div class="tl-row"><div class="tl-time">12:20</div><div>Dismissed from class</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">12:30</div><div>Bus departs Medford \u2014 eat lunch before, bus snack on ride</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">~1:45</div><div>Arrive UW-Stout \u2014 find Johnson Fieldhouse</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">2:00</div><div>Begin warm-up (see prep below)</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">3:00 PM</div><div>Meet starts \u2014 field events + first running events</div></div>';
+    for (var m = 0; m < a.events.length; m++) {
+      var e2 = a.events[m];
+      html += '<div class="tl-row"><div class="tl-time">' + e2.time.replace('~', '') + '</div><div>' + e2.e + (e2.lvl === 'WC' ? ' (Wildcard)' : '') + (e2.seed ? ' \u2014 seed: ' + e2.seed : '') + '</div></div>';
+    }
+    html += '</div>';
+
+    html += '<div class="prep-section"><div class="prep-title">\ud83c\udf19 Tonight (Day Before)</div><div class="prep-item">' + prep.tonight + '</div></div>';
+    html += '<div class="prep-section"><div class="prep-title">\ud83c\udf7d\ufe0f Nutrition Plan</div><div class="prep-item">' + prep.meal + '</div></div>';
+    html += '<div class="prep-section"><div class="prep-title">\ud83d\udd25 Meet Warm-Up</div><div class="prep-item">' + prep.warmup + '</div></div>';
+
+    html += '</div></div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function toggleCard(name) {
+  if (expandedCards.has(name)) expandedCards.delete(name);
+  else expandedCards.add(name);
+  render(searchBox.value);
+}
+
+searchBox.addEventListener('input', function() { render(searchBox.value); });
+render();
+</script>
+</body>
+</html>
