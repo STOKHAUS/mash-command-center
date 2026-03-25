@@ -1,12 +1,11 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
 // Merge form data with roster for enriched profiles
 function getProfile(name) {
-  // Fuzzy match - handle "Paxton" vs "Paxton Hamland", "Manny" vs "Emmanuel Espinoza", etc.
   const n = name.toLowerCase();
   return FORM_DATA.find(f => {
     const fn = f.n.toLowerCase();
@@ -44,6 +43,9 @@ export default function Home() {
   const [pracLoad, setPracLoad] = useState(false);
   // Live roster from Google Sheet
   const [liveRoster, setLiveRoster] = useState(null);
+  // Results
+  const [resMeet, setResMeet] = useState(RESULTS?.length ? RESULTS[0].date : '');
+  const [resView, setResView] = useState('summary');
 
   const NOW = new Date();
   const nm = MEETS.find(m => new Date(m.date) >= NOW);
@@ -88,24 +90,22 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  // Merged roster: live sheet = who's on team, FORM_DATA = enriched profiles
+  // Merged roster
   const rosterData = (() => {
-    if (!liveRoster) return FORM_DATA; // fallback to form data
+    if (!liveRoster) return FORM_DATA;
     return liveRoster.map(lr => {
-      // Try to match with form data by name (fuzzy)
       const ln = lr.name.toLowerCase();
       const match = FORM_DATA.find(f => {
         const fn = f.n.toLowerCase();
         return fn === ln || fn.includes(ln) || ln.includes(fn)
-          || fn.split(' ')[1] === ln.split(' ')[1]; // match last name
+          || fn.split(' ')[1] === ln.split(' ')[1];
       });
       if (match) return { ...match, g: lr.grade, gn: lr.gender === 'M' ? 'M' : 'F' };
-      // No form data — minimal entry
       return { n: lr.name, g: lr.grade, gn: lr.gender === 'M' ? 'M' : 'F', p1:'', p2:'', ph:'', em:'', pr:'', inj:'', goal:'', imp:'', pg:'', rv:'', conf:'', sp:'' };
     });
   })();
 
-  // Practice plan - fetch when tab selected
+  // Practice plan
   useEffect(() => {
     if (tab !== 'practice' || pracPlan || pracLoad) return;
     setPracLoad(true);
@@ -201,7 +201,19 @@ export default function Home() {
     );
   };
 
-  const tabs = [['today','⚡ Today'],['practice','📋 Practice'],['meets','🏟️ Meets'],['athletes','👤 Roster'],['plans','🍽️ Plans'],['msg','📱 Message'],['ai','🤖 AI']];
+  // ═══ RESULTS HELPERS ═══
+  const getResultsForAthlete = (name) => {
+    if (!RESULTS) return [];
+    const all = [];
+    RESULTS.forEach(meet => {
+      meet.data.filter(r => r.a === name).forEach(r => {
+        all.push({ ...r, meetName: meet.meet, meetDate: meet.date, teams: meet.teams });
+      });
+    });
+    return all;
+  };
+
+  const tabs = [['today','⚡ Today'],['results','📊 Results'],['practice','📋 Practice'],['meets','🏟️ Meets'],['athletes','👤 Roster'],['plans','🍽️ Plans'],['msg','📱 Message'],['ai','🤖 AI']];
   const input = { background:'#161616', border:`1px solid rgba(255,255,255,.08)`, color:'#fff', padding:'8px 12px', fontSize:'.8rem', width:'100%' };
   const btn = { padding:'8px 16px', background:R, color:'#fff', border:'none', fontWeight:800, fontSize:'.68rem', textTransform:'uppercase', letterSpacing:'.08em', cursor:'pointer' };
   const btnO = { ...btn, background:'transparent', border:`1px solid rgba(255,255,255,.15)`, fontWeight:600 };
@@ -212,7 +224,7 @@ export default function Home() {
       {/* TOP BAR */}
       <div style={{ background:`linear-gradient(135deg,#1a0000,#0a0a0a)`, borderBottom:`2px solid ${R}`, padding:'10px 16px', display:'flex', justifyContent:'space-between', alignItems:'center', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', letterSpacing:'.12em', textTransform:'uppercase' }}><span style={{color:R}}>MASH</span> Command Center</div>
-        <div style={{ fontSize:'.55rem', color:'#444' }}>v3 · 2026</div>
+        <div style={{ fontSize:'.55rem', color:'#444' }}>v4 · 2026</div>
       </div>
 
       {/* NAV */}
@@ -247,15 +259,15 @@ export default function Home() {
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                 <div style={{ fontSize:'1.8rem' }}>📋</div>
                 <div>
-                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.05rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Today's Practice Plan</div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.05rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Today&apos;s Practice Plan</div>
                   <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)', marginTop:4, lineHeight:1.4 }}>Auto-generated daily workout · Event groups · Coach assignments</div>
                 </div>
               </div>
             </button>
-            <button onClick={() => setTab('plans')} style={{ background:'linear-gradient(135deg,#0a0a15,#15102a)', border:`2px solid #7c3aed`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
-              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>🍽️</div>
-              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Meal & Workout Plans</div>
-              <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>Per-athlete nutrition + training</div>
+            <button onClick={() => setTab('results')} style={{ background:'linear-gradient(135deg,#0a150a,#0a2a0a)', border:`2px solid ${G}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
+              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>📊</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Meet Results</div>
+              <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>PRs, placements, performance tracking</div>
             </button>
             <button onClick={() => setTab('ai')} style={{ background:'linear-gradient(135deg,#050a1a,#0a0a2a)', border:`2px solid ${B}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
               <div style={{ fontSize:'1.4rem', marginBottom:4 }}>🤖</div>
@@ -282,20 +294,132 @@ export default function Home() {
         </div>
       )}
 
+      {/* ═══ RESULTS ═══ */}
+      {tab === 'results' && (() => {
+        const meet = RESULTS?.find(r => r.date === resMeet);
+        if (!RESULTS?.length || !meet) return (
+          <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto', textAlign:'center', paddingTop:60 }}>
+            <div style={{ fontSize:'2rem', marginBottom:12 }}>📊</div>
+            <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase' }}>No Results Yet</div>
+            <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginTop:8 }}>Results will appear here after meets are completed.</div>
+          </div>
+        );
+
+        const d = meet.data;
+        const indiv = d.filter(r => !r.a.includes('Medford'));
+        const seeded = indiv.filter(r => r.seed);
+        const prs = seeded.filter(r => r.pr);
+        const prPct = seeded.length ? Math.round((prs.length / seeded.length) * 100) : 0;
+        const scoring = d.filter(r => r.lvl === 'V' && r.place <= 8).length;
+        const uniqueA = new Set(d.filter(r => !r.a.includes('Medford')).map(r => r.a));
+
+        let rows = d;
+        if (resView === 'varsity') rows = d.filter(r => r.lvl === 'V');
+        else if (resView === 'jv') rows = d.filter(r => r.lvl === 'JV');
+        else if (resView === 'prs') rows = d.filter(r => r.pr);
+        rows = [...rows].sort((a, b) => { if (a.lvl !== b.lvl) return a.lvl === 'V' ? -1 : 1; return a.place - b.place; });
+
+        return (
+          <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
+            {/* Meet selector */}
+            <div style={{ display:'flex', gap:6, alignItems:'center', marginBottom:12, flexWrap:'wrap' }}>
+              {RESULTS.map(r => (
+                <button key={r.date} style={btnS(resMeet === r.date)} onClick={() => setResMeet(r.date)}>
+                  {r.meet} {r.date.slice(5)}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ fontWeight:800, fontSize:'1.1rem', textTransform:'uppercase' }}>{meet.meet}</div>
+            <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>
+              {new Date(meet.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })} · {meet.teams} teams
+            </div>
+
+            {/* KPIs */}
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:BDR, marginBottom:14 }}>
+              <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:G }}>{prPct}%</div>
+                <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>PR Rate</div>
+                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>{prs.length} of {seeded.length} seeded</div>
+              </div>
+              <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:R }}>{scoring}</div>
+                <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>Top-8 Varsity</div>
+                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>scoring positions</div>
+              </div>
+              <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:'#fff' }}>{uniqueA.size}</div>
+                <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>Athletes</div>
+                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>competed</div>
+              </div>
+              <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:Y }}>{d.length}</div>
+                <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>Performances</div>
+                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>total entries</div>
+              </div>
+            </div>
+
+            {/* View toggle */}
+            <div style={{ display:'flex', gap:4, marginBottom:10, flexWrap:'wrap' }}>
+              {['summary', 'varsity', 'jv', 'prs'].map(k => (
+                <button key={k} style={btnS(resView === k)} onClick={() => setResView(k)}>
+                  {k === 'prs' ? 'PRs Only' : k.charAt(0).toUpperCase() + k.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Results list */}
+            {rows.map((r, i) => {
+              const isPr = r.pr;
+              const isRelay = r.a.includes('Medford');
+              const hasSeed = r.seed && r.seed.length > 0;
+              const placeColor = r.place <= 3 ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.5)';
+
+              return (
+                <div key={i} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 12px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${isPr ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.08)'}`, marginBottom:2 }}>
+                  <div style={{ minWidth:28, textAlign:'center' }}>
+                    <span style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', color:placeColor }}>{r.place}</span>
+                    <span style={{ fontSize:'.45rem', color:'#555', display:'block' }}>/{r.of}</span>
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontWeight:700, fontSize:'.82rem' }}>
+                      {r.a}
+                      <span style={bd(r.lvl === 'V' ? R : '#555')}>{r.lvl}</span>
+                      {isPr && <span style={bd(G)}>PR</span>}
+                      {r.place === 1 && <span style={bd(Y)}>🥇</span>}
+                    </div>
+                    <div style={{ fontSize:'.7rem', color:'rgba(255,255,255,.4)' }}>
+                      {r.e}{hasSeed ? ` · Seed: ${r.seed}` : ''}
+                    </div>
+                  </div>
+                  <div style={{ textAlign:'right' }}>
+                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.95rem' }}>{r.mark}</div>
+                    {hasSeed && (
+                      <div style={{ fontSize:'.6rem', fontWeight:700, color: isPr ? G : R }}>
+                        {isPr ? '↑ PR' : '↓ OFF'}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       {/* ═══ PRACTICE ═══ */}
       {tab === 'practice' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           {pracLoad && (
             <div style={{ textAlign:'center', padding:'60px 20px' }}>
               <div style={{ fontSize:'2rem', marginBottom:12 }}>📋</div>
-              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', color:R }}>Generating Today's Practice Plan...</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', color:R }}>Generating Today&apos;s Practice Plan...</div>
               <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.4)', marginTop:8 }}>Building workout based on training phase and meet schedule</div>
             </div>
           )}
 
           {pracPlan && !pracPlan.isOff && !pracPlan.error && (
             <>
-              {/* Hero */}
               <div style={{ border:`1px solid rgba(255,255,255,.06)`, background:'radial-gradient(circle at top right,rgba(204,0,0,.12),transparent 30%),linear-gradient(135deg,#151515,#0f0f0f)', padding:'2rem', marginBottom:'1.5rem' }}>
                 <div style={{ fontSize:'.65rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.3em', color:R, marginBottom:6 }}>MASH Track & Field</div>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'clamp(1.6rem,4vw,2.4rem)', textTransform:'uppercase', lineHeight:1, marginBottom:8 }}>
@@ -318,7 +442,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Time Blocks */}
               {pracPlan.blocks && pracPlan.blocks.map((block, i) => (
                 <div key={i} style={{ display:'grid', gridTemplateColumns:'140px 1fr', border:`1px solid rgba(255,255,255,.06)`, background:'#1a1a1a', marginBottom:8 }}>
                   <div style={{ background:'linear-gradient(180deg,#1e1e1e,#161616)', borderRight:`1px solid rgba(255,255,255,.06)`, padding:'1rem .8rem' }}>
@@ -337,7 +460,6 @@ export default function Home() {
                 </div>
               ))}
 
-              {/* Event Groups */}
               {pracPlan.groups && pracPlan.groups.length > 0 && (
                 <>
                   <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, margin:'20px 0 10px' }}>Event Group Workouts</div>
@@ -357,11 +479,10 @@ export default function Home() {
                 </>
               )}
 
-              {/* Closing */}
               {pracPlan.closingMessage && (
                 <div style={{ borderLeft:`3px solid ${R}`, background:'rgba(204,0,0,.06)', padding:'1rem 1.2rem', marginTop:16 }}>
                   <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:600, fontSize:'.9rem', color:'rgba(255,255,255,.8)', lineHeight:1.5, fontStyle:'italic' }}>
-                    "{pracPlan.closingMessage}"
+                    &ldquo;{pracPlan.closingMessage}&rdquo;
                   </div>
                 </div>
               )}
@@ -396,6 +517,7 @@ export default function Home() {
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>Schedule</div>
           {MEETS.map(m => {
             const d = Math.ceil((new Date(m.date)-NOW)/86400000);
+            const hasResults = RESULTS?.some(r => r.id === m.id);
             return (
               <div key={m.id} style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px 14px', marginBottom:6, opacity:d<0?.3:1 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
@@ -408,6 +530,7 @@ export default function Home() {
                     <span style={bd(m.type==='home'||m.type==='conf'||m.type==='regional'||m.type==='sectional'?R:'#555')}>{m.type}</span>
                     {d>=0 && d<=7 && <span style={bd(Y)}>{d}d</span>}
                     {m.hl && <span style={bd(G)}>Lineup</span>}
+                    {hasResults && <button onClick={() => { setResMeet(RESULTS.find(r=>r.id===m.id)?.date||''); setTab('results'); }} style={bd(B)}>📊 Results</button>}
                   </div>
                 </div>
               </div>
@@ -437,10 +560,12 @@ export default function Home() {
             return true;
           }).map((a, i) => {
             const st = getSt(a.n);
+            const athResults = getResultsForAthlete(a.n);
             return (
               <div key={i} onClick={() => setSelectedAth(a)} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 10px', borderBottom:`1px solid ${BDR}`, fontSize:'.8rem', cursor:'pointer' }}>
                 <div style={{ width:7, height:7, borderRadius:'50%', background:stCol(st), flexShrink:0 }} />
                 <span style={{ fontWeight:600, flex:1 }}>{a.n}</span>
+                {athResults.length > 0 && <span style={bd(B)}>{athResults.length} results</span>}
                 <span style={{ color:'#555', fontSize:'.7rem' }}>{a.gn}·{a.g}·{a.p1||'TBD'}</span>
                 {a.inj && !['No','None','N/A','Nope','no','none','No no no',''].includes(a.inj) && <span style={bd(R)}>⚠</span>}
                 <select value={st} onClick={e => e.stopPropagation()} onChange={e => setStatuses(p => ({...p,[a.n]:e.target.value}))} style={{ background:'#222', border:`1px solid ${BDR}`, color:'#fff', padding:'3px 6px', fontSize:'.65rem' }}>
@@ -453,56 +578,88 @@ export default function Home() {
       )}
 
       {/* ═══ ATHLETE DETAIL ═══ */}
-      {tab === 'athletes' && selectedAth && (
-        <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
-          <button onClick={() => setSelectedAth(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Roster</button>
-          <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'16px', marginBottom:10 }}>
-            <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
-            <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>
-              Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}
+      {tab === 'athletes' && selectedAth && (() => {
+        const athResults = getResultsForAthlete(selectedAth.n);
+        return (
+          <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
+            <button onClick={() => setSelectedAth(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Roster</button>
+            <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'16px', marginBottom:10 }}>
+              <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
+              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>
+                Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}
+              </div>
             </div>
-          </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-            <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Contact</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>📱 {selectedAth.ph || 'No phone'}</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>🚨 {selectedAth.em || 'No emergency contact'}</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Contact</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>📱 {selectedAth.ph || 'No phone'}</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>🚨 {selectedAth.em || 'No emergency contact'}</div>
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Personal Records</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)', whiteSpace:'pre-wrap' }}>{selectedAth.pr || 'None recorded'}</div>
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${selectedAth.inj && !['No','None','N/A','Nope','no','none','','No no no'].includes(selectedAth.inj) ? 'rgba(204,0,0,.3)' : BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Health / Injuries</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.inj || 'None reported'}</div>
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Season Goal</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.goal || 'Not specified'}</div>
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>R.A.I.D.E.R.S. Focus</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.rv || 'Not specified'}</div>
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Schedule Conflicts</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.conf || 'None'}</div>
+              </div>
             </div>
-            <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Personal Records</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)', whiteSpace:'pre-wrap' }}>{selectedAth.pr || 'None recorded'}</div>
-            </div>
-            <div style={{ background:CARD, border:`1px solid ${selectedAth.inj && !['No','None','N/A','Nope','no','none','','No no no'].includes(selectedAth.inj) ? 'rgba(204,0,0,.3)' : BDR}`, padding:'12px' }}>
-              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Health / Injuries</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.inj || 'None reported'}</div>
-            </div>
-            <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Season Goal</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.goal || 'Not specified'}</div>
-            </div>
-            <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>R.A.I.D.E.R.S. Focus</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.rv || 'Not specified'}</div>
-            </div>
-            <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Schedule Conflicts</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.conf || 'None'}</div>
-            </div>
-          </div>
 
-          <div style={{ display:'flex', gap:8, marginTop:12 }}>
-            <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
-            <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
+            {/* Meet Results for this athlete */}
+            {athResults.length > 0 && (
+              <>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:8 }}>
+                  Meet Results ({athResults.length})
+                </div>
+                {athResults.map((r, i) => (
+                  <div key={i} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 12px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${r.pr ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.08)'}`, marginBottom:2 }}>
+                    <div style={{ minWidth:28, textAlign:'center' }}>
+                      <span style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', color:r.place<=3?G:r.place<=8?Y:'rgba(255,255,255,.5)' }}>{r.place}</span>
+                      <span style={{ fontSize:'.45rem', color:'#555', display:'block' }}>/{r.of}</span>
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:700, fontSize:'.82rem' }}>
+                        {r.e}
+                        <span style={bd(r.lvl === 'V' ? R : '#555')}>{r.lvl}</span>
+                        {r.pr ? <span style={bd(G)}>PR</span> : null}
+                      </div>
+                      <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)' }}>{r.meetName} · {r.meetDate}{r.seed ? ` · Seed: ${r.seed}` : ''}</div>
+                    </div>
+                    <div style={{ textAlign:'right' }}>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.95rem' }}>{r.mark}</div>
+                      {r.seed && <div style={{ fontSize:'.55rem', fontWeight:700, color:r.pr?G:R }}>{r.pr?'↑ PR':'↓ OFF'}</div>}
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+
+            <div style={{ display:'flex', gap:8, marginTop:12 }}>
+              <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
+              <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ═══ PLANS ═══ */}
       {tab === 'plans' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:4 }}>Athlete Plans</div>
-          <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>AI-generated meal + workout plans using each athlete's actual PRs, injuries, goals, and training phase.</div>
+          <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>AI-generated meal + workout plans using each athlete&apos;s actual PRs, injuries, goals, and training phase.</div>
 
           <select style={{ ...input, marginBottom:12 }} value="" onChange={e => { const a = rosterData.find(x => x.n === e.target.value); if(a) genPlans(a); }}>
             <option value="">Select athlete...</option>
@@ -584,7 +741,7 @@ export default function Home() {
             <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>How to Send</div>
             <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', lineHeight:1.6 }}>
               1. Compose or select template above<br/>
-              2. Click "Copy for TeamReach"<br/>
+              2. Click &ldquo;Copy for TeamReach&rdquo;<br/>
               3. Open TeamReach app → MASH TRACK 2026<br/>
               4. Paste and send<br/><br/>
               Join code: <strong style={{color:'#fff'}}>M7155705718</strong>
@@ -602,7 +759,7 @@ export default function Home() {
                 <div style={{ fontSize:'2rem', marginBottom:8 }}>🤖</div>
                 <div style={{ fontWeight:800, fontSize:'1rem', textTransform:'uppercase', marginBottom:8 }}>AI Coaching Assistant</div>
                 <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', maxWidth:400, margin:'0 auto 16px' }}>
-                  Full program knowledge loaded. Knows every athlete's PRs, injuries, goals, and event preferences.
+                  Full program knowledge loaded. Knows every athlete&apos;s PRs, injuries, goals, and event preferences.
                 </div>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:6, justifyContent:'center' }}>
                   {['Best 4x400 relay combos?','Northern Badger entry strategy','Who can break a school record this year?','Marshfield girls scoring plan','Which injured athletes need modified workouts?'].map((q,i) => (
