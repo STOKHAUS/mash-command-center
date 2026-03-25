@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Meet Day Guide — Marshfield Tiger Girls Invite 3/26</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#cc0000;--dk:#0a0a0a;--card:#131313;--bdr:rgba(255,255,255,.06);--gold:#d4a843;--grn:#22c55e;--blu:#4a9eff;--mut:#666}
+body{font-family:'Barlow',sans-serif!important;background:var(--dk)!important;color:#fff!important;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--red)!important;text-decoration:none}
+div,span,p,strong,input{color:inherit}
+
+.topbar{background:linear-gradient(135deg,#1a0000,var(--dk))!important;border-bottom:2px solid var(--red);padding:14px 16px;text-align:center;position:sticky;top:0;z-index:100;color:#fff!important}
+.brand{font-family:'Oswald',sans-serif!important;font-weight:800;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;color:#fff!important}
+.brand span{color:var(--red)!important}
+.meet-title{font-family:'Oswald',sans-serif!important;font-weight:700;font-size:.85rem;color:rgba(255,255,255,.5)!important;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+.info-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr)!important;margin:0}
+.info-strip>div{background:#111!important;padding:10px 8px;text-align:center;color:#fff!important}
+.info-strip .val{font-family:'Oswald',sans-serif!important;font-weight:800;font-size:1.1rem;line-height:1;color:#fff!important}
+.info-strip .lbl{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)!important;margin-top:2px}
+
+.alert-bar{background:rgba(204,0,0,.12)!important;border-bottom:1px solid rgba(204,0,0,.3);padding:10px 16px;text-align:center;font-size:.72rem;font-weight:700;color:#ff6666!important;text-transform:uppercase;letter-spacing:.06em}
+
+.search-wrap{padding:12px 16px;position:sticky;top:68px;z-index:99;background:var(--dk)!important}
+.search{background:#161616!important;border:1px solid rgba(255,255,255,.1)!important;color:#fff!important;padding:10px 14px;font-size:.9rem;width:100%;font-family:inherit;border-radius:0}
+.search::placeholder{color:#444!important}
+.search:focus{outline:none;border-color:var(--red)!important}
+
+.sec{padding:0 16px 16px;max-width:700px;margin:0 auto;color:#fff!important}
+.label{font-size:.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.2em;color:var(--red)!important;margin:16px 0 6px}
+
+.athlete-card{background:var(--card)!important;border:1px solid var(--bdr);border-left:3px solid var(--red);margin-bottom:10px;overflow:hidden;color:#fff!important}
+.athlete-card.collapsed .card-body{display:none}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;color:#fff!important}
+.card-header:hover{background:rgba(255,255,255,.02)!important}
+.ath-name{font-family:'Oswald',sans-serif!important;font-weight:700;font-size:1rem;text-transform:uppercase;color:#fff!important}
+.ath-meta{font-size:.65rem;color:var(--mut)!important;font-weight:600}
+.ath-count{font-size:.6rem;font-weight:800;background:rgba(204,0,0,.2)!important;color:#ff4444!important;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
+.card-body{padding:0 14px 14px;border-top:1px solid var(--bdr);color:#fff!important}
+
+.evt-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);color:#fff!important}
+.evt-row:last-child{border-bottom:none}
+.evt-time{font-family:'Oswald',sans-serif!important;font-weight:700;font-size:.85rem;color:var(--gold)!important;min-width:62px;text-align:right}
+.evt-name{font-weight:600;font-size:.82rem;flex:1;color:#fff!important}
+.evt-seed{font-size:.72rem;color:rgba(255,255,255,.4)!important;font-weight:600}
+.evt-level{font-size:.5rem;font-weight:800;padding:1px 5px;text-transform:uppercase;letter-spacing:.04em}
+.evt-v{background:rgba(204,0,0,.2)!important;color:#ff4444!important;border:1px solid rgba(204,0,0,.3)}
+.evt-jv{background:rgba(255,255,255,.05)!important;color:#888!important;border:1px solid rgba(255,255,255,.08)}
+
+.prep-section{margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.02)!important;border:1px solid rgba(255,255,255,.04)}
+.prep-title{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--gold)!important;margin-bottom:6px}
+.prep-item{font-size:.75rem;color:rgba(255,255,255,.6)!important;line-height:1.6;padding:2px 0}
+.prep-item strong{color:rgba(255,255,255,.85)!important;font-weight:700}
+
+.timeline{margin-top:10px;padding:10px 12px;background:rgba(34,197,94,.05)!important;border:1px solid rgba(34,197,94,.1)}
+.timeline-title{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--grn)!important;margin-bottom:6px}
+.tl-row{display:flex;gap:10px;padding:3px 0;font-size:.75rem;color:rgba(255,255,255,.6)!important}
+.tl-time{font-weight:700;color:rgba(255,255,255,.8)!important;min-width:56px}
+
+.note-box{margin-top:10px;padding:10px 12px;background:rgba(204,0,0,.06)!important;border:1px solid rgba(204,0,0,.15)}
+.note-box .prep-title{color:#ff4444!important}
+
+.footer{text-align:center;padding:20px 16px;font-size:.6rem;color:var(--mut)!important;border-top:1px solid var(--bdr);margin-top:20px}
+
+@media(max-width:600px){
+.info-strip{grid-template-columns:repeat(2,1fr)}
+.info-strip .val{font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span>MASH</span> Track & Field</div>
+  <div class="meet-title">Meet Day Guide — Marshfield Tiger Girls Invite</div>
+</div>
+
+<div class="info-strip">
+  <div><div class="val">Thu 3/26</div><div class="lbl">Date</div></div>
+  <div><div class="val" style="color:var(--red)!important">4:45 PM</div><div class="lbl">Start</div></div>
+  <div><div class="val">2:30 PM</div><div class="lbl">Bus</div></div>
+  <div><div class="val">46°F 🌧️</div><div class="lbl">Weather</div></div>
+</div>
+
+<div class="alert-bar">⚠️ Indoor Meet — Fredrick Construction Fieldhouse · Rain likely — dress warm for bus travel</div>
+
+<div class="search-wrap">
+  <input class="search" id="search" placeholder="Find your name..." autocomplete="off">
+</div>
+
+<div class="sec" id="content"></div>
+
+<div class="footer">
+  MASH Track & Field 2026 · Medford Raiders<br>
+  Marshfield HS · Bus 2:30 PM · Dismiss 2:20 PM · Meet Start 4:45 PM
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// ATHLETE DATA — Marshfield Girls 3/26
+// ═══════════════════════════════════════
+
+const ATHLETES = [
+  {
+    name: 'Adalyn Dittrich', gr: 12, group: 'jumps',
+    events: [
+      {e:'High Jump',lvl:'V',time:'~4:45 PM',seed:''},
+    ],
+    notes: 'Senior debut — HJ starts with the meet. Opening height 3\'6". Focus on your approach and clearing early heights cleanly to build confidence. Katie will be at the pit with you during warm-ups.'
+  },
+  {
+    name: 'Alessia Salamin', gr: 10, group: 'sprint',
+    events: [
+      {e:'8-Lap Relay',lvl:'V',time:'~6:05 PM',seed:''},
+    ],
+    notes: 'One relay — stay loose until your race. Use the early part of the meet to watch races and do a thorough warm-up. The 8-lap is a girls-only event — solid race pace, smooth handoffs.'
+  },
+  {
+    name: 'Alexis Zuleger', gr: 12, group: 'sprint',
+    events: [
+      {e:'60yd Dash',lvl:'V',time:'~5:20 PM',seed:''},
+      {e:'220yd Dash',lvl:'V',time:'~6:45 PM',seed:'31.46'},
+      {e:'4-Lap Relay',lvl:'V',time:'~6:15 PM',seed:''},
+      {e:'2x160 Relay',lvl:'V',time:'~6:15 PM',seed:''},
+    ],
+    notes: 'Big senior night — 60 is your first shot, attack the start. Relay block mid-meet, then close with the 220. Stay warm between events. Use the early field events to get a full warm-up in.'
+  },
+  {
+    name: 'Avary Sigmund', gr: 9, group: 'sprint',
+    events: [
+      {e:'8-Lap Relay',lvl:'V',time:'~6:05 PM',seed:''},
+    ],
+    notes: 'First meet! One relay event — enjoy the atmosphere and soak it all in. Get a good warm-up before your leg. Listen to coaches on pacing and exchange zones.'
+  },
+  {
+    name: 'Chelsea Dick', gr: 10, group: 'sprint',
+    events: [
+      {e:'60yd Dash',lvl:'JV',time:'~5:10 PM',seed:''},
+      {e:'220yd Dash',lvl:'JV',time:'~6:35 PM',seed:''},
+    ],
+    notes: 'Two sprint events — get a full warm-up done before the JV 60. Long break before the 220, so stay warm and hydrated. Focus on clean starts and running relaxed through the finish.'
+  },
+  {
+    name: 'Chloe Pipkorn', gr: 11, group: 'throws',
+    events: [
+      {e:'Shot Put',lvl:'JV',time:'~4:45 PM',seed:''},
+    ],
+    notes: 'SP starts right away — be warmed up before the meet begins. Stand throws first, then build to glides. Focus on technique and a clean release.'
+  },
+  {
+    name: 'Cora Semrau', gr: 10, group: 'hurdles',
+    events: [
+      {e:'60yd Hurdles',lvl:'V',time:'~5:05 PM',seed:''},
+      {e:'Long Jump',lvl:'V',time:'~4:45 PM',seed:''},
+    ],
+    notes: 'Two varsity events — LJ starts with the meet, hurdles follow about 20 minutes later. Get your approach marks set early at the LJ pit. Transition quickly to hurdle warm-up after your jumps. 3-step rhythm over the hurdles.'
+  },
+  {
+    name: 'Coraline Neitzel', gr: 9, group: 'sprint',
+    events: [
+      {e:'60yd Dash',lvl:'JV',time:'~5:10 PM',seed:''},
+      {e:'220yd Dash',lvl:'JV',time:'~6:35 PM',seed:''},
+    ],
+    notes: 'First meet — welcome to the team! Two sprint events with a nice break in between. Focus on explosive starts in the 60 and running relaxed in the 220. Have fun out there.'
+  },
+  {
+    name: 'Ellie Eckert', gr: 11, group: 'jumps',
+    events: [
+      {e:'High Jump',lvl:'JV',time:'~4:45 PM',seed:''},
+      {e:'Long Jump',lvl:'JV',time:'~4:45 PM',seed:'10-7.75'},
+    ],
+    notes: 'HJ and LJ both start with the meet — talk to coaches NOW about which to warm up for first. You may need to alternate between pits. Communicate with officials if there\'s a timing conflict.'
+  },
+  {
+    name: 'Esmeralda Anderson', gr: 12, group: 'sprint',
+    events: [
+      {e:'60yd Dash',lvl:'JV',time:'~5:10 PM',seed:''},
+      {e:'220yd Dash',lvl:'JV',time:'~6:35 PM',seed:''},
+    ],
+    notes: 'Senior year — bring the energy. Two JV sprint events. Get a full warm-up in and attack both races. Long break between the 60 and 220, so stay loose and hydrated.'
+  },
+  {
+    name: 'Isabella Leischer', gr: 10, group: 'sprint',
+    events: [
+      {e:'60yd Dash',lvl:'JV',time:'~5:10 PM',seed:''},
+      {e:'220yd Dash',lvl:'JV',time:'~6:35 PM',seed:''},
+    ],
+    notes: 'Two sprint events — the 60 is all about explosive starts, the 220 is about holding form. Use the break between to stay warm and visualize your race.'
+  },
+  {
+    name: 'Jordyn Grant', gr: 10, group: 'sprint',
+    events: [
+      {e:'Long Jump',lvl:'V',time:'~4:45 PM',seed:''},
+      {e:'60yd Dash',lvl:'V',time:'~5:20 PM',seed:''},
+      {e:'Triple Jump',lvl:'V',time:'~5:15 PM',seed:'30-10'},
+      {e:'4-Lap Relay',lvl:'V',time:'~6:15 PM',seed:''},
+    ],
+    notes: '4 events — busy day. LJ starts right away, then TJ and 60 overlap mid-meet. Communicate with TJ officials if you need to step out for the 60. TJ is your best event (30-10 seed). Close with the relay. Hydrate and eat between field and running events.'
+  },
+  {
+    name: 'Lindsay Kahn', gr: 12, group: 'distance',
+    events: [
+      {e:'4x880 Relay',lvl:'V',time:'~4:50 PM',seed:''},
+      {e:'Mile Run',lvl:'V',time:'~5:35 PM',seed:'6:14.63'},
+    ],
+    notes: 'Senior distance leader. 4x880 first — use it as a hard warm-up, then recover for the mile. The mile is your A-race. Go out controlled and build through the second half. You\'ve got about 45 minutes between events — stay warm and hydrated.'
+  },
+  {
+    name: 'Lucy Ulrich', gr: 11, group: 'sprint',
+    events: [
+      {e:'4-Lap Relay',lvl:'V',time:'~6:15 PM',seed:''},
+      {e:'2x160 Relay',lvl:'V',time:'~6:15 PM',seed:''},
+      {e:'8-Lap Relay',lvl:'V',time:'~6:05 PM',seed:''},
+    ],
+    notes: 'Three relays — you\'re a relay workhorse tonight. The 8-lap comes first, then the sprint relays back-to-back. Stay warm throughout the meet. Your relay block comes in the second half — use the early meet to get a thorough warm-up.'
+  },
+  {
+    name: 'Mariah Salzer', gr: 9, group: 'sprint',
+    events: [
+      {e:'4x880 Relay',lvl:'V',time:'~4:50 PM',seed:''},
+      {e:'2x160 Relay',lvl:'V',time:'~6:15 PM',seed:''},
+      {e:'4x440 Relay',lvl:'V',time:'~6:55 PM',seed:''},
+    ],
+    notes: 'Freshman on three varsity relays — that\'s earned. 4x880 starts early, then you have a long break before the sprint relays at the end. Stay fueled and warm. Run your legs hard and trust your teammates on the exchanges.'
+  },
+  {
+    name: 'Melanie Richter', gr: 9, group: 'distance',
+    events: [
+      {e:'4x880 Relay',lvl:'V',time:'~4:50 PM',seed:''},
+      {e:'Mile Run',lvl:'V',time:'~5:35 PM',seed:''},
+      {e:'880yd Run',lvl:'V',time:'~6:30 PM',seed:''},
+    ],
+    notes: '3 distance events — pace yourself. The 4x880 is first — run your split hard but save your legs. The mile comes next — you and Kahn run together, work off each other. The 880 at the end tests your endurance. Eat something light between events and stay hydrated.'
+  },
+  {
+    name: 'Mya Matthias', gr: 11, group: 'throws',
+    events: [
+      {e:'Shot Put',lvl:'JV',time:'~4:45 PM',seed:''},
+    ],
+    notes: 'SP starts right away — be warmed up before the meet begins. Focus on technique: stand throws first, then build to glides. Compete against your own marks today.'
+  },
+  {
+    name: 'Naomi Thomas', gr: 10, group: 'throws',
+    events: [
+      {e:'Shot Put',lvl:'V',time:'~4:45 PM',seed:'18-3.25'},
+    ],
+    notes: 'Varsity shot — starts right away. Get your warm-up throws in early. Focus on your glide technique and attacking the ring. You\'re competing against yourself today — every throw better than the last.'
+  },
+  {
+    name: 'Raylin Rothmeier', gr: 10, group: 'sprint',
+    events: [
+      {e:'440yd Dash',lvl:'V',time:'~5:55 PM',seed:''},
+      {e:'4-Lap Relay',lvl:'V',time:'~6:15 PM',seed:''},
+      {e:'8-Lap Relay',lvl:'V',time:'~6:05 PM',seed:''},
+      {e:'4x440 Relay',lvl:'V',time:'~6:55 PM',seed:''},
+    ],
+    notes: '4 events — heavy night. The 440 is your individual showcase, then three relays stacked at the end. Go out controlled in the 440 — strong through 220, then hold form to finish. You need to manage your energy for the relay block that follows. Hydrate constantly.'
+  },
+  {
+    name: 'Rivalee Stokes', gr: 12, group: 'throws',
+    events: [
+      {e:'Shot Put',lvl:'V',time:'~4:45 PM',seed:'28-6.5'},
+    ],
+    notes: 'Top seed on the team — 28-6.5 is a strong opening mark. One event, full focus. Warm up with standing throws, build to glides. Senior year — attack the ring with confidence. Note: limited status, so listen to your body and communicate with coaches.'
+  },
+  {
+    name: 'Savannah Hebert', gr: 9, group: 'throws',
+    events: [
+      {e:'Shot Put',lvl:'JV',time:'~4:45 PM',seed:''},
+    ],
+    notes: 'First meet — focus on getting comfortable in the ring. Stand throws first, then glide. Technique over power today. Compete against yourself and soak in the experience.'
+  },
+  {
+    name: 'Taylor Klingbeil', gr: 10, group: 'sprint',
+    events: [
+      {e:'440yd Dash',lvl:'JV',time:'~5:45 PM',seed:''},
+      {e:'Long Jump',lvl:'JV',time:'~4:45 PM',seed:''},
+    ],
+    notes: 'LJ starts right away — get your approach marks set during warm-ups. The 440 comes about an hour later. The 440 is all about going out controlled through 220 and finishing strong. Stay warm between events.'
+  },
+  {
+    name: 'Willow Dassow', gr: 11, group: 'distance',
+    events: [
+      {e:'4x880 Relay',lvl:'V',time:'~4:50 PM',seed:''},
+      {e:'880yd Run',lvl:'V',time:'~6:30 PM',seed:'3:03.29'},
+      {e:'4x440 Relay',lvl:'V',time:'~6:55 PM',seed:''},
+    ],
+    notes: '3 events — the 880 is your A-race. Use the 4x880 early to get your legs going and shake out the nerves. Long break before the open 880 — stay warm and hydrated. The 4x440 at the end will test your endurance. Run smart and trust your fitness.'
+  },
+];
+
+// Group-specific prep plans
+const PREP = {
+  sprint: {
+    tonight: 'Light 10-min jog or walk. 4\u00d760m strides at 70%. No lifting. Foam roll quads and hamstrings.',
+    meal: '<strong>Tonight:</strong> Pasta or rice with grilled chicken, steamed veggies. Drink 32+ oz water before bed.<br><strong>Tomorrow lunch:</strong> PB&J or turkey sandwich, fruit, water. Eat by noon \u2014 nothing heavy or greasy.<br><strong>Pre-meet snack (~2:00 PM):</strong> Banana + granola bar. Sip water on the bus.',
+    warmup: 'At the meet: 800m jog \u2192 A-skips/B-skips \u2192 high knees/butt kicks \u2192 leg swings (front + lateral) \u2192 4\u00d740m build-ups. Get warm 20 min before your first event.'
+  },
+  distance: {
+    tonight: 'Easy 15-min shakeout jog. 4\u00d7100m strides at 75%. Gentle stretching \u2014 hips, calves, hamstrings. Early to bed.',
+    meal: '<strong>Tonight:</strong> Carb-heavy \u2014 pasta, rice, or potatoes with lean protein. Extra glass of water before bed.<br><strong>Tomorrow lunch:</strong> Balanced meal \u2014 sandwich, fruit, pretzels. Nothing new or spicy. Eat by noon.<br><strong>Pre-meet snack (~2:00 PM):</strong> Banana or applesauce + small handful of pretzels.',
+    warmup: 'At the meet: 10-min easy jog \u2192 dynamic stretches \u2192 4\u00d7100m strides building to race pace. Jog easy between events to stay loose.'
+  },
+  jumps: {
+    tonight: 'Light walk + dynamic stretching. 4\u00d740m acceleration build-ups. Foam roll glutes, hip flexors, calves. Visualize your approach.',
+    meal: '<strong>Tonight:</strong> Balanced plate \u2014 rice or pasta, chicken or fish, vegetables. Hydrate well (32+ oz water).<br><strong>Tomorrow lunch:</strong> Turkey sandwich or PB&J, banana, water. Keep it simple and familiar.<br><strong>Pre-meet snack (~2:00 PM):</strong> Banana + small handful of trail mix. Stay hydrated on the bus.',
+    warmup: 'At the meet: 800m jog \u2192 A-skips \u2192 leg swings \u2192 approach run-throughs (no jumping, just steps). Get your check marks set early.'
+  },
+  throws: {
+    tonight: 'Light upper body stretching + foam roll shoulders, back, hips. No heavy lifting. Visualize your release point.',
+    meal: '<strong>Tonight:</strong> Protein-rich \u2014 chicken, beef, or fish with rice/potatoes and veggies. Hydrate well.<br><strong>Tomorrow lunch:</strong> Solid lunch \u2014 sandwich with protein, fruit, water. You need fuel for explosive throws.<br><strong>Pre-meet snack (~2:00 PM):</strong> PB&J or protein bar + banana. Water on the bus.',
+    warmup: 'At the meet: Light jog \u2192 arm circles \u2192 hip rotations \u2192 5-6 easy standing throws \u2192 3-4 progressive glide throws. Find your rhythm before competition starts.'
+  },
+  hurdles: {
+    tonight: 'Light 10-min jog. 4\u00d760m strides. Trail leg and lead leg drills (light). Foam roll hip flexors, hamstrings, groin.',
+    meal: '<strong>Tonight:</strong> Pasta or rice with grilled chicken, veggies. Drink 32+ oz water before bed.<br><strong>Tomorrow lunch:</strong> PB&J or sandwich, fruit, water. Nothing heavy. Eat by noon.<br><strong>Pre-meet snack (~2:00 PM):</strong> Banana + granola bar. Sip water on the bus.',
+    warmup: 'At the meet: 800m jog \u2192 A-skips/B-skips \u2192 hurdle walk-overs (lead + trail) \u2192 3\u00d7over 2 hurdles from blocks. Get your rhythm dialed in early.'
+  }
+};
+
+// ═══ RENDER ═══
+const container = document.getElementById('content');
+const searchBox = document.getElementById('search');
+let expandedCards = new Set();
+
+function render(filter) {
+  filter = filter || '';
+  const q = filter.toLowerCase().trim();
+  const filtered = q ? ATHLETES.filter(function(a) { return a.name.toLowerCase().includes(q); }) : ATHLETES;
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:40px 0;color:#444;font-size:.85rem">No athletes found. Try a different name.</div>';
+    return;
+  }
+
+  var html = '<div class="label">Your Meet Day Plan (' + filtered.length + ' athlete' + (filtered.length !== 1 ? 's' : '') + ')</div>';
+
+  for (var i = 0; i < filtered.length; i++) {
+    var a = filtered[i];
+    var expanded = expandedCards.has(a.name) || q.length > 0;
+    var prep = PREP[a.group] || PREP.sprint;
+    var heavy = a.events.length >= 4;
+    var vCount = 0, jvCount = 0;
+    for (var k = 0; k < a.events.length; k++) {
+      if (a.events[k].lvl === 'V') vCount++;
+      else jvCount++;
+    }
+
+    html += '<div class="athlete-card ' + (expanded ? '' : 'collapsed') + '" id="card-' + a.name.replace(/\s/g, '-') + '">';
+    html += '<div class="card-header" onclick="toggleCard(\'' + a.name.replace(/'/g, "\\'") + '\')">';
+    html += '<div><div class="ath-name">' + a.name + '</div>';
+    html += '<div class="ath-meta">Grade ' + a.gr + ' \u00b7 ' + a.group.charAt(0).toUpperCase() + a.group.slice(1) + ' \u00b7 ' + vCount + 'V / ' + jvCount + 'JV</div></div>';
+    html += '<div class="ath-count">' + a.events.length + ' event' + (a.events.length !== 1 ? 's' : '') + '</div>';
+    html += '</div>';
+
+    html += '<div class="card-body">';
+    for (var j = 0; j < a.events.length; j++) {
+      var ev = a.events[j];
+      html += '<div class="evt-row">';
+      html += '<div class="evt-time">' + ev.time + '</div>';
+      html += '<div class="evt-name">' + ev.e + '</div>';
+      html += '<span class="evt-level ' + (ev.lvl === 'V' ? 'evt-v' : 'evt-jv') + '">' + ev.lvl + '</span>';
+      if (ev.seed) html += '<div class="evt-seed">' + ev.seed + '</div>';
+      html += '</div>';
+    }
+
+    if (heavy) {
+      html += '<div class="note-box"><div class="prep-title">\u26a0\ufe0f Coach\'s Note</div><div class="prep-item">' + a.notes + '</div></div>';
+    } else {
+      html += '<div class="prep-section"><div class="prep-title">Coach\'s Note</div><div class="prep-item">' + a.notes + '</div></div>';
+    }
+
+    html += '<div class="timeline"><div class="timeline-title">Your Meet Day Timeline</div>';
+    html += '<div class="tl-row"><div class="tl-time">2:20 PM</div><div>Dismissed from class</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">2:30 PM</div><div>Bus departs Medford \u2014 eat pre-meet snack on bus</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">~3:15</div><div>Arrive Marshfield HS \u2014 find your event area</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">3:30</div><div>Begin warm-up (see prep below)</div></div>';
+    html += '<div class="tl-row"><div class="tl-time">4:45 PM</div><div>Meet starts \u2014 field events + running events begin</div></div>';
+    for (var m = 0; m < a.events.length; m++) {
+      var e2 = a.events[m];
+      html += '<div class="tl-row"><div class="tl-time">' + e2.time.replace('~', '') + '</div><div>' + e2.e + ' (' + e2.lvl + ')' + (e2.seed ? ' \u2014 seed: ' + e2.seed : '') + '</div></div>';
+    }
+    html += '</div>';
+
+    html += '<div class="prep-section"><div class="prep-title">\ud83c\udf19 Tonight (Day Before)</div><div class="prep-item">' + prep.tonight + '</div></div>';
+    html += '<div class="prep-section"><div class="prep-title">\ud83c\udf7d\ufe0f Nutrition Plan</div><div class="prep-item">' + prep.meal + '</div></div>';
+    html += '<div class="prep-section"><div class="prep-title">\ud83d\udd25 Meet Warm-Up</div><div class="prep-item">' + prep.warmup + '</div></div>';
+
+    html += '</div></div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function toggleCard(name) {
+  if (expandedCards.has(name)) expandedCards.delete(name);
+  else expandedCards.add(name);
+  render(searchBox.value);
+}
+
+searchBox.addEventListener('input', function() { render(searchBox.value); });
+render();
+</script>
+</body>
+</html>
