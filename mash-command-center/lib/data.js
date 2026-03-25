@@ -1,5 +1,5 @@
 // Auto-generated athlete data from MASH Track Student Form 2026
-// 48 athletes with PRs, injuries, goals, phone, emergency contacts
+// 50 athletes with PRs, injuries, goals, phone, emergency contacts
 
 export const FORM_DATA = [
   {
@@ -817,6 +817,40 @@ export const FORM_DATA = [
     "rv": "Discipline and attitude",
     "conf": "No",
     "sp": "Wrestling and soccer"
+  },
+  {
+    "n": "Tosh Satterwhite",
+    "g": 10,
+    "gn": "M",
+    "ph": "",
+    "em": "",
+    "p1": "60yd Dash",
+    "p2": "Relays",
+    "pr": "60yd: 7.31",
+    "inj": "No",
+    "goal": "Make varsity sprints",
+    "imp": "Speed",
+    "pg": "Consistency",
+    "rv": "Discipline",
+    "conf": "",
+    "sp": ""
+  },
+  {
+    "n": "Jovenski Macrsaint-Vil",
+    "g": 10,
+    "gn": "M",
+    "ph": "",
+    "em": "",
+    "p1": "Sprints",
+    "p2": "",
+    "pr": "",
+    "inj": "",
+    "goal": "",
+    "imp": "Sprints",
+    "pg": "",
+    "rv": "",
+    "conf": "",
+    "sp": ""
   }
 ];
 
@@ -866,8 +900,57 @@ export const ACTIONS = [
 
 export const KNOWN_STATUS = {
   "Evan Pagel":"limited",
+  "Sawyer Hoops":"modified",
+  "Colton Long":"modified",
   "Autumn Cooley":"limited",
   "Aliyah Pilgrim":"unavailable",
   "Avery Losiewicz":"injured",
   "Rivalee Stokes":"limited",
 };
+
+// ═══════════════════════════════════════════════
+// MEET RESULTS — Marshfield Tiger Boys Invite 3/24
+// ═══════════════════════════════════════════════
+export const RESULTS = [
+  {meet:"Marshfield Boys",date:"2026-03-24",id:1,teams:15,data:[
+    // VARSITY
+    {a:"Colton Long",e:"60yd Dash",lvl:"V",mark:"7.23",seed:"7.40",place:13,of:25,pr:1},
+    {a:"Erik Paul",e:"60yd Dash",lvl:"V",mark:"7.58",seed:"7.87",place:20,of:25,pr:1},
+    {a:"Axel Brushaber",e:"220yd Dash",lvl:"V",mark:"27.52",seed:"27.82",place:9,of:23,pr:1},
+    {a:"Erik Paul",e:"220yd Dash",lvl:"V",mark:"28.78",seed:"28.00",place:17,of:23,pr:0},
+    {a:"Sawyer Hoops",e:"440yd Dash",lvl:"V",mark:"1:01.42",seed:"1:05.00",place:5,of:18,pr:1},
+    {a:"Judah Wipf",e:"880yd Run",lvl:"V",mark:"2:26.43",seed:"2:36.00",place:6,of:20,pr:1},
+    {a:"Angus Hamland",e:"Mile Run",lvl:"V",mark:"5:57.34",seed:"5:32.79",place:11,of:18,pr:0},
+    {a:"Luke Klapatauskas",e:"60m Hurdles",lvl:"V",mark:"9.08",seed:"9.50",place:4,of:11,pr:1},
+    {a:"Luke Klapatauskas",e:"Triple Jump",lvl:"V",mark:"37-4",seed:"37-5.5",place:2,of:10,pr:0},
+    {a:"Jasper Stokes",e:"Long Jump",lvl:"V",mark:"16-5",seed:"18-0",place:11,of:18,pr:0},
+    {a:"Max Losiewicz",e:"Pole Vault",lvl:"V",mark:"11-0",seed:"9-6",place:8,of:13,pr:1},
+    {a:"Jordan Lavin",e:"Pole Vault",lvl:"V",mark:"11-0",seed:"9-6",place:9,of:13,pr:1},
+    {a:"Logan Langdon",e:"Shot Put",lvl:"V",mark:"37-9.5",seed:"34-7",place:6,of:24,pr:1},
+    {a:"Johnathon Bartnick",e:"Shot Put",lvl:"V",mark:"31-11",seed:"30-5.5",place:15,of:24,pr:1},
+    {a:"Medford Area",e:"4x440 Relay",lvl:"V",mark:"4:13.43",seed:"",place:5,of:8,pr:0},
+    {a:"Medford Area",e:"4x880 Relay",lvl:"V",mark:"9:54.30",seed:"",place:3,of:5,pr:0},
+    // JV
+    {a:"Tosh Satterwhite",e:"60yd Dash",lvl:"JV",mark:"7.31",seed:"",place:23,of:78,pr:0},
+    {a:"Parker Judnic",e:"60yd Dash",lvl:"JV",mark:"7.61",seed:"",place:39,of:78,pr:0},
+    {a:"Draven Dums",e:"220yd Dash",lvl:"JV",mark:"29.18",seed:"",place:20,of:42,pr:0},
+    {a:"Parker Judnic",e:"220yd Dash",lvl:"JV",mark:"30.41",seed:"",place:25,of:42,pr:0},
+    {a:"Ryker Hallam",e:"440yd Dash",lvl:"JV",mark:"1:20.18",seed:"",place:22,of:23,pr:0},
+    {a:"Peyton Reid",e:"880yd Run",lvl:"JV",mark:"2:33.29",seed:"",place:2,of:18,pr:0},
+    {a:"Nevyn Gripentrog",e:"880yd Run",lvl:"JV",mark:"2:59.19",seed:"",place:10,of:18,pr:0},
+    {a:"Tristan Newberry",e:"Mile Run",lvl:"JV",mark:"6:55.37",seed:"",place:8,of:8,pr:0},
+    {a:"Draven Dums",e:"High Jump",lvl:"JV",mark:"4-8",seed:"",place:5,of:7,pr:0},
+    {a:"Luca Gumy",e:"Long Jump",lvl:"JV",mark:"15-3.75",seed:"",place:6,of:27,pr:0},
+    {a:"Jaden Thao",e:"Long Jump",lvl:"JV",mark:"14-7",seed:"",place:17,of:27,pr:0},
+    {a:"Ryker Hallam",e:"Long Jump",lvl:"JV",mark:"9-9.5",seed:"",place:27,of:27,pr:0},
+    {a:"Axel Brushaber",e:"Triple Jump",lvl:"JV",mark:"36-3.5",seed:"",place:1,of:4,pr:0},
+    {a:"Erik Paul",e:"Triple Jump",lvl:"JV",mark:"31-6",seed:"",place:3,of:4,pr:0},
+    {a:"Bentley Cooley",e:"Pole Vault",lvl:"JV",mark:"8-0",seed:"",place:3,of:5,pr:0},
+    {a:"Parker Fogo",e:"Shot Put",lvl:"JV",mark:"30-2",seed:"",place:14,of:39,pr:0},
+    {a:"Logan Schmidt",e:"Shot Put",lvl:"JV",mark:"26-1.75",seed:"",place:26,of:39,pr:0},
+    {a:"Reuben Barnhart",e:"Shot Put",lvl:"JV",mark:"25-10.75",seed:"",place:27,of:39,pr:0},
+    {a:"Paxton Hamland",e:"Shot Put",lvl:"JV",mark:"21-11.5",seed:"",place:33,of:39,pr:0},
+    {a:"Medford Area",e:"4x440 Relay",lvl:"JV",mark:"4:33.61",seed:"",place:4,of:4,pr:0},
+    {a:"Medford Area",e:"4x880 Relay",lvl:"JV",mark:"11:50.03",seed:"",place:2,of:2,pr:0},
+  ]}
+];
