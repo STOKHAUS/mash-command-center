@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, BADGER_BOYS, BADGER_GIRLS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -11,6 +11,14 @@ function getProfile(name) {
     const fn = f.n.toLowerCase();
     return fn === n || n.includes(fn) || fn.includes(n.split(' ')[0]);
   });
+}
+
+// Get lineups for a meet (supports combined B/G)
+function getLineups(meetId) {
+  if (meetId === 3 && BADGER_BOYS && BADGER_GIRLS) {
+    return [{ label: 'Boys Entries', data: BADGER_BOYS, gender: 'B' }, { label: 'Girls Entries', data: BADGER_GIRLS, gender: 'G' }];
+  }
+  return null;
 }
 
 const wxIcon = c => { if(c<=1)return'☀️';if(c<=3)return'⛅';if(c<=49)return'🌫️';if(c<=69)return'🌧️';if(c<=79)return'🌨️';if(c<=99)return'⛈️';return'🌤️'; };
@@ -46,6 +54,8 @@ export default function Home() {
   // Results
   const [resMeet, setResMeet] = useState(RESULTS?.length ? RESULTS[0].date : '');
   const [resView, setResView] = useState('summary');
+  // Meet detail view
+  const [meetView, setMeetView] = useState(null);
 
   const NOW = new Date();
   const nm = MEETS.find(m => new Date(m.date) >= NOW);
@@ -176,6 +186,13 @@ export default function Home() {
     return s !== 'available';
   });
 
+  // Upcoming conflicts (next 14 days)
+  const upcomingConflicts = (CONFLICTS || []).filter(c => {
+    const d = c.date ? new Date(c.date) : new Date(c.start);
+    const diff = Math.ceil((d - NOW) / 86400000);
+    return diff >= 0 && diff <= 14;
+  });
+
   // Badge helper
   const bd = (c) => ({ display:'inline-block', fontSize:'.5rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.06em', padding:'2px 6px', marginLeft:4, background:`${c}20`, color:c, border:`1px solid ${c}40` });
 
@@ -224,13 +241,13 @@ export default function Home() {
       {/* TOP BAR */}
       <div style={{ background:`linear-gradient(135deg,#1a0000,#0a0a0a)`, borderBottom:`2px solid ${R}`, padding:'10px 16px', display:'flex', justifyContent:'space-between', alignItems:'center', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', letterSpacing:'.12em', textTransform:'uppercase' }}><span style={{color:R}}>MASH</span> Command Center</div>
-        <div style={{ fontSize:'.55rem', color:'#444' }}>v4 · 2026</div>
+        <div style={{ fontSize:'.55rem', color:'#444' }}>v5 · 2026</div>
       </div>
 
       {/* NAV */}
       <div style={{ display:'flex', overflowX:'auto', background:'#111', borderBottom:`1px solid ${BDR}`, position:'sticky', top:44, zIndex:99 }}>
         {tabs.map(([k,l]) => (
-          <button key={k} onClick={() => setTab(k)} style={{ padding:'10px 12px', background:tab===k?'rgba(204,0,0,.12)':'transparent', color:tab===k?'#fff':'#666', borderBottom:tab===k?`2px solid ${R}`:'2px solid transparent', fontWeight:700, fontSize:'.58rem', textTransform:'uppercase', letterSpacing:'.08em', whiteSpace:'nowrap', flexShrink:0 }}>{l}</button>
+          <button key={k} onClick={() => { setTab(k); setMeetView(null); }} style={{ padding:'10px 12px', background:tab===k?'rgba(204,0,0,.12)':'transparent', color:tab===k?'#fff':'#666', borderBottom:tab===k?`2px solid ${R}`:'2px solid transparent', fontWeight:700, fontSize:'.58rem', textTransform:'uppercase', letterSpacing:'.08em', whiteSpace:'nowrap', flexShrink:0 }}>{l}</button>
         ))}
       </div>
 
@@ -275,6 +292,24 @@ export default function Home() {
               <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>Strategy, lineups, WIAA rules</div>
             </button>
           </div>
+
+          {/* COACH CONFLICTS */}
+          {upcomingConflicts.length > 0 && (
+            <>
+              <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:B, marginTop:14, marginBottom:8 }}>
+                Coach Conflicts (Next 14 Days)
+              </div>
+              {upcomingConflicts.map((c, i) => (
+                <div key={i} style={{ display:'flex', gap:8, alignItems:'center', padding:'8px 10px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${B}`, marginBottom:4 }}>
+                  <div style={{ width:7, height:7, borderRadius:'50%', background:B, flexShrink:0 }} />
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:'.8rem', fontWeight:600, lineHeight:1.3 }}>{c.text}</div>
+                    <div style={{ fontSize:'.6rem', color:B, fontWeight:700, marginTop:2 }}>{c.date || `${c.start} – ${c.end}`}</div>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
 
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:14, marginBottom:8 }}>
             Actions ({ACTIONS.filter(a => !done.includes(a.id)).length})
@@ -321,7 +356,6 @@ export default function Home() {
 
         return (
           <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
-            {/* Meet selector */}
             <div style={{ display:'flex', gap:6, alignItems:'center', marginBottom:12, flexWrap:'wrap' }}>
               {RESULTS.map(r => (
                 <button key={r.date} style={btnS(resMeet === r.date)} onClick={() => setResMeet(r.date)}>
@@ -335,7 +369,6 @@ export default function Home() {
               {new Date(meet.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })} · {meet.teams} teams
             </div>
 
-            {/* KPIs */}
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:BDR, marginBottom:14 }}>
               <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:G }}>{prPct}%</div>
@@ -359,7 +392,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* View toggle */}
             <div style={{ display:'flex', gap:4, marginBottom:10, flexWrap:'wrap' }}>
               {['summary', 'varsity', 'jv', 'prs'].map(k => (
                 <button key={k} style={btnS(resView === k)} onClick={() => setResView(k)}>
@@ -368,10 +400,8 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Results list */}
             {rows.map((r, i) => {
               const isPr = r.pr;
-              const isRelay = r.a.includes('Medford');
               const hasSeed = r.seed && r.seed.length > 0;
               const placeColor = r.place <= 3 ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.5)';
 
@@ -512,25 +542,29 @@ export default function Home() {
       )}
 
       {/* ═══ MEETS ═══ */}
-      {tab === 'meets' && (
+      {tab === 'meets' && !meetView && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>Schedule</div>
           {MEETS.map(m => {
             const d = Math.ceil((new Date(m.date)-NOW)/86400000);
             const hasResults = RESULTS?.some(r => r.id === m.id);
+            const hasGuide = GUIDE_URLS && GUIDE_URLS[m.id];
+            const hasLineup = m.hasLineup;
             return (
-              <div key={m.id} style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px 14px', marginBottom:6, opacity:d<0?.3:1 }}>
+              <div key={m.id} onClick={() => { if (hasLineup || hasGuide || hasResults) setMeetView(m.id); }} style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px 14px', marginBottom:6, opacity:d<0?.3:1, cursor:(hasLineup||hasGuide||hasResults)?'pointer':'default' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
                   <div>
                     <div style={{ fontWeight:700, fontSize:'.85rem' }}>{m.name} <span style={{ color:'#555', fontWeight:400 }}>({m.g})</span></div>
                     <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)' }}>{m.date} · {m.loc}{m.bus ? ` · Bus ${m.bus}` : ''}</div>
                     {m.deadline && <div style={{ fontSize:'.65rem', color:Y, fontWeight:600 }}>Deadline: {m.deadline}</div>}
                   </div>
-                  <div style={{ display:'flex', gap:4, alignItems:'center' }}>
+                  <div style={{ display:'flex', gap:4, alignItems:'center', flexWrap:'wrap' }}>
                     <span style={bd(m.type==='home'||m.type==='conf'||m.type==='regional'||m.type==='sectional'?R:'#555')}>{m.type}</span>
                     {d>=0 && d<=7 && <span style={bd(Y)}>{d}d</span>}
-                    {m.hl && <span style={bd(G)}>Lineup</span>}
-                    {hasResults && <button onClick={() => { setResMeet(RESULTS.find(r=>r.id===m.id)?.date||''); setTab('results'); }} style={bd(B)}>📊 Results</button>}
+                    {hasResults && <span style={bd(G)}>Results</span>}
+                    {hasLineup && <span style={bd(G)}>Lineup</span>}
+                    {hasGuide && <span style={bd(B)}>Guide</span>}
+                    {(hasLineup||hasGuide||hasResults) && <span style={{color:R,fontSize:'.8rem'}}>→</span>}
                   </div>
                 </div>
               </div>
@@ -538,6 +572,67 @@ export default function Home() {
           })}
         </div>
       )}
+
+      {/* ═══ MEET DETAIL ═══ */}
+      {tab === 'meets' && meetView && (() => {
+        const m = MEETS.find(x => x.id === meetView);
+        if (!m) return null;
+        const lineups = getLineups(meetView);
+        const meetResults = RESULTS?.find(r => r.id === meetView);
+        const guideUrl = GUIDE_URLS && GUIDE_URLS[meetView];
+        const d = Math.ceil((new Date(m.date)-NOW)/86400000);
+
+        return (
+          <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
+            <button onClick={() => setMeetView(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Schedule</button>
+
+            <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'14px', marginBottom:10 }}>
+              <div style={{ fontWeight:800, fontSize:'1.1rem', textTransform:'uppercase' }}>{m.name} ({m.g})</div>
+              <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>
+                {new Date(m.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · {m.loc} · Start {m.start}{m.bus ? ` · Bus ${m.bus}` : ''}{m.deadline ? ` · Deadline: ${m.deadline}` : ''}
+              </div>
+              <div style={{ display:'flex', gap:6, marginTop:10, flexWrap:'wrap' }}>
+                {guideUrl && <button onClick={() => window.open(guideUrl, '_blank')} style={btn}>📋 Meet Day Guide</button>}
+                {meetResults && <button onClick={() => { setResMeet(meetResults.date); setTab('results'); setMeetView(null); }} style={{ ...btn, background:G }}>📊 View Results</button>}
+                {d >= 0 && d <= 3 && <span style={{ ...bd(Y), fontSize:'.65rem', padding:'6px 10px' }}>⚡ {d === 0 ? 'TODAY' : d + 'd away'}</span>}
+              </div>
+            </div>
+
+            {/* Northern Badger lineups */}
+            {lineups && lineups.map((group, gi) => (
+              <div key={gi}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:group.gender==='G'?Y:R, marginTop:16, marginBottom:8 }}>{group.label}</div>
+                {group.data.map((ev, ei) => {
+                  const hasNote = ev.note;
+                  return (
+                    <div key={ei} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${group.gender==='G'?Y:R}`, padding:'10px 14px', marginBottom:4 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+                        <span style={{ fontWeight:700, fontSize:'.85rem' }}>{ev.e}</span>
+                        {ev.a.some(a => a.includes('WC')) && <span style={bd(B)}>Wildcard</span>}
+                      </div>
+                      <div style={{ marginTop:4 }}>
+                        {ev.a.map((a, ai) => (
+                          <div key={ai} style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', padding:'2px 0', display:'flex', justifyContent:'space-between' }}>
+                            <span>{a}</span>
+                            {ev.seed && ev.seed[ai] && <span style={{ color:'rgba(255,255,255,.4)', fontSize:'.72rem' }}>{ev.seed[ai]}</span>}
+                          </div>
+                        ))}
+                      </div>
+                      {hasNote && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+
+            {!lineups && !meetResults && (
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'20px', textAlign:'center' }}>
+                <div style={{ fontSize:'.8rem', color:'rgba(255,255,255,.4)' }}>No lineup or entries loaded for this meet yet.</div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ═══ ATHLETES ═══ */}
       {tab === 'athletes' && !selectedAth && (
@@ -618,7 +713,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Meet Results for this athlete */}
             {athResults.length > 0 && (
               <>
                 <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:8 }}>
