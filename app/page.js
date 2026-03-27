@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, BADGER_BOYS, BADGER_GIRLS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -23,38 +23,33 @@ function getLineups(meetId) {
 
 const wxIcon = c => { if(c<=1)return'☀️';if(c<=3)return'⛅';if(c<=49)return'🌫️';if(c<=69)return'🌧️';if(c<=79)return'🌨️';if(c<=99)return'⛈️';return'🌤️'; };
 
+// Results URL helper
+const getResultsUrl = (meetId) => RESULTS_URLS && RESULTS_URLS[meetId] ? RESULTS_URLS[meetId] : null;
+
 export default function Home() {
   const [tab, setTab] = useState('today');
   const [done, setDone] = useState([]);
   const [statuses, setStatuses] = useState({});
   const [wx, setWx] = useState(null);
   const [mWx, setMWx] = useState(null);
-  // AI
   const [aiMsgs, setAiMsgs] = useState([]);
   const [aiIn, setAiIn] = useState('');
   const [aiLoad, setAiLoad] = useState(false);
   const chatRef = useRef(null);
-  // Plans
   const [planA, setPlanA] = useState(null);
   const [meal, setMeal] = useState(null);
   const [work, setWork] = useState(null);
   const [planLoad, setPlanLoad] = useState(false);
-  // Athletes
   const [athF, setAthF] = useState('all');
   const [athQ, setAthQ] = useState('');
   const [selectedAth, setSelectedAth] = useState(null);
-  // Message
   const [msgBody, setMsgBody] = useState('');
   const [copied, setCopied] = useState(false);
-  // Practice
   const [pracPlan, setPracPlan] = useState(null);
   const [pracLoad, setPracLoad] = useState(false);
-  // Live roster from Google Sheet
   const [liveRoster, setLiveRoster] = useState(null);
-  // Results
   const [resMeet, setResMeet] = useState(RESULTS?.length ? RESULTS[0].date : '');
   const [resView, setResView] = useState('summary');
-  // Meet detail view
   const [meetView, setMeetView] = useState(null);
 
   const NOW = new Date();
@@ -63,7 +58,6 @@ export default function Home() {
   const getSt = n => statuses[n] || KNOWN_STATUS[n] || 'available';
   const stCol = s => s === 'available' ? G : s === 'injured' || s === 'unavailable' ? R : Y;
 
-  // Persist state
   useEffect(() => {
     try {
       const s = localStorage.getItem('mash-cc');
@@ -75,7 +69,6 @@ export default function Home() {
     try { localStorage.setItem('mash-cc', JSON.stringify({ done, statuses, aiMsgs })); } catch(e) {}
   }, [done, statuses, aiMsgs]);
 
-  // Weather
   useEffect(() => {
     async function fetchWx() {
       try {
@@ -92,7 +85,6 @@ export default function Home() {
     fetchWx();
   }, []);
 
-  // Live roster sync from Google Sheet
   useEffect(() => {
     fetch('/api/roster')
       .then(r => r.json())
@@ -100,7 +92,6 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  // Merged roster
   const rosterData = (() => {
     if (!liveRoster) return FORM_DATA;
     return liveRoster.map(lr => {
@@ -115,7 +106,6 @@ export default function Home() {
     });
   })();
 
-  // Practice plan
   useEffect(() => {
     if (tab !== 'practice' || pracPlan || pracLoad) return;
     setPracLoad(true);
@@ -125,7 +115,6 @@ export default function Home() {
       .catch(() => setPracLoad(false));
   }, [tab, pracPlan, pracLoad]);
 
-  // AI Coach
   const sendAI = useCallback(async () => {
     if (!aiIn.trim() || aiLoad) return;
     const msg = aiIn.trim(); setAiIn('');
@@ -144,7 +133,6 @@ export default function Home() {
     setTimeout(() => { if(chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, 100);
   }, [aiIn, aiMsgs, aiLoad]);
 
-  // Generate Plans
   const genPlans = useCallback(async (athlete) => {
     setPlanA(athlete); setPlanLoad(true); setMeal(null); setWork(null);
     const profile = getProfile(athlete.n);
@@ -173,7 +161,6 @@ export default function Home() {
     setPlanLoad(false);
   }, [dtn]);
 
-  // Copy for TeamReach
   const copyMsg = () => {
     navigator.clipboard.writeText(msgBody);
     setCopied(true);
@@ -181,22 +168,16 @@ export default function Home() {
   };
 
   const toggleDone = id => setDone(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
-  const alerts = rosterData.filter(a => {
-    const s = getSt(a.n);
-    return s !== 'available';
-  });
+  const alerts = rosterData.filter(a => { const s = getSt(a.n); return s !== 'available'; });
 
-  // Upcoming conflicts (next 14 days)
   const upcomingConflicts = (CONFLICTS || []).filter(c => {
     const d = c.date ? new Date(c.date) : new Date(c.start);
     const diff = Math.ceil((d - NOW) / 86400000);
     return diff >= 0 && diff <= 14;
   });
 
-  // Badge helper
   const bd = (c) => ({ display:'inline-block', fontSize:'.5rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.06em', padding:'2px 6px', marginLeft:4, background:`${c}20`, color:c, border:`1px solid ${c}40` });
 
-  // Weather widget
   const WxWidget = ({ data, title }) => {
     if (!data) return null;
     return (
@@ -218,7 +199,6 @@ export default function Home() {
     );
   };
 
-  // ═══ RESULTS HELPERS ═══
   const getResultsForAthlete = (name) => {
     if (!RESULTS) return [];
     const all = [];
@@ -238,20 +218,17 @@ export default function Home() {
 
   return (
     <div>
-      {/* TOP BAR */}
       <div style={{ background:`linear-gradient(135deg,#1a0000,#0a0a0a)`, borderBottom:`2px solid ${R}`, padding:'10px 16px', display:'flex', justifyContent:'space-between', alignItems:'center', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', letterSpacing:'.12em', textTransform:'uppercase' }}><span style={{color:R}}>MASH</span> Command Center</div>
-        <div style={{ fontSize:'.55rem', color:'#444' }}>v5 · 2026</div>
+        <div style={{ fontSize:'.55rem', color:'#444' }}>v6 · 2026</div>
       </div>
 
-      {/* NAV */}
       <div style={{ display:'flex', overflowX:'auto', background:'#111', borderBottom:`1px solid ${BDR}`, position:'sticky', top:44, zIndex:99 }}>
         {tabs.map(([k,l]) => (
           <button key={k} onClick={() => { setTab(k); setMeetView(null); }} style={{ padding:'10px 12px', background:tab===k?'rgba(204,0,0,.12)':'transparent', color:tab===k?'#fff':'#666', borderBottom:tab===k?`2px solid ${R}`:'2px solid transparent', fontWeight:700, fontSize:'.58rem', textTransform:'uppercase', letterSpacing:'.08em', whiteSpace:'nowrap', flexShrink:0 }}>{l}</button>
         ))}
       </div>
 
-      {/* ═══ TODAY ═══ */}
       {tab === 'today' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R }}>Command Center</div>
@@ -270,7 +247,6 @@ export default function Home() {
           <WxWidget data={wx} title="Medford (54451) — 7-Day Forecast" />
           {mWx && nm && <WxWidget data={mWx.d} title={`${nm.name} @ ${mWx.loc}`} />}
 
-          {/* BIG ACTION BUTTONS */}
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, margin:'14px 0' }}>
             <button onClick={() => setTab('practice')} style={{ background:'linear-gradient(135deg,#1a0505,#2a0a0a)', border:`2px solid ${R}`, padding:'20px 16px', cursor:'pointer', textAlign:'left', transition:'all .2s', gridColumn:'1 / -1' }}>
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
@@ -284,7 +260,7 @@ export default function Home() {
             <button onClick={() => setTab('results')} style={{ background:'linear-gradient(135deg,#0a150a,#0a2a0a)', border:`2px solid ${G}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
               <div style={{ fontSize:'1.4rem', marginBottom:4 }}>📊</div>
               <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Meet Results</div>
-              <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>PRs, placements, performance tracking</div>
+              <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>{RESULTS?.length || 0} meets · PRs, placements, tracking</div>
             </button>
             <button onClick={() => setTab('ai')} style={{ background:'linear-gradient(135deg,#050a1a,#0a0a2a)', border:`2px solid ${B}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
               <div style={{ fontSize:'1.4rem', marginBottom:4 }}>🤖</div>
@@ -293,12 +269,9 @@ export default function Home() {
             </button>
           </div>
 
-          {/* COACH CONFLICTS */}
           {upcomingConflicts.length > 0 && (
             <>
-              <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:B, marginTop:14, marginBottom:8 }}>
-                Coach Conflicts (Next 14 Days)
-              </div>
+              <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:B, marginTop:14, marginBottom:8 }}>Coach Conflicts (Next 14 Days)</div>
               {upcomingConflicts.map((c, i) => (
                 <div key={i} style={{ display:'flex', gap:8, alignItems:'center', padding:'8px 10px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${B}`, marginBottom:4 }}>
                   <div style={{ width:7, height:7, borderRadius:'50%', background:B, flexShrink:0 }} />
@@ -311,9 +284,7 @@ export default function Home() {
             </>
           )}
 
-          <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:14, marginBottom:8 }}>
-            Actions ({ACTIONS.filter(a => !done.includes(a.id)).length})
-          </div>
+          <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:14, marginBottom:8 }}>Actions ({ACTIONS.filter(a => !done.includes(a.id)).length})</div>
           {ACTIONS.sort((a,b) => new Date(a.d)-new Date(b.d)).map(a => {
             const d = done.includes(a.id);
             return (
@@ -329,7 +300,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* ═══ RESULTS ═══ */}
       {tab === 'results' && (() => {
         const meet = RESULTS?.find(r => r.date === resMeet);
         if (!RESULTS?.length || !meet) return (
@@ -347,6 +317,8 @@ export default function Home() {
         const prPct = seeded.length ? Math.round((prs.length / seeded.length) * 100) : 0;
         const scoring = d.filter(r => r.lvl === 'V' && r.place <= 8).length;
         const uniqueA = new Set(d.filter(r => !r.a.includes('Medford')).map(r => r.a));
+        const wins = d.filter(r => r.lvl === 'V' && r.place === 1).length;
+        const resultsPageUrl = getResultsUrl(meet.id);
 
         let rows = d;
         if (resView === 'varsity') rows = d.filter(r => r.lvl === 'V');
@@ -365,9 +337,15 @@ export default function Home() {
             </div>
 
             <div style={{ fontWeight:800, fontSize:'1.1rem', textTransform:'uppercase' }}>{meet.meet}</div>
-            <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>
+            <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:8 }}>
               {new Date(meet.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })} · {meet.teams} teams
             </div>
+
+            {resultsPageUrl && (
+              <button onClick={() => window.open(resultsPageUrl, '_blank')} style={{ ...btn, marginBottom:12, display:'inline-flex', alignItems:'center', gap:6 }}>
+                📊 Visual Results Breakdown →
+              </button>
+            )}
 
             <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:BDR, marginBottom:14 }}>
               <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
@@ -381,9 +359,9 @@ export default function Home() {
                 <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>scoring positions</div>
               </div>
               <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
-                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:'#fff' }}>{uniqueA.size}</div>
-                <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>Athletes</div>
-                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>competed</div>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:wins > 0 ? Y : '#fff' }}>{wins > 0 ? wins : uniqueA.size}</div>
+                <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>{wins > 0 ? 'Event Wins' : 'Athletes'}</div>
+                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>{wins > 0 ? '🥇' : 'competed'}</div>
               </div>
               <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:Y }}>{d.length}</div>
@@ -404,7 +382,6 @@ export default function Home() {
               const isPr = r.pr;
               const hasSeed = r.seed && r.seed.length > 0;
               const placeColor = r.place <= 3 ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.5)';
-
               return (
                 <div key={i} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 12px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${isPr ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.08)'}`, marginBottom:2 }}>
                   <div style={{ minWidth:28, textAlign:'center' }}>
@@ -437,7 +414,6 @@ export default function Home() {
         );
       })()}
 
-      {/* ═══ PRACTICE ═══ */}
       {tab === 'practice' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           {pracLoad && (
@@ -447,7 +423,6 @@ export default function Home() {
               <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.4)', marginTop:8 }}>Building workout based on training phase and meet schedule</div>
             </div>
           )}
-
           {pracPlan && !pracPlan.isOff && !pracPlan.error && (
             <>
               <div style={{ border:`1px solid rgba(255,255,255,.06)`, background:'radial-gradient(circle at top right,rgba(204,0,0,.12),transparent 30%),linear-gradient(135deg,#151515,#0f0f0f)', padding:'2rem', marginBottom:'1.5rem' }}>
@@ -457,21 +432,14 @@ export default function Home() {
                 </div>
                 <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginBottom:'1.2rem' }}>{pracPlan.date}</div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8 }}>
-                  <div style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
-                    <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>Phase</div>
-                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.9rem' }}>{pracPlan.phase}</div>
-                  </div>
-                  <div style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
-                    <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>Next Meet</div>
-                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.85rem' }}>{pracPlan.nextMeet || 'TBD'}</div>
-                  </div>
-                  <div style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
-                    <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>R.A.I.D.E.R.S.</div>
-                    <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.9rem' }}>{pracPlan.raidersValue}</div>
-                  </div>
+                  {[['Phase',pracPlan.phase],['Next Meet',pracPlan.nextMeet||'TBD'],['R.A.I.D.E.R.S.',pracPlan.raidersValue]].map(([l,v],i) => (
+                    <div key={i} style={{ background:'rgba(255,255,255,.04)', border:`1px solid rgba(255,255,255,.06)`, padding:'10px 12px' }}>
+                      <div style={{ fontSize:'.6rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.15em', color:R, marginBottom:3 }}>{l}</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.9rem' }}>{v}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
-
               {pracPlan.blocks && pracPlan.blocks.map((block, i) => (
                 <div key={i} style={{ display:'grid', gridTemplateColumns:'140px 1fr', border:`1px solid rgba(255,255,255,.06)`, background:'#1a1a1a', marginBottom:8 }}>
                   <div style={{ background:'linear-gradient(180deg,#1e1e1e,#161616)', borderRight:`1px solid rgba(255,255,255,.06)`, padding:'1rem .8rem' }}>
@@ -489,7 +457,6 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-
               {pracPlan.groups && pracPlan.groups.length > 0 && (
                 <>
                   <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, margin:'20px 0 10px' }}>Event Group Workouts</div>
@@ -508,21 +475,14 @@ export default function Home() {
                   </div>
                 </>
               )}
-
               {pracPlan.closingMessage && (
                 <div style={{ borderLeft:`3px solid ${R}`, background:'rgba(204,0,0,.06)', padding:'1rem 1.2rem', marginTop:16 }}>
-                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:600, fontSize:'.9rem', color:'rgba(255,255,255,.8)', lineHeight:1.5, fontStyle:'italic' }}>
-                    &ldquo;{pracPlan.closingMessage}&rdquo;
-                  </div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:600, fontSize:'.9rem', color:'rgba(255,255,255,.8)', lineHeight:1.5, fontStyle:'italic' }}>&ldquo;{pracPlan.closingMessage}&rdquo;</div>
                 </div>
               )}
-
-              <div style={{ background:R, padding:'12px 16px', marginTop:12, textAlign:'center', fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.8rem', textTransform:'uppercase', letterSpacing:'.06em' }}>
-                1% Better Every Day · E + R = O · Go Raiders
-              </div>
+              <div style={{ background:R, padding:'12px 16px', marginTop:12, textAlign:'center', fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.8rem', textTransform:'uppercase', letterSpacing:'.06em' }}>1% Better Every Day · E + R = O · Go Raiders</div>
             </>
           )}
-
           {pracPlan && pracPlan.isOff && (
             <div style={{ textAlign:'center', padding:'60px 20px' }}>
               <div style={{ fontSize:'2.5rem', marginBottom:12 }}>😴</div>
@@ -530,7 +490,6 @@ export default function Home() {
               <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginTop:8, maxWidth:400, margin:'8px auto 0' }}>{pracPlan.closingMessage}</div>
             </div>
           )}
-
           {pracPlan && pracPlan.error && (
             <div style={{ textAlign:'center', padding:'60px 20px' }}>
               <div style={{ fontSize:'2rem', marginBottom:12 }}>⚠️</div>
@@ -541,7 +500,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* ═══ MEETS ═══ */}
       {tab === 'meets' && !meetView && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>Schedule</div>
@@ -573,19 +531,18 @@ export default function Home() {
         </div>
       )}
 
-      {/* ═══ MEET DETAIL ═══ */}
       {tab === 'meets' && meetView && (() => {
         const m = MEETS.find(x => x.id === meetView);
         if (!m) return null;
         const lineups = getLineups(meetView);
         const meetResults = RESULTS?.find(r => r.id === meetView);
         const guideUrl = GUIDE_URLS && GUIDE_URLS[meetView];
+        const resultsPageUrl = getResultsUrl(meetView);
         const d = Math.ceil((new Date(m.date)-NOW)/86400000);
 
         return (
           <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
             <button onClick={() => setMeetView(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Schedule</button>
-
             <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'14px', marginBottom:10 }}>
               <div style={{ fontWeight:800, fontSize:'1.1rem', textTransform:'uppercase' }}>{m.name} ({m.g})</div>
               <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>
@@ -594,34 +551,31 @@ export default function Home() {
               <div style={{ display:'flex', gap:6, marginTop:10, flexWrap:'wrap' }}>
                 {guideUrl && <button onClick={() => window.open(guideUrl, '_blank')} style={btn}>📋 Meet Day Guide</button>}
                 {meetResults && <button onClick={() => { setResMeet(meetResults.date); setTab('results'); setMeetView(null); }} style={{ ...btn, background:G }}>📊 View Results</button>}
+                {resultsPageUrl && <button onClick={() => window.open(resultsPageUrl, '_blank')} style={{ ...btn, background:B }}>📊 Visual Breakdown</button>}
                 {d >= 0 && d <= 3 && <span style={{ ...bd(Y), fontSize:'.65rem', padding:'6px 10px' }}>⚡ {d === 0 ? 'TODAY' : d + 'd away'}</span>}
               </div>
             </div>
 
-            {/* Northern Badger lineups */}
             {lineups && lineups.map((group, gi) => (
               <div key={gi}>
                 <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:group.gender==='G'?Y:R, marginTop:16, marginBottom:8 }}>{group.label}</div>
-                {group.data.map((ev, ei) => {
-                  const hasNote = ev.note;
-                  return (
-                    <div key={ei} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${group.gender==='G'?Y:R}`, padding:'10px 14px', marginBottom:4 }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
-                        <span style={{ fontWeight:700, fontSize:'.85rem' }}>{ev.e}</span>
-                        {ev.a.some(a => a.includes('WC')) && <span style={bd(B)}>Wildcard</span>}
-                      </div>
-                      <div style={{ marginTop:4 }}>
-                        {ev.a.map((a, ai) => (
-                          <div key={ai} style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', padding:'2px 0', display:'flex', justifyContent:'space-between' }}>
-                            <span>{a}</span>
-                            {ev.seed && ev.seed[ai] && <span style={{ color:'rgba(255,255,255,.4)', fontSize:'.72rem' }}>{ev.seed[ai]}</span>}
-                          </div>
-                        ))}
-                      </div>
-                      {hasNote && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
+                {group.data.map((ev, ei) => (
+                  <div key={ei} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${group.gender==='G'?Y:R}`, padding:'10px 14px', marginBottom:4 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+                      <span style={{ fontWeight:700, fontSize:'.85rem' }}>{ev.e}</span>
+                      {ev.a.some(a => a.includes('WC')) && <span style={bd(B)}>Wildcard</span>}
                     </div>
-                  );
-                })}
+                    <div style={{ marginTop:4 }}>
+                      {ev.a.map((a, ai) => (
+                        <div key={ai} style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', padding:'2px 0', display:'flex', justifyContent:'space-between' }}>
+                          <span>{a}</span>
+                          {ev.seed && ev.seed[ai] && <span style={{ color:'rgba(255,255,255,.4)', fontSize:'.72rem' }}>{ev.seed[ai]}</span>}
+                        </div>
+                      ))}
+                    </div>
+                    {ev.note && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
+                  </div>
+                ))}
               </div>
             ))}
 
@@ -634,7 +588,6 @@ export default function Home() {
         );
       })()}
 
-      {/* ═══ ATHLETES ═══ */}
       {tab === 'athletes' && !selectedAth && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
@@ -672,7 +625,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* ═══ ATHLETE DETAIL ═══ */}
       {tab === 'athletes' && selectedAth && (() => {
         const athResults = getResultsForAthlete(selectedAth.n);
         return (
@@ -680,44 +632,19 @@ export default function Home() {
             <button onClick={() => setSelectedAth(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Roster</button>
             <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'16px', marginBottom:10 }}>
               <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
-              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>
-                Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}
-              </div>
+              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}</div>
             </div>
-
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Contact</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>📱 {selectedAth.ph || 'No phone'}</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>🚨 {selectedAth.em || 'No emergency contact'}</div>
-              </div>
-              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Personal Records</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)', whiteSpace:'pre-wrap' }}>{selectedAth.pr || 'None recorded'}</div>
-              </div>
-              <div style={{ background:CARD, border:`1px solid ${selectedAth.inj && !['No','None','N/A','Nope','no','none','','No no no'].includes(selectedAth.inj) ? 'rgba(204,0,0,.3)' : BDR}`, padding:'12px' }}>
-                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Health / Injuries</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.inj || 'None reported'}</div>
-              </div>
-              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Season Goal</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.goal || 'Not specified'}</div>
-              </div>
-              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>R.A.I.D.E.R.S. Focus</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.rv || 'Not specified'}</div>
-              </div>
-              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
-                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Schedule Conflicts</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>{selectedAth.conf || 'None'}</div>
-              </div>
+              {[['Contact',`📱 ${selectedAth.ph||'No phone'}\n🚨 ${selectedAth.em||'No emergency contact'}`],['Personal Records',selectedAth.pr||'None recorded'],['Health / Injuries',selectedAth.inj||'None reported'],['Season Goal',selectedAth.goal||'Not specified'],['R.A.I.D.E.R.S. Focus',selectedAth.rv||'Not specified'],['Schedule Conflicts',selectedAth.conf||'None']].map(([l,v],i) => (
+                <div key={i} style={{ background:CARD, border:`1px solid ${l==='Health / Injuries'&&selectedAth.inj&&!['No','None','N/A','Nope','no','none','','No no no'].includes(selectedAth.inj)?'rgba(204,0,0,.3)':BDR}`, padding:'12px' }}>
+                  <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>{l}</div>
+                  <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)', whiteSpace:'pre-wrap' }}>{v}</div>
+                </div>
+              ))}
             </div>
-
             {athResults.length > 0 && (
               <>
-                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:8 }}>
-                  Meet Results ({athResults.length})
-                </div>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:8 }}>Meet Results ({athResults.length})</div>
                 {athResults.map((r, i) => (
                   <div key={i} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 12px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${r.pr ? G : r.place <= 8 ? Y : 'rgba(255,255,255,.08)'}`, marginBottom:2 }}>
                     <div style={{ minWidth:28, textAlign:'center' }}>
@@ -740,7 +667,6 @@ export default function Home() {
                 ))}
               </>
             )}
-
             <div style={{ display:'flex', gap:8, marginTop:12 }}>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
@@ -749,19 +675,15 @@ export default function Home() {
         );
       })()}
 
-      {/* ═══ PLANS ═══ */}
       {tab === 'plans' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:4 }}>Athlete Plans</div>
           <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>AI-generated meal + workout plans using each athlete&apos;s actual PRs, injuries, goals, and training phase.</div>
-
           <select style={{ ...input, marginBottom:12 }} value="" onChange={e => { const a = rosterData.find(x => x.n === e.target.value); if(a) genPlans(a); }}>
             <option value="">Select athlete...</option>
             {rosterData.map((a, i) => <option key={i} value={a.n}>{a.n} ({a.gn}·Gr{a.g}·{a.p1||'TBD'})</option>)}
           </select>
-
           {planLoad && <div style={{ textAlign:'center', padding:30, color:R, fontWeight:700 }}>Generating plans for {planA?.n}...</div>}
-
           {planA && !planLoad && (
             <>
               <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'12px 14px', marginBottom:6 }}>
@@ -786,7 +708,6 @@ export default function Home() {
               )}
             </>
           )}
-
           {!planA && !planLoad && (
             <div style={{ textAlign:'center', padding:40, color:'#333' }}>
               <div style={{ fontSize:'2rem', marginBottom:8 }}>🍽️🏋️</div>
@@ -797,12 +718,10 @@ export default function Home() {
         </div>
       )}
 
-      {/* ═══ MESSAGE ═══ */}
       {tab === 'msg' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:4 }}>Team Messaging</div>
           <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>Compose a message, then copy it to TeamReach (MASH TRACK 2026 · Code: M7155705718)</div>
-
           <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px', marginBottom:10 }}>
             <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:6 }}>Quick Templates</div>
             {[
@@ -816,35 +735,20 @@ export default function Home() {
               </div>
             ))}
           </div>
-
-          <textarea
-            style={{ ...input, minHeight:200, resize:'vertical', marginBottom:8 }}
-            placeholder="Type or select a template above..."
-            value={msgBody}
-            onChange={e => setMsgBody(e.target.value)}
-          />
-
+          <textarea style={{ ...input, minHeight:200, resize:'vertical', marginBottom:8 }} placeholder="Type or select a template above..." value={msgBody} onChange={e => setMsgBody(e.target.value)} />
           <div style={{ display:'flex', gap:8 }}>
-            <button onClick={copyMsg} style={btn}>
-              {copied ? '✓ Copied!' : '📋 Copy for TeamReach'}
-            </button>
+            <button onClick={copyMsg} style={btn}>{copied ? '✓ Copied!' : '📋 Copy for TeamReach'}</button>
             <button onClick={() => setMsgBody('')} style={btnO}>Clear</button>
           </div>
-
           <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px', marginTop:16 }}>
             <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>How to Send</div>
             <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', lineHeight:1.6 }}>
-              1. Compose or select template above<br/>
-              2. Click &ldquo;Copy for TeamReach&rdquo;<br/>
-              3. Open TeamReach app → MASH TRACK 2026<br/>
-              4. Paste and send<br/><br/>
-              Join code: <strong style={{color:'#fff'}}>M7155705718</strong>
+              1. Compose or select template above<br/>2. Click &ldquo;Copy for TeamReach&rdquo;<br/>3. Open TeamReach app → MASH TRACK 2026<br/>4. Paste and send<br/><br/>Join code: <strong style={{color:'#fff'}}>M7155705718</strong>
             </div>
           </div>
         </div>
       )}
 
-      {/* ═══ AI COACH ═══ */}
       {tab === 'ai' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto', display:'flex', flexDirection:'column', height:'calc(100vh - 90px)' }}>
           <div style={{ flex:1, overflowY:'auto', marginBottom:10 }} ref={chatRef}>
@@ -852,9 +756,7 @@ export default function Home() {
               <div style={{ textAlign:'center', padding:'30px 20px' }}>
                 <div style={{ fontSize:'2rem', marginBottom:8 }}>🤖</div>
                 <div style={{ fontWeight:800, fontSize:'1rem', textTransform:'uppercase', marginBottom:8 }}>AI Coaching Assistant</div>
-                <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', maxWidth:400, margin:'0 auto 16px' }}>
-                  Full program knowledge loaded. Knows every athlete&apos;s PRs, injuries, goals, and event preferences.
-                </div>
+                <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', maxWidth:400, margin:'0 auto 16px' }}>Full program knowledge loaded. Knows every athlete&apos;s PRs, injuries, goals, and event preferences.</div>
                 <div style={{ display:'flex', flexWrap:'wrap', gap:6, justifyContent:'center' }}>
                   {['Best 4x400 relay combos?','Northern Badger entry strategy','Who can break a school record this year?','Marshfield girls scoring plan','Which injured athletes need modified workouts?'].map((q,i) => (
                     <button key={i} style={{ ...btnO, fontSize:'.6rem', padding:'6px 10px' }} onClick={() => setAiIn(q)}>{q}</button>
@@ -864,9 +766,7 @@ export default function Home() {
             )}
             {aiMsgs.map((m, i) => (
               <div key={i} style={{ marginBottom:10, display:'flex', flexDirection:'column', alignItems:m.role==='user'?'flex-end':'flex-start' }}>
-                <div style={{ maxWidth:'85%', padding:'10px 14px', background:m.role==='user'?R:CARD, border:`1px solid ${m.role==='user'?'transparent':BDR}`, fontSize:'.82rem', lineHeight:1.6, whiteSpace:'pre-wrap', borderRadius:m.role==='user'?'12px 12px 2px 12px':'12px 12px 12px 2px' }}>
-                  {m.content}
-                </div>
+                <div style={{ maxWidth:'85%', padding:'10px 14px', background:m.role==='user'?R:CARD, border:`1px solid ${m.role==='user'?'transparent':BDR}`, fontSize:'.82rem', lineHeight:1.6, whiteSpace:'pre-wrap', borderRadius:m.role==='user'?'12px 12px 2px 12px':'12px 12px 12px 2px' }}>{m.content}</div>
               </div>
             ))}
             {aiLoad && <div style={{ padding:10, fontSize:'.75rem', color:R, fontWeight:700 }}>Thinking...</div>}
