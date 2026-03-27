@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Girls Results — Marshfield Tiger Girls Invite 3/26 · MASH Track 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700;800&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#cc0000;--dk:#0a0a0a;--card:#131313;--bdr:rgba(255,255,255,.06);--gold:#d4a843;--grn:#22c55e;--blu:#4a9eff;--mut:#666;--surface:#111}
+body{font-family:'Barlow',sans-serif !important;background:var(--dk) !important;background-color:#0a0a0a !important;color:#fff !important;min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--red) !important;text-decoration:none !important}a:hover{text-decoration:underline !important}
+
+/* TOPBAR */
+.topbar{background:linear-gradient(135deg,#1a0000,var(--dk)) !important;border-bottom:2px solid var(--red) !important;padding:14px 16px;text-align:center;position:sticky;top:0;z-index:100}
+.brand{font-family:'Oswald',sans-serif !important;font-weight:800;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;color:#fff !important}
+.brand span{color:var(--red) !important}
+.meet-title{font-family:'Oswald',sans-serif !important;font-weight:700;font-size:.75rem;color:rgba(255,255,255,.45) !important;text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+/* INFO STRIP */
+.info-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bdr) !important}
+.info-strip>div{background:var(--surface) !important;background-color:#111 !important;padding:12px 8px;text-align:center}
+.info-strip .val{font-family:'Oswald',sans-serif !important;font-weight:800;font-size:1.15rem;line-height:1;color:#fff !important}
+.info-strip .lbl{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mut) !important;margin-top:3px}
+
+/* HERO STAT ROW */
+.hero-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bdr) !important;margin-top:1px}
+.hero-row>div{background:var(--surface) !important;background-color:#111 !important;padding:16px 10px;text-align:center}
+.hero-val{font-family:'Oswald',sans-serif !important;font-weight:800;font-size:2rem;line-height:1;color:#fff !important}
+.hero-lbl{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--mut) !important;margin-top:4px}
+
+/* SECTION */
+.sec{padding:0 16px 16px;max-width:720px;margin:0 auto}
+.label{font-size:.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.2em;color:var(--red) !important;margin:20px 0 8px;display:flex;align-items:center;gap:8px}
+.label::after{content:'';flex:1;height:1px;background:rgba(204,0,0,.25) !important}
+
+/* SPOTLIGHT CARD */
+.spotlight{background:linear-gradient(135deg,rgba(204,0,0,.12),rgba(204,0,0,.03)) !important;border:1px solid rgba(204,0,0,.3) !important;border-left:4px solid var(--red) !important;padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+.spotlight::before{content:'🥇';position:absolute;top:10px;right:14px;font-size:1.8rem;opacity:.6}
+.spot-name{font-family:'Oswald',sans-serif !important;font-weight:800;font-size:1.3rem;text-transform:uppercase;line-height:1;color:#fff !important}
+.spot-meta{font-size:.68rem;color:rgba(255,255,255,.45) !important;font-weight:600;margin-top:2px}
+.spot-mark{font-family:'Oswald',sans-serif !important;font-weight:800;font-size:1.6rem;color:var(--gold) !important;margin-top:6px}
+.spot-event{font-size:.72rem;color:rgba(255,255,255,.6) !important;font-weight:600}
+.spot-note{font-size:.72rem;color:rgba(255,255,255,.4) !important;margin-top:6px;font-style:italic;line-height:1.4}
+
+/* RESULT ROW */
+.result{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card) !important;background-color:#131313 !important;border:1px solid var(--bdr) !important;margin-bottom:4px;transition:background .15s}
+.result:hover{background:rgba(255,255,255,.03) !important}
+.result-place{font-family:'Oswald',sans-serif !important;font-weight:800;font-size:1rem;min-width:32px;text-align:center;color:rgba(255,255,255,.35) !important}
+.result-place.top5{color:var(--gold) !important}
+.result-place.top10{color:var(--grn) !important}
+.result-info{flex:1;min-width:0}
+.result-name{font-weight:700;font-size:.85rem;line-height:1.2;color:#fff !important}
+.result-event{font-size:.68rem;color:rgba(255,255,255,.4) !important;font-weight:600}
+.result-mark{font-family:'Oswald',sans-serif !important;font-weight:700;font-size:1rem;color:#fff !important;text-align:right;white-space:nowrap}
+.badge{display:inline-block;font-size:.48rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;margin-left:6px;vertical-align:middle}
+.badge-v{background:rgba(204,0,0,.2) !important;color:#ff4444 !important;border:1px solid rgba(204,0,0,.3) !important}
+.badge-jv{background:rgba(255,255,255,.05) !important;color:#888 !important;border:1px solid rgba(255,255,255,.08) !important}
+.badge-gold{background:rgba(212,168,67,.2) !important;color:var(--gold) !important;border:1px solid rgba(212,168,67,.3) !important}
+.badge-pr{background:rgba(34,197,94,.15) !important;color:var(--grn) !important;border:1px solid rgba(34,197,94,.3) !important}
+.badge-win{background:rgba(204,0,0,.25) !important;color:#ff4444 !important;border:1px solid rgba(204,0,0,.4) !important;font-size:.52rem}
+
+/* ATHLETE CARD (compact) */
+.ath-card{background:var(--card) !important;background-color:#131313 !important;border:1px solid var(--bdr) !important;border-left:3px solid var(--red) !important;margin-bottom:6px;overflow:hidden}
+.ath-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;cursor:pointer}
+.ath-header:hover{background:rgba(255,255,255,.02) !important}
+.ath-name{font-family:'Oswald',sans-serif !important;font-weight:700;font-size:.95rem;text-transform:uppercase;color:#fff !important}
+.ath-sub{font-size:.62rem;color:var(--mut) !important;font-weight:600}
+.ath-count{font-size:.58rem;font-weight:800;background:rgba(204,0,0,.15) !important;color:#ff4444 !important;padding:2px 8px;text-transform:uppercase}
+.ath-body{padding:0 12px 10px;border-top:1px solid var(--bdr) !important}
+.ath-evt{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03) !important}
+.ath-evt:last-child{border-bottom:none !important}
+.ath-evt-place{font-family:'Oswald',sans-serif !important;font-weight:700;font-size:.82rem;color:var(--gold) !important;min-width:28px;text-align:right}
+.ath-evt-name{font-weight:600;font-size:.78rem;flex:1;color:#fff !important}
+.ath-evt-mark{font-family:'Oswald',sans-serif !important;font-weight:600;font-size:.82rem;color:rgba(255,255,255,.7) !important}
+
+/* GAP CARD */
+.gap-card{background:rgba(255,68,68,.04) !important;border:1px solid rgba(204,0,0,.2) !important;border-left:3px solid var(--red) !important;padding:12px 14px;margin-bottom:6px}
+.gap-title{font-weight:700;font-size:.82rem;color:#ff4444 !important}
+.gap-detail{font-size:.72rem;color:rgba(255,255,255,.4) !important;margin-top:3px;line-height:1.4}
+
+/* TOGGLE TABS */
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:6px 14px;background:rgba(255,255,255,.04) !important;color:#888 !important;border:1px solid rgba(255,255,255,.08) !important;font-weight:700;font-size:.6rem;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;font-family:inherit;transition:all .15s}
+.tab.active{background:var(--red) !important;background-color:#cc0000 !important;color:#fff !important;border-color:var(--red) !important}
+
+/* FOOTER */
+.footer{text-align:center;padding:24px 16px;font-size:.58rem;color:var(--mut) !important;border-top:1px solid var(--bdr) !important;margin-top:24px}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .info-strip{grid-template-columns:repeat(2,1fr)}
+  .hero-row{grid-template-columns:repeat(3,1fr)}
+  .hero-val{font-size:1.6rem}
+  .info-strip .val{font-size:1rem}
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sec>*{animation:fadeUp .4s ease both}
+.sec>*:nth-child(1){animation-delay:.05s}
+.sec>*:nth-child(2){animation-delay:.1s}
+.sec>*:nth-child(3){animation-delay:.15s}
+.sec>*:nth-child(4){animation-delay:.2s}
+.sec>*:nth-child(5){animation-delay:.25s}
+
+/* ═══ SQUARESPACE NUCLEAR OVERRIDE ═══ */
+/* Squarespace injects styles that force black text. Override everything. */
+body,div,span,p,h1,h2,h3,h4,h5,h6,li,td,th,label,
+input,select,textarea,button,a{color:#fff !important}
+.meet-title,.spot-meta,.spot-note,.result-event,
+.gap-detail,.ath-sub,.footer,.hero-lbl,.info-strip .lbl{color:rgba(255,255,255,.45) !important}
+.label{color:#cc0000 !important}
+.spot-mark,.ath-evt-place{color:#d4a843 !important}
+.gap-title,.badge-v,.badge-win,.ath-count{color:#ff4444 !important}
+.badge-jv{color:#888 !important}
+.result-place{color:rgba(255,255,255,.35) !important}
+.result-place.top5{color:#d4a843 !important}
+.result-place.top10{color:#22c55e !important}
+.ath-evt-mark{color:rgba(255,255,255,.7) !important}
+.result-event{color:rgba(255,255,255,.4) !important}
+.spot-event{color:rgba(255,255,255,.6) !important}
+.tab{color:#888 !important}
+.tab.active{color:#fff !important}
+.footer{color:#666 !important}
+.info-strip .lbl,.hero-lbl{color:#666 !important}
+.ath-sub{color:#666 !important}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span>MASH</span> Track & Field</div>
+  <div class="meet-title">Results — Marshfield Tiger Girls Invite · Thu 3/26</div>
+</div>
+
+<div class="info-strip">
+  <div><div class="val">Thu 3/26</div><div class="lbl">Date</div></div>
+  <div><div class="val" style="color:var(--red) !important">4:45 PM</div><div class="lbl">Start</div></div>
+  <div><div class="val">15</div><div class="lbl">Teams</div></div>
+  <div><div class="val">Marshfield</div><div class="lbl">Location</div></div>
+</div>
+
+<div class="hero-row">
+  <div><div class="hero-val" style="color:var(--gold) !important">1</div><div class="hero-lbl">Event Win</div></div>
+  <div><div class="hero-val" style="color:var(--grn) !important">13</div><div class="hero-lbl">Athletes</div></div>
+  <div><div class="hero-val" style="color:var(--red) !important">4</div><div class="hero-lbl">Top-10 V</div></div>
+</div>
+
+<div class="sec">
+
+  <!-- SPOTLIGHT -->
+  <div class="label">Meet Spotlight</div>
+
+  <div class="spotlight">
+    <div class="spot-name">Lindsay Kahn</div>
+    <div class="spot-meta">Senior · Distance · Season Opener</div>
+    <div class="spot-mark">5:56.00</div>
+    <div class="spot-event">Mile Run — 1st Place 🥇</div>
+    <div class="spot-note">First event win of the 2026 girls season. Kahn ran down the entire field to take gold against 15 teams at the Fredrick Construction Fieldhouse.</div>
+  </div>
+
+  <!-- VIEW TOGGLE -->
+  <div class="label">Results View</div>
+  <div class="tabs" id="viewTabs">
+    <button class="tab active" data-view="highlights" onclick="setView('highlights')">Highlights</button>
+    <button class="tab" data-view="athletes" onclick="setView('athletes')">By Athlete</button>
+    <button class="tab" data-view="gaps" onclick="setView('gaps')">Gaps & Notes</button>
+  </div>
+
+  <!-- ═══ HIGHLIGHTS VIEW ═══ -->
+  <div id="view-highlights">
+
+    <div class="label">Varsity Scoring Performances</div>
+
+    <div class="result">
+      <div class="result-place top5">1st</div>
+      <div class="result-info">
+        <div class="result-name">Lindsay Kahn <span class="badge badge-v">V</span> <span class="badge badge-win">WIN</span></div>
+        <div class="result-event">Mile Run · Senior · Distance</div>
+      </div>
+      <div class="result-mark">5:56.00</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place top5">4th</div>
+      <div class="result-info">
+        <div class="result-name">Jordyn Grant <span class="badge badge-v">V</span></div>
+        <div class="result-event">Triple Jump · Soph · Sprint</div>
+      </div>
+      <div class="result-mark">30-0.00</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place top10">8th</div>
+      <div class="result-info">
+        <div class="result-name">Jordyn Grant <span class="badge badge-v">V</span></div>
+        <div class="result-event">220yd Dash · Soph · Sprint</div>
+      </div>
+      <div class="result-mark">31.31</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place top10">10th</div>
+      <div class="result-info">
+        <div class="result-name">Melanie Richter <span class="badge badge-v">V</span></div>
+        <div class="result-event">880yd Run · Freshman · Distance</div>
+      </div>
+      <div class="result-mark">2:51.62</div>
+    </div>
+
+    <div class="label">Varsity — All Results</div>
+
+    <div class="result">
+      <div class="result-place">12th</div>
+      <div class="result-info">
+        <div class="result-name">Taylor Klingbeil <span class="badge badge-v">V</span></div>
+        <div class="result-event">Long Jump · Soph</div>
+      </div>
+      <div class="result-mark">13-8.50</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">14th</div>
+      <div class="result-info">
+        <div class="result-name">Jordyn Grant <span class="badge badge-v">V</span></div>
+        <div class="result-event">60yd Dash · Soph</div>
+      </div>
+      <div class="result-mark">8.09</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">14th</div>
+      <div class="result-info">
+        <div class="result-name">Rivalee Stokes <span class="badge badge-v">V</span></div>
+        <div class="result-event">Shot Put · Senior</div>
+      </div>
+      <div class="result-mark">29-5.25</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">15th</div>
+      <div class="result-info">
+        <div class="result-name">Alexis Zuleger <span class="badge badge-v">V</span></div>
+        <div class="result-event">220yd Dash · Senior</div>
+      </div>
+      <div class="result-mark">33.59</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">16th</div>
+      <div class="result-info">
+        <div class="result-name">Raylin Rothmeier <span class="badge badge-v">V</span></div>
+        <div class="result-event">Long Jump · Senior</div>
+      </div>
+      <div class="result-mark">12-7.50</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">16th</div>
+      <div class="result-info">
+        <div class="result-name">Cora Semrau <span class="badge badge-v">V</span></div>
+        <div class="result-event">60m Hurdles · Soph</div>
+      </div>
+      <div class="result-mark">11.99</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">17th</div>
+      <div class="result-info">
+        <div class="result-name">Willow Dassow <span class="badge badge-v">V</span></div>
+        <div class="result-event">880yd Run · Junior</div>
+      </div>
+      <div class="result-mark">2:56.50</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">21st</div>
+      <div class="result-info">
+        <div class="result-name">Sada Carstensen <span class="badge badge-v">V</span></div>
+        <div class="result-event">Shot Put · Soph</div>
+      </div>
+      <div class="result-mark">27-10.75</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">24th</div>
+      <div class="result-info">
+        <div class="result-name">Alexis Zuleger <span class="badge badge-v">V</span></div>
+        <div class="result-event">60yd Dash · Senior</div>
+      </div>
+      <div class="result-mark">8.62</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">26th</div>
+      <div class="result-info">
+        <div class="result-name">Ellie Eckert <span class="badge badge-v">V</span></div>
+        <div class="result-event">Long Jump · Junior</div>
+      </div>
+      <div class="result-mark">9-8.75</div>
+    </div>
+
+    <div class="result">
+      <div class="result-place">31st</div>
+      <div class="result-info">
+        <div class="result-name">Naomi Thomas <span class="badge badge-v">V</span></div>
+        <div class="result-event">Shot Put · Soph</div>
+      </div>
+      <div class="result-mark">23-7.25</div>
+    </div>
+
+    <div class="label">JV Results</div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place top10">7th</div>
+      <div class="result-info">
+        <div class="result-name">Taylor Klingbeil <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">220yd Dash</div>
+      </div>
+      <div class="result-mark">32.28</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">14th</div>
+      <div class="result-info">
+        <div class="result-name">Savannah Hebert <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">Shot Put · Freshman</div>
+      </div>
+      <div class="result-mark">22-0.50</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">18th</div>
+      <div class="result-info">
+        <div class="result-name">Mya Matthias <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">Shot Put · Junior</div>
+      </div>
+      <div class="result-mark">21-0.50</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">22nd</div>
+      <div class="result-info">
+        <div class="result-name">Cora Semrau <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">60yd Dash</div>
+      </div>
+      <div class="result-mark">8.50</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">22nd</div>
+      <div class="result-info">
+        <div class="result-name">Mariah Salzer <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">440yd Dash · Freshman</div>
+      </div>
+      <div class="result-mark">1:24.07</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">28th</div>
+      <div class="result-info">
+        <div class="result-name">Chloe Pipkorn <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">Shot Put · Junior</div>
+      </div>
+      <div class="result-mark">19-2.75</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">33rd</div>
+      <div class="result-info">
+        <div class="result-name">Alessia Salamin <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">220yd Dash</div>
+      </div>
+      <div class="result-mark">34.87</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">40th</div>
+      <div class="result-info">
+        <div class="result-name">Lucy Ulrich <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">60yd Dash</div>
+      </div>
+      <div class="result-mark">8.81</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">53rd</div>
+      <div class="result-info">
+        <div class="result-name">Alessia Salamin <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">60yd Dash</div>
+      </div>
+      <div class="result-mark">9.09</div>
+    </div>
+
+    <div class="result" style="opacity:.7">
+      <div class="result-place">62nd</div>
+      <div class="result-info">
+        <div class="result-name">Ellie Eckert <span class="badge badge-jv">JV</span></div>
+        <div class="result-event">60yd Dash</div>
+      </div>
+      <div class="result-mark">9.24</div>
+    </div>
+
+  </div>
+
+  <!-- ═══ BY ATHLETE VIEW ═══ -->
+  <div id="view-athletes" style="display:none">
+
+    <div class="label">Athlete Breakdowns</div>
+
+    <!-- JORDYN GRANT -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Jordyn Grant</div>
+          <div class="ath-sub">Soph · Sprint · 3V Events</div>
+        </div>
+        <div class="ath-count">Workhorse</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">4th</div><div class="ath-evt-name">Triple Jump <span class="badge badge-v">V</span></div><div class="ath-evt-mark">30-0.00</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">8th</div><div class="ath-evt-name">220yd Dash <span class="badge badge-v">V</span></div><div class="ath-evt-mark">31.31</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">14th</div><div class="ath-evt-name">60yd Dash <span class="badge badge-v">V</span></div><div class="ath-evt-mark">8.09</div></div>
+      </div>
+    </div>
+
+    <!-- LINDSAY KAHN -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Lindsay Kahn</div>
+          <div class="ath-sub">Senior · Distance · 1V Event</div>
+        </div>
+        <div class="ath-count">🥇 Champion</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place" style="color:var(--red) !important">1st</div><div class="ath-evt-name">Mile Run <span class="badge badge-v">V</span> <span class="badge badge-win">WIN</span></div><div class="ath-evt-mark">5:56.00</div></div>
+      </div>
+    </div>
+
+    <!-- MELANIE RICHTER -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Melanie Richter</div>
+          <div class="ath-sub">Freshman · Distance · 1V Event</div>
+        </div>
+        <div class="ath-count">Top 10</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">10th</div><div class="ath-evt-name">880yd Run <span class="badge badge-v">V</span></div><div class="ath-evt-mark">2:51.62</div></div>
+      </div>
+    </div>
+
+    <!-- RIVALEE STOKES -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Rivalee Stokes</div>
+          <div class="ath-sub">Senior · Throws · 1V Event</div>
+        </div>
+        <div class="ath-count">1 Event</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">14th</div><div class="ath-evt-name">Shot Put <span class="badge badge-v">V</span></div><div class="ath-evt-mark">29-5.25</div></div>
+      </div>
+    </div>
+
+    <!-- WILLOW DASSOW -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Willow Dassow</div>
+          <div class="ath-sub">Junior · Distance · 1V Event</div>
+        </div>
+        <div class="ath-count">1 Event</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">17th</div><div class="ath-evt-name">880yd Run <span class="badge badge-v">V</span></div><div class="ath-evt-mark">2:56.50</div></div>
+      </div>
+    </div>
+
+    <!-- CORA SEMRAU -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Cora Semrau</div>
+          <div class="ath-sub">Soph · Hurdles · 1V + 1JV</div>
+        </div>
+        <div class="ath-count">2 Events</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">16th</div><div class="ath-evt-name">60m Hurdles <span class="badge badge-v">V</span></div><div class="ath-evt-mark">11.99</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">22nd</div><div class="ath-evt-name">60yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">8.50</div></div>
+      </div>
+    </div>
+
+    <!-- ALEXIS ZULEGER -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Alexis Zuleger</div>
+          <div class="ath-sub">Senior · Sprint · 2V Events</div>
+        </div>
+        <div class="ath-count">2 Events</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">15th</div><div class="ath-evt-name">220yd Dash <span class="badge badge-v">V</span></div><div class="ath-evt-mark">33.59</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">24th</div><div class="ath-evt-name">60yd Dash <span class="badge badge-v">V</span></div><div class="ath-evt-mark">8.62</div></div>
+      </div>
+    </div>
+
+    <!-- TAYLOR KLINGBEIL -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Taylor Klingbeil</div>
+          <div class="ath-sub">Soph · Sprint · 1V + 1JV</div>
+        </div>
+        <div class="ath-count">2 Events</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">12th</div><div class="ath-evt-name">Long Jump <span class="badge badge-v">V</span></div><div class="ath-evt-mark">13-8.50</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">7th</div><div class="ath-evt-name">220yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">32.28</div></div>
+      </div>
+    </div>
+
+    <!-- RAYLIN ROTHMEIER -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Raylin Rothmeier</div>
+          <div class="ath-sub">Senior · Sprint · 1V Event</div>
+        </div>
+        <div class="ath-count">1 Event</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">16th</div><div class="ath-evt-name">Long Jump <span class="badge badge-v">V</span></div><div class="ath-evt-mark">12-7.50</div></div>
+      </div>
+    </div>
+
+    <!-- SADA CARSTENSEN -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Sada Carstensen</div>
+          <div class="ath-sub">Soph · Throws · 1V Event</div>
+        </div>
+        <div class="ath-count">1 Event</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">21st</div><div class="ath-evt-name">Shot Put <span class="badge badge-v">V</span></div><div class="ath-evt-mark">27-10.75</div></div>
+      </div>
+    </div>
+
+    <!-- ELLIE ECKERT -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Ellie Eckert</div>
+          <div class="ath-sub">Junior · Sprint · 1V + 1JV</div>
+        </div>
+        <div class="ath-count">2 Events</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">26th</div><div class="ath-evt-name">Long Jump <span class="badge badge-v">V</span></div><div class="ath-evt-mark">9-8.75</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">62nd</div><div class="ath-evt-name">60yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">9.24</div></div>
+      </div>
+    </div>
+
+    <!-- NAOMI THOMAS -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Naomi Thomas</div>
+          <div class="ath-sub">Soph · Throws · 1V Event</div>
+        </div>
+        <div class="ath-count">1 Event</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">31st</div><div class="ath-evt-name">Shot Put <span class="badge badge-v">V</span></div><div class="ath-evt-mark">23-7.25</div></div>
+      </div>
+    </div>
+
+    <!-- MARIAH SALZER -->
+    <div class="ath-card">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Mariah Salzer</div>
+          <div class="ath-sub">Freshman · Sprint · JV Only</div>
+        </div>
+        <div class="ath-count">JV</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">22nd</div><div class="ath-evt-name">440yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">1:24.07</div></div>
+      </div>
+    </div>
+
+    <div class="label">JV Only Athletes</div>
+
+    <div class="ath-card" style="border-left-color:#444 !important">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Savannah Hebert</div>
+          <div class="ath-sub">Freshman · Throws</div>
+        </div>
+        <div class="ath-count" style="background:rgba(255,255,255,.05) !important;color:#888 !important">JV</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">14th</div><div class="ath-evt-name">Shot Put <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">22-0.50</div></div>
+      </div>
+    </div>
+
+    <div class="ath-card" style="border-left-color:#444 !important">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Mya Matthias</div>
+          <div class="ath-sub">Junior · Throws</div>
+        </div>
+        <div class="ath-count" style="background:rgba(255,255,255,.05) !important;color:#888 !important">JV</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">18th</div><div class="ath-evt-name">Shot Put <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">21-0.50</div></div>
+      </div>
+    </div>
+
+    <div class="ath-card" style="border-left-color:#444 !important">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Chloe Pipkorn</div>
+          <div class="ath-sub">Junior · Throws</div>
+        </div>
+        <div class="ath-count" style="background:rgba(255,255,255,.05) !important;color:#888 !important">JV</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">28th</div><div class="ath-evt-name">Shot Put <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">19-2.75</div></div>
+      </div>
+    </div>
+
+    <div class="ath-card" style="border-left-color:#444 !important">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Alessia Salamin</div>
+          <div class="ath-sub">Soph · Sprint</div>
+        </div>
+        <div class="ath-count" style="background:rgba(255,255,255,.05) !important;color:#888 !important">JV</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">33rd</div><div class="ath-evt-name">220yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">34.87</div></div>
+        <div class="ath-evt"><div class="ath-evt-place">53rd</div><div class="ath-evt-name">60yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">9.09</div></div>
+      </div>
+    </div>
+
+    <div class="ath-card" style="border-left-color:#444 !important">
+      <div class="ath-header" onclick="toggleAth(this)">
+        <div>
+          <div class="ath-name">Lucy Ulrich</div>
+          <div class="ath-sub">Junior · Sprint</div>
+        </div>
+        <div class="ath-count" style="background:rgba(255,255,255,.05) !important;color:#888 !important">JV</div>
+      </div>
+      <div class="ath-body">
+        <div class="ath-evt"><div class="ath-evt-place">40th</div><div class="ath-evt-name">60yd Dash <span class="badge badge-jv">JV</span></div><div class="ath-evt-mark">8.81</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ GAPS VIEW ═══ -->
+  <div id="view-gaps" style="display:none">
+
+    <div class="label">Events Not Entered — Scoring Left on Table</div>
+
+    <div class="gap-card">
+      <div class="gap-title">⚠️ 4x880 Relay — No Entry</div>
+      <div class="gap-detail">7 teams competed. Kahn + Richter + Dassow + Salzer could have contended for top 5. This is the highest-value relay gap on the girls side.</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-title">⚠️ 4x220 Relay — No Entry</div>
+      <div class="gap-detail">5 teams competed. Grant, Zuleger, Klingbeil, and a 4th could have scored. Winning time was 3:13 — Medford could have been competitive.</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-title">⚠️ 4x440 Relay — No Entry</div>
+      <div class="gap-detail">5 teams competed. Owen-Withee won at 4:50. Medford had athletes in the 440 and 880 who could populate this relay.</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-title">⚠️ High Jump — No Entry</div>
+      <div class="gap-detail">18 athletes competed. Winning mark was 5-0. A 4-0 clearance would have placed 14th — baseline points with minimal entry risk. Adalyn Dittrich was listed in the lineup.</div>
+    </div>
+
+    <div class="gap-card">
+      <div class="gap-title">Pole Vault — No Entry (Expected)</div>
+      <div class="gap-detail">Zero for safety — no trained girls vaulters. Not a gap to fix short-term.</div>
+    </div>
+
+    <div class="label">Performance Notes</div>
+
+    <div style="background:var(--card) !important;border:1px solid var(--bdr) !important;padding:12px 14px;margin-bottom:6px">
+      <div style="font-weight:700;font-size:.82rem;color:var(--gold) !important">Lindsay Kahn — Mile Champion</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.5) !important;margin-top:4px;line-height:1.5">Only entered in one event. Could double up in the 880 going forward — her 5:56 mile pace suggests sub-2:45 880 potential. Senior captain energy.</div>
+    </div>
+
+    <div style="background:var(--card) !important;border:1px solid var(--bdr) !important;padding:12px 14px;margin-bottom:6px">
+      <div style="font-weight:700;font-size:.82rem;color:var(--gold) !important">Jordyn Grant — 3-Event Workhorse</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.5) !important;margin-top:4px;line-height:1.5">4th in TJ, 8th in 220, 14th in 60. Your most versatile girl. Triple jump is her best scoring event. Consider protecting her legs for TJ by limiting sprint load at bigger meets.</div>
+    </div>
+
+    <div style="background:var(--card) !important;border:1px solid var(--bdr) !important;padding:12px 14px;margin-bottom:6px">
+      <div style="font-weight:700;font-size:.82rem;color:var(--gold) !important">Melanie Richter — Freshman Watch</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.5) !important;margin-top:4px;line-height:1.5">2:51.62 in the 880 as a freshman for 10th place. Listed as Grade 8 on MileSplit but Grade 9 on your roster — verify. Either way, she has varsity upside in the 880 and could anchor the 4x880.</div>
+    </div>
+
+    <div style="background:var(--card) !important;border:1px solid var(--bdr) !important;padding:12px 14px;margin-bottom:6px">
+      <div style="font-weight:700;font-size:.82rem;color:var(--gold) !important">Relay Deficit — Biggest Team Score Gap</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.5) !important;margin-top:4px;line-height:1.5">Zero relay entries means zero relay points. The boys scored in multiple relays at their opener. Getting even one relay fielded at Northern Badger tomorrow is a priority. Kahn, Richter, Dassow, Salzer could run the 4x880 with minimal risk.</div>
+    </div>
+
+    <div style="background:var(--card) !important;border:1px solid var(--bdr) !important;padding:12px 14px;margin-bottom:6px">
+      <div style="font-weight:700;font-size:.82rem;color:var(--gold) !important">Throws — Depth Emerging</div>
+      <div style="font-size:.72rem;color:rgba(255,255,255,.5) !important;margin-top:4px;line-height:1.5">Rivalee Stokes at 29-5.25 leads the group. Sada Carstensen (27-10.75) and Naomi Thomas (23-7.25) give depth. Three JV throwers also competed. Coach D's group is developing.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  MASH Track & Field 2026 · Medford Area Senior High<br>
+  Marshfield Tiger Girls Invite · Fredrick Construction Fieldhouse · 15 Teams<br>
+  <span style="color:var(--red) !important;font-weight:700">E + R = O · 1% Better Every Day</span>
+</div>
+
+<script>
+function setView(v){
+  document.querySelectorAll('[id^="view-"]').forEach(el=>el.style.display='none');
+  document.getElementById('view-'+v).style.display='block';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('[data-view="'+v+'"]').classList.add('active');
+}
+
+function toggleAth(header){
+  const card=header.closest('.ath-card');
+  const body=card.querySelector('.ath-body');
+  if(body.style.display==='none'){body.style.display='block';}
+  else{body.style.display='none';}
+}
+
+// Start with all athlete bodies visible
+</script>
+</body>
+</html>
