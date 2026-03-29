@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -17,6 +17,9 @@ function getProfile(name) {
 function getLineups(meetId) {
   if (meetId === 3 && BADGER_BOYS && BADGER_GIRLS) {
     return [{ label: 'Boys Entries', data: BADGER_BOYS, gender: 'B' }, { label: 'Girls Entries', data: BADGER_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 4 && STOUT_BOYS && STOUT_GIRLS) {
+    return [{ label: 'Boys Entries', data: STOUT_BOYS, gender: 'B' }, { label: 'Girls Entries', data: STOUT_GIRLS, gender: 'G' }];
   }
   return null;
 }
