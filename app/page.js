@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -23,6 +23,9 @@ function getLineups(meetId) {
   }
   if (meetId === 5 && UWSP_BOYS && UWSP_GIRLS) {
     return [{ label: 'Boys Entries', data: UWSP_BOYS, gender: 'B' }, { label: 'Girls Entries', data: UWSP_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 6 && EARLYBIRD_BOYS && EARLYBIRD_GIRLS) {
+    return [{ label: 'Boys Entries', data: EARLYBIRD_BOYS, gender: 'B' }, { label: 'Girls Entries', data: EARLYBIRD_GIRLS, gender: 'G' }];
   }
   return null;
 }
