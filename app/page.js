@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -563,6 +563,13 @@ export default function Home() {
                 {resultsPageUrl && <button onClick={() => window.open(resultsPageUrl, '_blank')} style={{ ...btn, background:B }}>📊 Visual Breakdown</button>}
                 {d >= 0 && d <= 3 && <span style={{ ...bd(Y), fontSize:'.65rem', padding:'6px 10px' }}>⚡ {d === 0 ? 'TODAY' : d + 'd away'}</span>}
               </div>
+              {MEET_LINKS && MEET_LINKS[meetView] && (
+                <div style={{ display:'flex', gap:6, marginTop:8, flexWrap:'wrap' }}>
+                  {MEET_LINKS[meetView].map((link, li) => (
+                    <button key={li} onClick={() => window.open(link.url, '_blank')} style={{ ...btnO, fontSize:'.65rem', padding:'6px 12px' }}>{link.label}</button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {lineups && lineups.map((group, gi) => (
@@ -677,6 +684,72 @@ export default function Home() {
                 ))}
               </>
             )}
+            {/* ── EARLY BIRD EVENT DRILL-DOWN ── */}
+            {(() => {
+              const lineupSrc = selectedAth.gn === 'F' ? EARLYBIRD_GIRLS : EARLYBIRD_BOYS;
+              const athEvents = [];
+              if (lineupSrc) {
+                for (const evt of lineupSrc) {
+                  const idx = evt.a.findIndex(name => name && name.toLowerCase().includes(selectedAth.n.split(' ')[1]?.toLowerCase() || '___'));
+                  const exactIdx = evt.a.indexOf(selectedAth.n);
+                  const matchIdx = exactIdx !== -1 ? exactIdx : idx;
+                  if (matchIdx !== -1 && evt.a[matchIdx]) {
+                    const sched = EARLYBIRD_SCHEDULE ? EARLYBIRD_SCHEDULE.find(s => s.e === evt.e) : null;
+                    athEvents.push({
+                      event: evt.e,
+                      pos: matchIdx + 1,
+                      posLabel: evt.e.includes('Relay') ? `Leg ${matchIdx+1}` : `Entry ${matchIdx+1}`,
+                      time: sched ? sched.time : '—',
+                      order: sched ? sched.order : 99,
+                      type: sched ? sched.type : 'unknown',
+                      isNew: evt.note && (evt.note.includes('added 4/8') || evt.note.includes('updated 4/8')),
+                    });
+                  }
+                }
+              }
+              athEvents.sort((a,b) => a.order - b.order);
+              const runCount = athEvents.filter(e => e.type==='running'||e.type==='relay').length;
+              const fieldCount = athEvents.filter(e => e.type==='field').length;
+              const total = athEvents.length;
+              const atMax = total >= 4;
+
+              if (athEvents.length === 0) return null;
+              return (
+                <>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:4 }}>Early Bird Lineup ({total} Events)</div>
+                  <div style={{ display:'flex', gap:8, marginBottom:10 }}>
+                    <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>Events</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.4rem', color:atMax?R:G }}>{total}/4</div>
+                      {atMax && <div style={{ fontSize:'.55rem', color:R, fontWeight:700 }}>AT MAX</div>}
+                    </div>
+                    <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>WIAA Check</div>
+                      <div style={{ fontSize:'.75rem', marginTop:4 }}>
+                        <span style={{ color:runCount<=3?G:R }}>Run: {runCount}/3</span>
+                        <span style={{ color:'#333' }}> · </span>
+                        <span style={{ color:fieldCount<=3?G:R }}>Fld: {fieldCount}/3</span>
+                      </div>
+                    </div>
+                  </div>
+                  {athEvents.map((ev, i) => {
+                    const timeBg = ev.type==='field' ? R : Y;
+                    return (
+                      <div key={i} style={{ display:'flex', gap:10, padding:'8px 12px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${timeBg}`, marginBottom:2 }}>
+                        <div style={{ background:timeBg, color:'#fff', padding:'4px 8px', borderRadius:2, fontWeight:700, fontSize:'.58rem', minWidth:70, textAlign:'center', alignSelf:'flex-start' }}>{ev.time}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:700, fontSize:'.82rem' }}>
+                            {ev.event}
+                            {ev.isNew && <span style={{ ...bd(Y), marginLeft:4 }}>NEW</span>}
+                          </div>
+                          <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)' }}>{ev.posLabel} · <span style={bd(ev.type==='field'?R:ev.type==='relay'?B:'#555')}>{ev.type}</span></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()}
             <div style={{ display:'flex', gap:8, marginTop:12 }}>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
