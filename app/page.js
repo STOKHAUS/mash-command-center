@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, STRATFORD_BOYS, STRATFORD_GIRLS, STRATFORD_SCHEDULE, MEET_LINKS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
+const DAY_MS = 86400000;
 
 // Merge form data with roster for enriched profiles
 function getProfile(name) {
@@ -31,6 +32,404 @@ function getLineups(meetId) {
     return [{ label: 'Boys Entries', data: STRATFORD_BOYS, gender: 'B' }, { label: 'Girls Entries', data: STRATFORD_GIRLS, gender: 'G' }];
   }
   return null;
+}
+
+function getMeetSchedule(meetId) {
+  if (meetId === 6 && EARLYBIRD_SCHEDULE) return EARLYBIRD_SCHEDULE;
+  if (meetId === 7 && STRATFORD_SCHEDULE) return STRATFORD_SCHEDULE;
+  return null;
+}
+
+function normalizeText(value = '') {
+  return value.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function getNameParts(name = '') {
+  const parts = normalizeText(name).split(' ').filter(Boolean);
+  return {
+    first: parts[0] || '',
+    last: parts[parts.length - 1] || '',
+  };
+}
+
+function oneEditAway(a = '', b = '') {
+  if (!a || !b || Math.abs(a.length - b.length) > 1) return false;
+  if (a === b) return true;
+
+  let i = 0;
+  let j = 0;
+  let edits = 0;
+
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) {
+      i++;
+      j++;
+      continue;
+    }
+    edits++;
+    if (edits > 1) return false;
+    if (a.length > b.length) i++;
+    else if (b.length > a.length) j++;
+    else {
+      i++;
+      j++;
+    }
+  }
+
+  if (i < a.length || j < b.length) edits++;
+  return edits <= 1;
+}
+
+function namesMatch(a = '', b = '') {
+  const na = normalizeText(a);
+  const nb = normalizeText(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+
+  const pa = getNameParts(a);
+  const pb = getNameParts(b);
+  if (!pa.first || !pa.last || !pb.first || !pb.last) return false;
+
+  const firstClose = pa.first === pb.first
+    || (pa.first[0] === pb.first[0] && (pa.first.slice(0, 3) === pb.first.slice(0, 3) || oneEditAway(pa.first, pb.first)));
+  const lastClose = pa.last === pb.last
+    || pa.last.slice(0, 4) === pb.last.slice(0, 4)
+    || oneEditAway(pa.last, pb.last);
+
+  return firstClose && lastClose;
+}
+
+function canonicalEventLabel(eventName = '') {
+  const raw = eventName.replace(/\s+/g, ' ').trim();
+  const key = normalizeText(raw);
+
+  if (key === '60yd dash') return '60yd Dash';
+  if (key === '55m dash') return '55M Dash';
+  if (key === '220yd dash') return '220yd Dash';
+  if (key === '440yd dash') return '440yd Dash';
+  if (key === '880yd run') return '880yd Run';
+  if (key === 'mile run') return 'Mile Run';
+  if (key === '55m hurdles') return '55M Hurdles';
+  if (key === '60m hurdles') return '60M Hurdles';
+  if (key === '100m hurdles') return '100m Hurdles';
+  if (key === '110m hurdles') return '110m Hurdles';
+  if (key === '300m hurdles') return '300m Hurdles';
+  if (key === '100 meters' || key === '100m') return '100 Meters';
+  if (key === '200 meters' || key === '200m') return '200 Meters';
+  if (key === '400 meters' || key === '400m') return '400 Meters';
+  if (key === '800 meters' || key === '800m') return '800 Meters';
+  if (key === '1600 meters' || key === '1600m') return '1600 Meters';
+  if (key === '3200 meters' || key === '3200m') return '3200 Meters';
+  if (key === '4x100 relay a' || key === '4x100 relay b') return '4x100 Relay';
+  if (key === '4x400 relay a' || key === '4x400 relay b') return '4x400 Relay';
+
+  return raw;
+}
+
+function getEventOrder(eventName = '') {
+  const order = [
+    '55M Hurdles',
+    '60M Hurdles',
+    '100m Hurdles',
+    '110m Hurdles',
+    '55M Dash',
+    '60yd Dash',
+    '100 Meters',
+    '220yd Dash',
+    '200 Meters',
+    '440yd Dash',
+    '400 Meters',
+    '880yd Run',
+    '800 Meters',
+    'Mile Run',
+    '1600 Meters',
+    '3200 Meters',
+    'Long Jump',
+    'Triple Jump',
+    'High Jump',
+    'Pole Vault',
+    'Shot Put',
+    'Discus',
+  ];
+  const idx = order.indexOf(canonicalEventLabel(eventName));
+  return idx === -1 ? 999 : idx;
+}
+
+function isRelayEvent(eventName = '') {
+  return normalizeText(eventName).includes('relay');
+}
+
+function isFieldEvent(eventName = '') {
+  const key = normalizeText(canonicalEventLabel(eventName));
+  return ['long jump', 'triple jump', 'high jump', 'pole vault', 'shot put', 'discus'].includes(key);
+}
+
+function parseRunningMark(mark = '') {
+  const clean = mark.trim();
+  if (!clean) return null;
+  if (clean.includes(':')) {
+    const [minutes, seconds] = clean.split(':');
+    const total = Number(minutes) * 60 + Number(seconds);
+    return Number.isFinite(total) ? total : null;
+  }
+  const total = Number(clean);
+  return Number.isFinite(total) ? total : null;
+}
+
+function parseFieldMark(mark = '') {
+  const clean = mark.trim();
+  if (!clean) return null;
+  const match = clean.match(/^(\d+)-(\d+(?:\.\d+)?)$/);
+  if (match) return Number(match[1]) * 12 + Number(match[2]);
+  const total = Number(clean);
+  return Number.isFinite(total) ? total : null;
+}
+
+function getComparableMark(eventName, mark) {
+  if (isFieldEvent(eventName)) return parseFieldMark(mark);
+  return parseRunningMark(mark);
+}
+
+function isBetterResult(candidate, current) {
+  const candidateValue = getComparableMark(candidate.e, candidate.mark);
+  const currentValue = getComparableMark(current.e, current.mark);
+
+  if (candidateValue == null) return false;
+  if (currentValue == null) return true;
+
+  return isFieldEvent(candidate.e) ? candidateValue > currentValue : candidateValue < currentValue;
+}
+
+function getResultsForAthlete(name) {
+  if (!RESULTS) return [];
+  const all = [];
+  RESULTS.forEach(meet => {
+    meet.data.filter(r => namesMatch(r.a, name)).forEach(r => {
+      all.push({ ...r, meetName: meet.meet, meetDate: meet.date, teams: meet.teams });
+    });
+  });
+  return all.sort((a, b) => new Date(b.meetDate) - new Date(a.meetDate));
+}
+
+function getOfficialBests(name) {
+  const bestByEvent = new Map();
+
+  getResultsForAthlete(name)
+    .filter(r => !isRelayEvent(r.e))
+    .forEach(result => {
+      const key = canonicalEventLabel(result.e);
+      const current = bestByEvent.get(key);
+      if (!current || isBetterResult(result, current)) {
+        bestByEvent.set(key, { ...result, eventLabel: key });
+      }
+    });
+
+  return [...bestByEvent.values()].sort((a, b) => {
+    const diff = getEventOrder(a.eventLabel) - getEventOrder(b.eventLabel);
+    if (diff !== 0) return diff;
+    return a.eventLabel.localeCompare(b.eventLabel);
+  });
+}
+
+function getAthleteFocus(athlete) {
+  const values = [athlete?.p1, athlete?.p2, athlete?.imp];
+  const text = normalizeText(values.filter(Boolean).join(' '));
+
+  if (text.includes('pole')) return { key: 'pole', label: 'pole vault' };
+  if (text.includes('shot') || text.includes('disc') || text.includes('throw')) return { key: 'throws', label: 'throws' };
+  if (text.includes('hurd')) return { key: 'hurdles', label: 'hurdles' };
+  if (text.includes('jump')) return { key: 'jumps', label: 'jumps' };
+  if (text.includes('1600') || text.includes('3200') || text.includes('mile') || text.includes('800') || text.includes('distance')) return { key: 'distance', label: 'distance' };
+  if (text.includes('100') || text.includes('200') || text.includes('400') || text.includes('relay') || text.includes('sprint')) return { key: 'sprints', label: 'sprints' };
+
+  return { key: 'general', label: 'general event work' };
+}
+
+function getPracticeFocus(athlete, practicePlan, daysToMeet) {
+  const focus = getAthleteFocus(athlete);
+  const phase = daysToMeet <= 2 ? 'SHARPEN' : daysToMeet <= 5 ? 'BUILD' : 'DEVELOP';
+  const groups = practicePlan?.groups || [];
+  const lookup = {
+    sprints: ['sprint', 'sprinter'],
+    hurdles: ['hurd', 'sprint'],
+    distance: ['distance', '800', '1600'],
+    jumps: ['jump'],
+    throws: ['throw'],
+    pole: ['pole'],
+  };
+  const match = groups.find(group => {
+    const name = normalizeText(group.name);
+    return (lookup[focus.key] || []).some(keyword => name.includes(keyword));
+  });
+
+  if (match) {
+    return {
+      source: 'plan',
+      phase: practicePlan.phase || phase,
+      title: match.name,
+      coach: match.coach,
+      bullets: (match.workout || []).slice(0, 3),
+    };
+  }
+
+  const fallbacks = {
+    SHARPEN: {
+      sprints: ['Explosive warm-up, block work, and a few race-model reps.', 'Keep volume low and quality high before the next meet.'],
+      hurdles: ['Hurdle rhythm, starts, and a few smooth fast reps.', 'Stay sharp without adding junk volume.'],
+      distance: ['Short aerobic work, a few controlled pace reps, and relaxed strides.', 'Finish fresh and ready to race.'],
+      jumps: ['Approach rhythm, pop-ups, and low-volume technical contacts.', 'Focus on timing and consistency.'],
+      throws: ['Stand throws and a few full-effort technical reps.', 'Stay loose, quick, and explosive.'],
+      pole: ['Approach and plant timing, then a few quality jumps.', 'Cut volume early and save pop for meet day.'],
+      general: ['Warm up well, hit your event-specific work, and finish feeling sharp.', 'Ask your coach where your group starts today.'],
+    },
+    BUILD: {
+      sprints: ['Acceleration work plus event-specific reps at controlled intensity.', 'Use the middle of the week to build rhythm and confidence.'],
+      hurdles: ['Hurdle mobility, rhythm work, and controlled special endurance.', 'Stay technical and smooth through every rep.'],
+      distance: ['Aerobic strength or threshold work with a strong cooldown.', 'Keep pacing even and finish with good mechanics.'],
+      jumps: ['Approach consistency, takeoff drills, and moderate jump volume.', 'Own the details on each rep.'],
+      throws: ['Technique work with moderate volume and a strength emphasis.', 'Quality positions matter more than extra throws.'],
+      pole: ['Run-throughs, plant mechanics, and bar progressions.', 'Build confidence with repeatable rhythm.'],
+      general: ['Today is a build day: good volume, good detail, no wasted reps.', 'Check in with your event coach and own your assignments.'],
+    },
+    DEVELOP: {
+      sprints: ['Speed mechanics, acceleration, and strength-based sprint work.', 'Build the base that will carry into meets.'],
+      hurdles: ['Mobility, drills, trail-leg work, and rhythm development.', 'Use today to groove good habits.'],
+      distance: ['Base-building aerobic work with drills and strides.', 'Stay patient and stack consistent days.'],
+      jumps: ['Technical reps, plyos, and approach development.', 'Build consistent pop and confidence.'],
+      throws: ['Technique reps, footwork, and strength-focused throwing work.', 'Stay patient and repeat clean positions.'],
+      pole: ['Runway rhythm, plant timing, and foundational vault work.', 'Use today to build confidence and consistency.'],
+      general: ['Today is about foundation work and consistency.', 'Put together a disciplined practice and finish stronger than you started.'],
+    },
+  };
+
+  return {
+    source: 'fallback',
+    phase,
+    title: `${focus.label[0].toUpperCase()}${focus.label.slice(1)} focus`,
+    coach: null,
+    bullets: fallbacks[phase][focus.key] || fallbacks[phase].general,
+  };
+}
+
+function getAthleteEntriesForMeet(athlete, meetId) {
+  const lineups = getLineups(meetId);
+  if (!lineups) return [];
+  const schedule = getMeetSchedule(meetId) || [];
+  const entries = [];
+
+  lineups.forEach(group => {
+    group.data.forEach(event => {
+      (event.a || []).forEach((entryName, idx) => {
+        if (!entryName || !namesMatch(entryName, athlete.n)) return;
+        const slot = schedule.find(item => item.e === event.e || item.e.startsWith(event.e) || event.e.startsWith(item.e));
+        entries.push({
+          event: event.e,
+          seed: event.seed?.[idx] || '',
+          note: event.note || event.n || '',
+          time: slot?.time || 'TBD',
+          order: slot?.order ?? 999,
+          type: slot?.type || (isFieldEvent(event.e) ? 'field' : isRelayEvent(event.e) ? 'relay' : 'running'),
+          gender: group.gender,
+        });
+      });
+    });
+  });
+
+  return entries.sort((a, b) => {
+    const diff = a.order - b.order;
+    if (diff !== 0) return diff;
+    return a.event.localeCompare(b.event);
+  });
+}
+
+function getMeetDate(dateString) {
+  return new Date(`${dateString}T12:00:00`);
+}
+
+function getMeetCountdown(daysAway) {
+  if (daysAway === 0) return 'today';
+  if (daysAway === 1) return 'tomorrow';
+  if (daysAway < 0) return `${Math.abs(daysAway)}d ago`;
+  return `in ${daysAway} days`;
+}
+
+function getNextMeetEntry(athlete, now) {
+  const current = new Date(now.toDateString());
+
+  for (const meet of MEETS) {
+    const meetDate = getMeetDate(meet.date);
+    if (meetDate < current) continue;
+    const entries = getAthleteEntriesForMeet(athlete, meet.id);
+    if (!entries.length) continue;
+    return {
+      meet,
+      entries,
+      daysAway: Math.ceil((meetDate - current) / DAY_MS),
+    };
+  }
+
+  return null;
+}
+
+function getFuelingTip(athlete, daysToMeet) {
+  const focus = getAthleteFocus(athlete);
+  const mealBase = focus.key === 'distance'
+    ? 'lean protein, rice or pasta, fruit, and plenty of water'
+    : focus.key === 'throws'
+      ? 'a bigger balanced dinner with carbs, protein, and extra fluids'
+      : 'a simple balanced dinner with carbs, lean protein, fruit, and water';
+
+  if (daysToMeet === 0) {
+    return 'Meet day: stick to familiar foods, keep fluids steady, and eat a light carb-focused snack 60-90 minutes before warm-ups if needed.';
+  }
+  if (daysToMeet === 1) {
+    return `Night-before fuel: aim for ${mealBase}. Keep it familiar and avoid heavy fried food.`;
+  }
+  return 'Regular training-day fuel: eat normally, get protein after practice, and stay ahead on hydration.';
+}
+
+function getTargetNote(nextMeetEntry, officialBests) {
+  if (!nextMeetEntry) {
+    return 'No next-meet entry is loaded yet, so the app cannot set event-specific targets.';
+  }
+
+  const seededEntry = nextMeetEntry.entries.find(entry => entry.seed && !isRelayEvent(entry.event));
+  if (seededEntry) {
+    const matchingBest = officialBests.find(best => best.eventLabel === canonicalEventLabel(seededEntry.event));
+    if (matchingBest) {
+      return `Target to chase: ${seededEntry.event} is seeded at ${seededEntry.seed}. Best loaded mark: ${matchingBest.mark}. Opponent targets still need the full meet field from other schools.`;
+    }
+    return `Target to chase: ${seededEntry.event} is seeded at ${seededEntry.seed}. To tell athletes exactly who to beat, the app still needs the full meet field from other schools.`;
+  }
+
+  return 'Your event list is loaded, but the app only has MASH entries right now. To add "who to beat next meet," we need full opponent seeds or heat sheets.';
+}
+
+function getGreeting(now) {
+  const hour = now.getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function buildAthleteMessage(athlete, now, practiceFocus, nextMeetEntry, officialBests, latestPr, status) {
+  const firstName = athlete.n.split(' ')[0];
+  const nextMeetText = nextMeetEntry
+    ? `You're entered in ${nextMeetEntry.meet.name} ${getMeetCountdown(nextMeetEntry.daysAway)} for ${nextMeetEntry.entries.map(entry => entry.event).slice(0, 3).join(', ')}${nextMeetEntry.entries.length > 3 ? ', and more.' : '.'}`
+    : 'No next-meet entries are loaded for you yet.';
+  const practiceText = practiceFocus.source === 'plan'
+    ? `Practice focus today: ${practiceFocus.title}${practiceFocus.coach ? ` with Coach ${practiceFocus.coach}` : ''}.`
+    : `Practice focus today: ${practiceFocus.phase.toLowerCase()} work for ${practiceFocus.title.toLowerCase()}.`;
+  const statusText = status !== 'available' ? ` You're currently marked ${status}, so check in with a coach before pushing full volume.` : '';
+  const performanceText = latestPr
+    ? `Latest PR loaded: ${canonicalEventLabel(latestPr.e)} in ${latestPr.mark} at ${latestPr.meetName}.`
+    : officialBests[0]
+      ? `Best official mark loaded: ${officialBests[0].eventLabel} in ${officialBests[0].mark}.`
+      : athlete.pr
+        ? `Reported all-time PRs: ${athlete.pr.split('\n')[0]}.`
+        : 'No PR data is loaded yet.';
+
+  return `${getGreeting(now)}, ${firstName}. ${practiceText} ${nextMeetText} ${performanceText}${statusText}`;
 }
 
 const wxIcon = c => { if(c<=1)return'☀️';if(c<=3)return'⛅';if(c<=49)return'🌫️';if(c<=69)return'🌧️';if(c<=79)return'🌨️';if(c<=99)return'⛈️';return'🌤️'; };
@@ -119,13 +518,13 @@ export default function Home() {
   })();
 
   useEffect(() => {
-    if (tab !== 'practice' || pracPlan || pracLoad) return;
+    if ((tab !== 'practice' && !selectedAth) || pracPlan || pracLoad) return;
     setPracLoad(true);
     fetch('/api/practice')
       .then(r => r.json())
       .then(data => { setPracPlan(data); setPracLoad(false); })
       .catch(() => setPracLoad(false));
-  }, [tab, pracPlan, pracLoad]);
+  }, [tab, selectedAth, pracPlan, pracLoad]);
 
   const sendAI = useCallback(async () => {
     if (!aiIn.trim() || aiLoad) return;
@@ -209,17 +608,6 @@ export default function Home() {
         </div>
       </div>
     );
-  };
-
-  const getResultsForAthlete = (name) => {
-    if (!RESULTS) return [];
-    const all = [];
-    RESULTS.forEach(meet => {
-      meet.data.filter(r => r.a === name).forEach(r => {
-        all.push({ ...r, meetName: meet.meet, meetDate: meet.date, teams: meet.teams });
-      });
-    });
-    return all;
   };
 
   const tabs = [['today','⚡ Today'],['results','📊 Results'],['practice','📋 Practice'],['meets','🏟️ Meets'],['athletes','👤 Roster'],['plans','🍽️ Plans'],['msg','📱 Message'],['ai','🤖 AI']];
@@ -647,6 +1035,17 @@ export default function Home() {
 
       {tab === 'athletes' && selectedAth && (() => {
         const athResults = getResultsForAthlete(selectedAth.n);
+        const officialBests = getOfficialBests(selectedAth.n);
+        const nextMeetEntry = getNextMeetEntry(selectedAth, NOW);
+        const athleteStatus = getSt(selectedAth.n);
+        const nextMeetDays = nextMeetEntry ? nextMeetEntry.daysAway : (dtn ?? 14);
+        const practiceFocus = getPracticeFocus(selectedAth, pracPlan, nextMeetDays);
+        const fuelingTip = getFuelingTip(selectedAth, nextMeetDays);
+        const targetNote = getTargetNote(nextMeetEntry, officialBests);
+        const latestPr = athResults.find(r => r.pr) || null;
+        const bestFinish = athResults.filter(r => r.place > 0).sort((a, b) => a.place - b.place)[0] || null;
+        const recentResult = athResults[0] || null;
+        const athleteMessage = buildAthleteMessage(selectedAth, NOW, practiceFocus, nextMeetEntry, officialBests, latestPr, athleteStatus);
         return (
           <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
             <button onClick={() => setSelectedAth(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Roster</button>
@@ -654,14 +1053,105 @@ export default function Home() {
               <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
               <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}</div>
             </div>
+            <div style={{ background:'linear-gradient(135deg,#1a0505,#0f0f0f)', border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'14px 16px', marginBottom:10 }}>
+              <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.18em', color:R, marginBottom:6 }}>Athlete Daily Brief</div>
+              <div style={{ fontSize:'.9rem', lineHeight:1.6, color:'rgba(255,255,255,.88)' }}>{athleteMessage}</div>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginTop:10 }}>
+                <span style={bd(practiceFocus.source === 'plan' ? G : Y)}>
+                  {practiceFocus.source === 'plan' ? `Practice Live · ${practiceFocus.phase}` : `Practice Fallback · ${practiceFocus.phase}`}
+                </span>
+                <span style={bd(athleteStatus === 'available' ? G : athleteStatus === 'modified' || athleteStatus === 'limited' ? Y : R)}>
+                  Status: {athleteStatus}
+                </span>
+                {nextMeetEntry ? <span style={bd(nextMeetEntry.daysAway <= 1 ? R : Y)}>{nextMeetEntry.meet.name} · {getMeetCountdown(nextMeetEntry.daysAway)}</span> : null}
+              </div>
+              {pracLoad && !pracPlan && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:8 }}>Loading today&apos;s practice plan for a more specific group message...</div>}
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:10 }}>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:6 }}>Practice Today</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.75)', marginBottom:6 }}>
+                  {practiceFocus.title}
+                  {practiceFocus.coach ? ` · Coach ${practiceFocus.coach}` : ''}
+                </div>
+                {practiceFocus.bullets.map((item, i) => (
+                  <div key={i} style={{ fontSize:'.74rem', color:'rgba(255,255,255,.55)', lineHeight:1.5, marginBottom:4 }}>• {item}</div>
+                ))}
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:6 }}>Next Meet</div>
+                {nextMeetEntry ? (
+                  <>
+                    <div style={{ fontSize:'.82rem', fontWeight:700 }}>{nextMeetEntry.meet.name}</div>
+                    <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.45)', marginTop:3 }}>
+                      {nextMeetEntry.meet.date} · {nextMeetEntry.meet.loc} · {getMeetCountdown(nextMeetEntry.daysAway)}
+                      {nextMeetEntry.meet.bus ? ` · Bus ${nextMeetEntry.meet.bus}` : ''}
+                    </div>
+                    <div style={{ marginTop:8 }}>
+                      {nextMeetEntry.entries.map((entry, i) => (
+                        <div key={i} style={{ display:'flex', justifyContent:'space-between', gap:8, padding:'4px 0', borderBottom:i < nextMeetEntry.entries.length - 1 ? `1px solid ${BDR}` : 'none' }}>
+                          <div>
+                            <div style={{ fontSize:'.76rem', color:'rgba(255,255,255,.8)' }}>{entry.event}</div>
+                            <div style={{ fontSize:'.6rem', color:'rgba(255,255,255,.35)' }}>{entry.time}{entry.note ? ` · ${entry.note}` : ''}</div>
+                          </div>
+                          <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.45)', textAlign:'right' }}>{entry.seed || 'Unseeded'}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', lineHeight:1.6 }}>No next-meet entries are loaded for this athlete yet. The schedule exists, but the app needs a lineup sheet for their next meet.</div>
+                )}
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:6 }}>Fueling Note</div>
+                <div style={{ fontSize:'.76rem', color:'rgba(255,255,255,.6)', lineHeight:1.6 }}>{fuelingTip}</div>
+              </div>
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
+                <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:6 }}>Target To Chase</div>
+                <div style={{ fontSize:'.76rem', color:'rgba(255,255,255,.6)', lineHeight:1.6 }}>{targetNote}</div>
+              </div>
+            </div>
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
-              {[['Contact',`📱 ${selectedAth.ph||'No phone'}\n🚨 ${selectedAth.em||'No emergency contact'}`],['Personal Records',selectedAth.pr||'None recorded'],['Health / Injuries',selectedAth.inj||'None reported'],['Season Goal',selectedAth.goal||'Not specified'],['R.A.I.D.E.R.S. Focus',selectedAth.rv||'Not specified'],['Schedule Conflicts',selectedAth.conf||'None']].map(([l,v],i) => (
+              {[['Contact',`📱 ${selectedAth.ph||'No phone'}\n🚨 ${selectedAth.em||'No emergency contact'}`],['Reported All-Time PRs',selectedAth.pr||'None recorded'],['Health / Injuries',selectedAth.inj||'None reported'],['Season Goal',selectedAth.goal||'Not specified'],['R.A.I.D.E.R.S. Focus',selectedAth.rv||'Not specified'],['Schedule Conflicts',selectedAth.conf||'None']].map(([l,v],i) => (
                 <div key={i} style={{ background:CARD, border:`1px solid ${l==='Health / Injuries'&&selectedAth.inj&&!['No','None','N/A','Nope','no','none','','No no no'].includes(selectedAth.inj)?'rgba(204,0,0,.3)':BDR}`, padding:'12px' }}>
                   <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>{l}</div>
                   <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)', whiteSpace:'pre-wrap' }}>{v}</div>
                 </div>
               ))}
             </div>
+            <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:8 }}>Official Best Marks</div>
+            {officialBests.length > 0 ? (
+              <>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:8 }}>
+                  {officialBests.map((best, i) => (
+                    <div key={i} style={{ background:CARD, border:`1px solid ${BDR}`, padding:'10px 12px' }}>
+                      <div style={{ fontSize:'.58rem', fontWeight:800, textTransform:'uppercase', color:'#666' }}>{best.eventLabel}</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.15rem', color:'#fff', marginTop:4 }}>{best.mark}</div>
+                      <div style={{ fontSize:'.62rem', color:'rgba(255,255,255,.4)', marginTop:3 }}>{best.meetName} · {best.meetDate}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:8, marginTop:8 }}>
+                  <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'10px 12px' }}>
+                    <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#666' }}>Latest PR</div>
+                    <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.78)', marginTop:4 }}>{latestPr ? `${canonicalEventLabel(latestPr.e)} · ${latestPr.mark}` : 'No official PR tagged yet'}</div>
+                  </div>
+                  <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'10px 12px' }}>
+                    <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#666' }}>Best Finish</div>
+                    <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.78)', marginTop:4 }}>{bestFinish ? `${bestFinish.place}${bestFinish.place === 1 ? 'st' : bestFinish.place === 2 ? 'nd' : bestFinish.place === 3 ? 'rd' : 'th'} · ${canonicalEventLabel(bestFinish.e)}` : 'No placing data yet'}</div>
+                  </div>
+                  <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'10px 12px' }}>
+                    <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#666' }}>Most Recent Result</div>
+                    <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.78)', marginTop:4 }}>{recentResult ? `${canonicalEventLabel(recentResult.e)} · ${recentResult.mark}` : 'No official result loaded'}</div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px', fontSize:'.76rem', color:'rgba(255,255,255,.5)', lineHeight:1.6 }}>
+                No official results are loaded for this athlete yet. The app can still show their reported all-time PRs, but it needs official meet results to build a true performance snapshot.
+              </div>
+            )}
             {athResults.length > 0 && (
               <>
                 <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:8 }}>Meet Results ({athResults.length})</div>
@@ -673,7 +1163,7 @@ export default function Home() {
                     </div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontWeight:700, fontSize:'.82rem' }}>
-                        {r.e}
+                        {canonicalEventLabel(r.e)}
                         <span style={bd(r.lvl === 'V' ? R : '#555')}>{r.lvl}</span>
                         {r.pr ? <span style={bd(G)}>PR</span> : null}
                       </div>
@@ -693,11 +1183,11 @@ export default function Home() {
               const athEvents = [];
               if (lineupSrc) {
                 for (const evt of lineupSrc) {
-                  const idx = evt.a.findIndex(name => name && name.toLowerCase().includes(selectedAth.n.split(' ')[1]?.toLowerCase() || '___'));
+                  const idx = evt.a.findIndex(name => name && namesMatch(name, selectedAth.n));
                   const exactIdx = evt.a.indexOf(selectedAth.n);
                   const matchIdx = exactIdx !== -1 ? exactIdx : idx;
                   if (matchIdx !== -1 && evt.a[matchIdx]) {
-                    const sched = STRATFORD_SCHEDULE ? STRATFORD_SCHEDULE.find(s => s.e === evt.e) : null;
+                    const sched = STRATFORD_SCHEDULE ? STRATFORD_SCHEDULE.find(s => s.e === evt.e || s.e.startsWith(evt.e) || evt.e.startsWith(s.e)) : null;
                     athEvents.push({
                       event: evt.e,
                       pos: matchIdx + 1,
