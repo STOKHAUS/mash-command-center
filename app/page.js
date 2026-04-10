@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, STRATFORD_BOYS, STRATFORD_GIRLS, STRATFORD_SCHEDULE, MEET_LINKS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -26,6 +26,9 @@ function getLineups(meetId) {
   }
   if (meetId === 6 && EARLYBIRD_BOYS && EARLYBIRD_GIRLS) {
     return [{ label: 'Boys Entries', data: EARLYBIRD_BOYS, gender: 'B' }, { label: 'Girls Entries', data: EARLYBIRD_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 7 && STRATFORD_BOYS && STRATFORD_GIRLS) {
+    return [{ label: 'Boys Entries', data: STRATFORD_BOYS, gender: 'B' }, { label: 'Girls Entries', data: STRATFORD_GIRLS, gender: 'G' }];
   }
   return null;
 }
@@ -684,9 +687,9 @@ export default function Home() {
                 ))}
               </>
             )}
-            {/* ── EARLY BIRD EVENT DRILL-DOWN ── */}
+            {/* ── STRATFORD EVENT DRILL-DOWN ── */}
             {(() => {
-              const lineupSrc = selectedAth.gn === 'F' ? EARLYBIRD_GIRLS : EARLYBIRD_BOYS;
+              const lineupSrc = selectedAth.gn === 'F' ? STRATFORD_GIRLS : STRATFORD_BOYS;
               const athEvents = [];
               if (lineupSrc) {
                 for (const evt of lineupSrc) {
@@ -694,7 +697,7 @@ export default function Home() {
                   const exactIdx = evt.a.indexOf(selectedAth.n);
                   const matchIdx = exactIdx !== -1 ? exactIdx : idx;
                   if (matchIdx !== -1 && evt.a[matchIdx]) {
-                    const sched = EARLYBIRD_SCHEDULE ? EARLYBIRD_SCHEDULE.find(s => s.e === evt.e) : null;
+                    const sched = STRATFORD_SCHEDULE ? STRATFORD_SCHEDULE.find(s => s.e === evt.e) : null;
                     athEvents.push({
                       event: evt.e,
                       pos: matchIdx + 1,
@@ -716,7 +719,7 @@ export default function Home() {
               if (athEvents.length === 0) return null;
               return (
                 <>
-                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:4 }}>Early Bird Lineup ({total} Events)</div>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:4 }}>Stratford Lineup ({total} Events)</div>
                   <div style={{ display:'flex', gap:8, marginBottom:10 }}>
                     <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'8px 14px', flex:1 }}>
                       <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>Events</div>
