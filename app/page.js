@@ -753,6 +753,66 @@ export default function Home() {
                 </>
               );
             })()}
+            {/* ── HOLY COW INVITATIONAL EVENT DRILL-DOWN ── */}
+            {(() => {
+              const hcSrc = selectedAth.gn === 'F' ? HOLYCOW_GIRLS : HOLYCOW_BOYS;
+              const hcEvents = [];
+              if (hcSrc) {
+                for (const evt of hcSrc) {
+                  const lastName = selectedAth.n.split(' ')[1]?.toLowerCase() || '___';
+                  const idx = evt.a.findIndex(name => name && name.toLowerCase().includes(lastName));
+                  const exactIdx = evt.a.indexOf(selectedAth.n);
+                  const matchIdx = exactIdx !== -1 ? exactIdx : idx;
+                  if (matchIdx !== -1 && evt.a[matchIdx]) {
+                    const isRelay = evt.e.includes('Relay');
+                    const isField = ['High Jump','Long Jump','Triple Jump','Pole Vault','Discus','Shot Put'].some(f => evt.e.includes(f));
+                    hcEvents.push({
+                      event: evt.e,
+                      seed: evt.seed ? evt.seed[matchIdx] : null,
+                      posLabel: isRelay ? 'Leg ' + (matchIdx+1) : 'Entry ' + (matchIdx+1),
+                      type: isField ? 'field' : isRelay ? 'relay' : 'running',
+                    });
+                  }
+                }
+              }
+              const hcRun = hcEvents.filter(e => e.type==='running'||e.type==='relay').length;
+              const hcField = hcEvents.filter(e => e.type==='field').length;
+              const hcTotal = hcEvents.length;
+              const hcMax = hcTotal >= 4;
+              if (hcTotal === 0) return null;
+              return (
+                <>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:4 }}>Holy Cow Invitational Lineup ({hcTotal} Events)</div>
+                  <div style={{ display:'flex', gap:8, marginBottom:10 }}>
+                    <div style={{ background:CARD, border:'1px solid ' + BDR, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>Events</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.4rem', color:hcMax?R:G }}>{hcTotal}/4</div>
+                      {hcMax && <div style={{ fontSize:'.55rem', color:R, fontWeight:700 }}>AT MAX</div>}
+                    </div>
+                    <div style={{ background:CARD, border:'1px solid ' + BDR, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>WIAA Check</div>
+                      <div style={{ fontSize:'.75rem', marginTop:4 }}>
+                        <span style={{ color:hcRun<=3?G:R }}>Run: {hcRun}/3</span>
+                        <span style={{ color:'#333' }}> · </span>
+                        <span style={{ color:hcField<=3?G:R }}>Fld: {hcField}/3</span>
+                      </div>
+                    </div>
+                  </div>
+                  {hcEvents.map((ev, i) => {
+                    const evBg = ev.type==='field' ? R : ev.type==='relay' ? B : Y;
+                    return (
+                      <div key={i} style={{ display:'flex', gap:10, padding:'8px 12px', background:CARD, border:'1px solid ' + BDR, borderLeft:'3px solid ' + evBg, marginBottom:2 }}>
+                        <div style={{ background:evBg, color:'#fff', padding:'4px 8px', borderRadius:2, fontWeight:700, fontSize:'.58rem', minWidth:70, textAlign:'center', alignSelf:'flex-start' }}>{ev.seed || '—'}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:700, fontSize:'.82rem' }}>{ev.event}</div>
+                          <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)' }}>{ev.posLabel} · <span style={bd(evBg)}>{ev.type}</span></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()}
             <div style={{ display:'flex', gap:8, marginTop:12 }}>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
