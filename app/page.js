@@ -368,9 +368,8 @@ export default function Home() {
 
         const d = meet.data;
         const indiv = d.filter(r => !r.a.includes('Medford'));
-        const seeded = indiv.filter(r => r.seed);
-        const prs = seeded.filter(r => r.pr);
-        const prPct = seeded.length ? Math.round((prs.length / seeded.length) * 100) : 0;
+        const prs = indiv.filter(r => r.pr);
+          const prPct = indiv.length ? Math.round((prs.length / indiv.length) * 100) : 0;
         const scoring = d.filter(r => r.lvl === 'V' && r.place <= 8).length;
         const uniqueA = new Set(d.filter(r => !r.a.includes('Medford')).map(r => r.a));
         const wins = d.filter(r => r.lvl === 'V' && r.place === 1).length;
@@ -407,7 +406,7 @@ export default function Home() {
               <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:G }}>{prPct}%</div>
                 <div style={{ fontSize:'.5rem', fontWeight:700, textTransform:'uppercase', letterSpacing:'.1em', color:'#555', marginTop:2 }}>PR Rate</div>
-                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>{prs.length} of {seeded.length} seeded</div>
+                <div style={{ fontSize:'.5rem', color:'rgba(255,255,255,.25)', marginTop:2 }}>{prs.length} of {indiv.length} entries</div>
               </div>
               <div style={{ background:'#111', padding:'12px 10px', textAlign:'center' }}>
                 <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.5rem', color:R }}>{scoring}</div>
