@@ -13,7 +13,7 @@ function getProfile(name) {
   });
 }
 
-const wxIcon = c => { if(c<=1)return'âï¸';if(c<=3)return'â';if(c<=49)return'ð«ï¸';if(c<=69)return'ð§ï¸';if(c<=79)return'ð¨ï¸';if(c<=99)return'âï¸';return'ð¤ï¸'; };
+const wxIcon = c => { if(c<=1)return'☀️';if(c<=3)return'⛅';if(c<=49)return'🌫️';if(c<=69)return'🌧️';if(c<=79)return'🌨️';if(c<=99)return'⛈️';return'🌤️'; };
 
 export default function Home() {
   const [tab, setTab] = useState('today');
@@ -190,10 +190,10 @@ export default function Home() {
             <div key={i} style={{ minWidth:68, textAlign:'center', padding:'8px 4px', background:'rgba(255,255,255,.02)', border:`1px solid ${BDR}`, flexShrink:0 }}>
               <div style={{ fontSize:'.58rem', color:'#555', fontWeight:700 }}>{new Date(t+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</div>
               <div style={{ fontSize:'1.2rem', margin:'3px 0' }}>{wxIcon(data.weathercode[i])}</div>
-              <div style={{ fontSize:'.75rem', fontWeight:700 }}>{Math.round(data.temperature_2m_max[i])}Â°F</div>
-              <div style={{ fontSize:'.6rem', color:'#555' }}>{Math.round(data.temperature_2m_min[i])}Â°</div>
-              <div style={{ fontSize:'.52rem', color:data.precipitation_probability_max[i]>40?B:'#444', marginTop:2 }}>ð§{data.precipitation_probability_max[i]}%</div>
-              <div style={{ fontSize:'.52rem', color:data.windspeed_10m_max[i]>15?Y:'#444' }}>ð¨{Math.round(data.windspeed_10m_max[i])}mph</div>
+              <div style={{ fontSize:'.75rem', fontWeight:700 }}>{Math.round(data.temperature_2m_max[i])}°F</div>
+              <div style={{ fontSize:'.6rem', color:'#555' }}>{Math.round(data.temperature_2m_min[i])}°</div>
+              <div style={{ fontSize:'.52rem', color:data.precipitation_probability_max[i]>40?B:'#444', marginTop:2 }}>💧{data.precipitation_probability_max[i]}%</div>
+              <div style={{ fontSize:'.52rem', color:data.windspeed_10m_max[i]>15?Y:'#444' }}>💨{Math.round(data.windspeed_10m_max[i])}mph</div>
             </div>
           ))}
         </div>
@@ -201,7 +201,7 @@ export default function Home() {
     );
   };
 
-  // âââ RESULTS HELPERS âââ
+  // ═══ RESULTS HELPERS ═══
   const getResultsForAthlete = (name) => {
     if (!RESULTS) return [];
     const all = [];
@@ -213,7 +213,7 @@ export default function Home() {
     return all;
   };
 
-  const tabs = [['today','â¡ Today'],['results','ð Results'],['practice','ð Practice'],['meets','ðï¸ Meets'],['athletes','ð¤ Roster'],['plans','ð½ï¸ Plans'],['msg','ð± Message'],['ai','ð¤ AI']];
+  const tabs = [['today','⚡ Today'],['results','📊 Results'],['practice','📋 Practice'],['meets','🏟️ Meets'],['athletes','👤 Roster'],['plans','🍽️ Plans'],['msg','📱 Message'],['ai','🤖 AI']];
   const input = { background:'#161616', border:`1px solid rgba(255,255,255,.08)`, color:'#fff', padding:'8px 12px', fontSize:'.8rem', width:'100%' };
   const btn = { padding:'8px 16px', background:R, color:'#fff', border:'none', fontWeight:800, fontSize:'.68rem', textTransform:'uppercase', letterSpacing:'.08em', cursor:'pointer' };
   const btnO = { ...btn, background:'transparent', border:`1px solid rgba(255,255,255,.15)`, fontWeight:600 };
@@ -224,7 +224,7 @@ export default function Home() {
       {/* TOP BAR */}
       <div style={{ background:`linear-gradient(135deg,#1a0000,#0a0a0a)`, borderBottom:`2px solid ${R}`, padding:'10px 16px', display:'flex', justifyContent:'space-between', alignItems:'center', position:'sticky', top:0, zIndex:100 }}>
         <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', letterSpacing:'.12em', textTransform:'uppercase' }}><span style={{color:R}}>MASH</span> Command Center</div>
-        <div style={{ fontSize:'.55rem', color:'#444' }}>v4 Â· 2026</div>
+        <div style={{ fontSize:'.55rem', color:'#444' }}>v4 · 2026</div>
       </div>
 
       {/* NAV */}
@@ -234,7 +234,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* âââ TODAY âââ */}
+      {/* ═══ TODAY ═══ */}
       {tab === 'today' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R }}>Command Center</div>
@@ -250,7 +250,7 @@ export default function Home() {
             ))}
           </div>
 
-          <WxWidget data={wx} title="Medford (54451) â 7-Day Forecast" />
+          <WxWidget data={wx} title="Medford (54451) — 7-Day Forecast" />
           {mWx && nm && <WxWidget data={mWx.d} title={`${nm.name} @ ${mWx.loc}`} />}
 
           {/* MEET ENTRIES LINEUP */}
@@ -260,7 +260,7 @@ export default function Home() {
                 <div>
                   <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R }}>Confirmed Lineup</div>
                   <div style={{ fontWeight:800, fontSize:'.95rem', textTransform:'uppercase' }}>{MEET_ENTRIES.meet}</div>
-                  <div style={{ fontSize:'.7rem', color:'rgba(255,255,255,.4)' }}>{MEET_ENTRIES.date} Â· {MEET_ENTRIES.loc}</div>
+                  <div style={{ fontSize:'.7rem', color:'rgba(255,255,255,.4)' }}>{MEET_ENTRIES.date} · {MEET_ENTRIES.loc}</div>
                 </div>
                 <div style={{ textAlign:'right' }}>
                   <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.4rem', color:R }}>{MEET_ENTRIES.totalEntries}</div>
@@ -306,20 +306,20 @@ export default function Home() {
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, margin:'14px 0' }}>
             <button onClick={() => setTab('practice')} style={{ background:'linear-gradient(135deg,#1a0505,#2a0a0a)', border:`2px solid ${R}`, padding:'20px 16px', cursor:'pointer', textAlign:'left', transition:'all .2s', gridColumn:'1 / -1' }}>
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-                <div style={{ fontSize:'1.8rem' }}>ð</div>
+                <div style={{ fontSize:'1.8rem' }}>📋</div>
                 <div>
                   <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.05rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Today&apos;s Practice Plan</div>
-                  <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)', marginTop:4, lineHeight:1.4 }}>Auto-generated daily workout Â· Event groups Â· Coach assignments</div>
+                  <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)', marginTop:4, lineHeight:1.4 }}>Auto-generated daily workout · Event groups · Coach assignments</div>
                 </div>
               </div>
             </button>
             <button onClick={() => setTab('results')} style={{ background:'linear-gradient(135deg,#0a150a,#0a2a0a)', border:`2px solid ${G}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
-              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>ð</div>
+              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>📊</div>
               <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>Meet Results</div>
               <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>PRs, placements, performance tracking</div>
             </button>
             <button onClick={() => setTab('ai')} style={{ background:'linear-gradient(135deg,#050a1a,#0a0a2a)', border:`2px solid ${B}`, padding:'16px 14px', cursor:'pointer', textAlign:'left' }}>
-              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>ð¤</div>
+              <div style={{ fontSize:'1.4rem', marginBottom:4 }}>🤖</div>
               <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'.85rem', textTransform:'uppercase', letterSpacing:'.08em', color:'#fff', lineHeight:1.2 }}>AI Coach</div>
               <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)', marginTop:4 }}>Strategy, lineups, WIAA rules</div>
             </button>
@@ -332,7 +332,7 @@ export default function Home() {
             const d = done.includes(a.id);
             return (
               <div key={a.id} onClick={() => toggleDone(a.id)} style={{ display:'flex', gap:8, alignItems:'flex-start', padding:'8px 10px', background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${a.p==='h'?R:Y}`, marginBottom:4, opacity:d?.35:1, cursor:'pointer' }}>
-                <div style={{ width:15, height:15, border:`2px solid ${d?G:R}`, background:d?G:'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontSize:'.55rem', fontWeight:800, color:'#000' }}>{d?'â':''}</div>
+                <div style={{ width:15, height:15, border:`2px solid ${d?G:R}`, background:d?G:'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontSize:'.55rem', fontWeight:800, color:'#000' }}>{d?'✓':''}</div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:'.8rem', fontWeight:600, lineHeight:1.3, textDecoration:d?'line-through':'none' }}>{a.t}</div>
                   <div style={{ fontSize:'.6rem', color:a.p==='h'?'#ff4444':Y, fontWeight:700, marginTop:2 }}>Due: {a.d}</div>
@@ -343,12 +343,12 @@ export default function Home() {
         </div>
       )}
 
-      {/* âââ RESULTS âââ */}
+      {/* ═══ RESULTS ═══ */}
       {tab === 'results' && (() => {
         const meet = RESULTS?.find(r => r.date === resMeet);
         if (!RESULTS?.length || !meet) return (
           <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto', textAlign:'center', paddingTop:60 }}>
-            <div style={{ fontSize:'2rem', marginBottom:12 }}>ð</div>
+            <div style={{ fontSize:'2rem', marginBottom:12 }}>📊</div>
             <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase' }}>No Results Yet</div>
             <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginTop:8 }}>Results will appear here after meets are completed.</div>
           </div>
@@ -381,7 +381,7 @@ export default function Home() {
 
             <div style={{ fontWeight:800, fontSize:'1.1rem', textTransform:'uppercase' }}>{meet.meet}</div>
             <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>
-              {new Date(meet.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })} Â· {meet.teams} teams
+              {new Date(meet.date + 'T12:00:00').toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' })} · {meet.teams} teams
             </div>
 
             {/* KPIs */}
@@ -435,17 +435,17 @@ export default function Home() {
                       {r.a}
                       <span style={bd(r.lvl === 'V' ? R : '#555')}>{r.lvl}</span>
                       {isPr && <span style={bd(G)}>PR</span>}
-                      {r.place === 1 && <span style={bd(Y)}>ð¥</span>}
+                      {r.place === 1 && <span style={bd(Y)}>🥇</span>}
                     </div>
                     <div style={{ fontSize:'.7rem', color:'rgba(255,255,255,.4)' }}>
-                      {r.e}{hasSeed ? ` Â· Seed: ${r.seed}` : ''}
+                      {r.e}{hasSeed ? ` · Seed: ${r.seed}` : ''}
                     </div>
                   </div>
                   <div style={{ textAlign:'right' }}>
                     <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.95rem' }}>{r.mark}</div>
                     {hasSeed && (
                       <div style={{ fontSize:'.6rem', fontWeight:700, color: isPr ? G : R }}>
-                        {isPr ? 'â PR' : 'â OFF'}
+                        {isPr ? '↑ PR' : '↓ OFF'}
                       </div>
                     )}
                   </div>
@@ -456,12 +456,12 @@ export default function Home() {
         );
       })()}
 
-      {/* âââ PRACTICE âââ */}
+      {/* ═══ PRACTICE ═══ */}
       {tab === 'practice' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           {pracLoad && (
             <div style={{ textAlign:'center', padding:'60px 20px' }}>
-              <div style={{ fontSize:'2rem', marginBottom:12 }}>ð</div>
+              <div style={{ fontSize:'2rem', marginBottom:12 }}>📋</div>
               <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', color:R }}>Generating Today&apos;s Practice Plan...</div>
               <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.4)', marginTop:8 }}>Building workout based on training phase and meet schedule</div>
             </div>
@@ -537,22 +537,22 @@ export default function Home() {
               )}
 
               <div style={{ background:R, padding:'12px 16px', marginTop:12, textAlign:'center', fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.8rem', textTransform:'uppercase', letterSpacing:'.06em' }}>
-                1% Better Every Day Â· E + R = O Â· Go Raiders
+                1% Better Every Day · E + R = O · Go Raiders
               </div>
             </>
           )}
 
           {pracPlan && pracPlan.isOff && (
             <div style={{ textAlign:'center', padding:'60px 20px' }}>
-              <div style={{ fontSize:'2.5rem', marginBottom:12 }}>ð´</div>
-              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>Rest Day â {pracPlan.day}</div>
+              <div style={{ fontSize:'2.5rem', marginBottom:12 }}>😴</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>Rest Day — {pracPlan.day}</div>
               <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginTop:8, maxWidth:400, margin:'8px auto 0' }}>{pracPlan.closingMessage}</div>
             </div>
           )}
 
           {pracPlan && pracPlan.error && (
             <div style={{ textAlign:'center', padding:'60px 20px' }}>
-              <div style={{ fontSize:'2rem', marginBottom:12 }}>â ï¸</div>
+              <div style={{ fontSize:'2rem', marginBottom:12 }}>⚠️</div>
               <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', color:R }}>Plan Unavailable</div>
               <div style={{ fontSize:'.85rem', color:'rgba(255,255,255,.5)', marginTop:8 }}>{pracPlan.error}</div>
             </div>
@@ -560,7 +560,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* âââ MEETS âââ */}
+      {/* ═══ MEETS ═══ */}
       {tab === 'meets' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>Schedule</div>
@@ -572,14 +572,14 @@ export default function Home() {
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
                   <div>
                     <div style={{ fontWeight:700, fontSize:'.85rem' }}>{m.name} <span style={{ color:'#555', fontWeight:400 }}>({m.g})</span></div>
-                    <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)' }}>{m.date} Â· {m.loc}{m.bus ? ` Â· Bus ${m.bus}` : ''}</div>
+                    <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.4)' }}>{m.date} · {m.loc}{m.bus ? ` · Bus ${m.bus}` : ''}</div>
                     {m.deadline && <div style={{ fontSize:'.65rem', color:Y, fontWeight:600 }}>Deadline: {m.deadline}</div>}
                   </div>
                   <div style={{ display:'flex', gap:4, alignItems:'center' }}>
                     <span style={bd(m.type==='home'||m.type==='conf'||m.type==='regional'||m.type==='sectional'?R:'#555')}>{m.type}</span>
                     {d>=0 && d<=7 && <span style={bd(Y)}>{d}d</span>}
                     {m.hl && <span style={bd(G)}>Lineup</span>}
-                    {hasResults && <button onClick={() => { setResMeet(RESULTS.find(r=>r.id===m.id)?.date||''); setTab('results'); }} style={bd(B)}>ð Results</button>}
+                    {hasResults && <button onClick={() => { setResMeet(RESULTS.find(r=>r.id===m.id)?.date||''); setTab('results'); }} style={bd(B)}>📊 Results</button>}
                   </div>
                 </div>
               </div>
@@ -588,7 +588,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* âââ ATHLETES âââ */}
+      {/* ═══ ATHLETES ═══ */}
       {tab === 'athletes' && !selectedAth && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
@@ -597,7 +597,7 @@ export default function Home() {
             </div>
             <div style={{ fontSize:'.55rem', color:liveRoster?G:'#555', fontWeight:700, textTransform:'uppercase', letterSpacing:'.08em', display:'flex', alignItems:'center', gap:4 }}>
               <div style={{ width:6, height:6, borderRadius:'50%', background:liveRoster?G:'#555' }} />
-              {liveRoster ? `Live Â· ${rosterData.length}` : `Offline Â· ${rosterData.length}`}
+              {liveRoster ? `Live · ${rosterData.length}` : `Offline · ${rosterData.length}`}
             </div>
           </div>
           <input style={{ ...input, marginBottom:10 }} placeholder="Search..." value={athQ} onChange={e => setAthQ(e.target.value)} />
@@ -615,8 +615,8 @@ export default function Home() {
                 <div style={{ width:7, height:7, borderRadius:'50%', background:stCol(st), flexShrink:0 }} />
                 <span style={{ fontWeight:600, flex:1 }}>{a.n}</span>
                 {athResults.length > 0 && <span style={bd(B)}>{athResults.length} results</span>}
-                <span style={{ color:'#555', fontSize:'.7rem' }}>{a.gn}Â·{a.g}Â·{a.p1||'TBD'}</span>
-                {a.inj && !['No','None','N/A','Nope','no','none','No no no',''].includes(a.inj) && <span style={bd(R)}>â </span>}
+                <span style={{ color:'#555', fontSize:'.7rem' }}>{a.gn}·{a.g}·{a.p1||'TBD'}</span>
+                {a.inj && !['No','None','N/A','Nope','no','none','No no no',''].includes(a.inj) && <span style={bd(R)}>⚠</span>}
                 <select value={st} onClick={e => e.stopPropagation()} onChange={e => setStatuses(p => ({...p,[a.n]:e.target.value}))} style={{ background:'#222', border:`1px solid ${BDR}`, color:'#fff', padding:'3px 6px', fontSize:'.65rem' }}>
                   {['available','modified','limited','injured','unavailable'].map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
@@ -626,24 +626,24 @@ export default function Home() {
         </div>
       )}
 
-      {/* âââ ATHLETE DETAIL âââ */}
+      {/* ═══ ATHLETE DETAIL ═══ */}
       {tab === 'athletes' && selectedAth && (() => {
         const athResults = getResultsForAthlete(selectedAth.n);
         return (
           <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
-            <button onClick={() => setSelectedAth(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>â Back to Roster</button>
+            <button onClick={() => setSelectedAth(null)} style={{ ...btnO, marginBottom:12, padding:'6px 14px' }}>← Back to Roster</button>
             <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'16px', marginBottom:10 }}>
               <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
               <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>
-                Grade {selectedAth.g} Â· {selectedAth.gn==='M'?'Boys':'Girls'} Â· Primary: {selectedAth.p1||'TBD'} Â· Secondary: {selectedAth.p2||'TBD'}
+                Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}
               </div>
             </div>
 
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
               <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
                 <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Contact</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>ð± {selectedAth.ph || 'No phone'}</div>
-                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>ð¨ {selectedAth.em || 'No emergency contact'}</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>📱 {selectedAth.ph || 'No phone'}</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.6)' }}>🚨 {selectedAth.em || 'No emergency contact'}</div>
               </div>
               <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px' }}>
                 <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:4 }}>Personal Records</div>
@@ -685,11 +685,11 @@ export default function Home() {
                         <span style={bd(r.lvl === 'V' ? R : '#555')}>{r.lvl}</span>
                         {r.pr ? <span style={bd(G)}>PR</span> : null}
                       </div>
-                      <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)' }}>{r.meetName} Â· {r.meetDate}{r.seed ? ` Â· Seed: ${r.seed}` : ''}</div>
+                      <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.35)' }}>{r.meetName} · {r.meetDate}{r.seed ? ` · Seed: ${r.seed}` : ''}</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
                       <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:'.95rem' }}>{r.mark}</div>
-                      {r.seed && <div style={{ fontSize:'.55rem', fontWeight:700, color:r.pr?G:R }}>{r.pr?'â PR':'â OFF'}</div>}
+                      {r.seed && <div style={{ fontSize:'.55rem', fontWeight:700, color:r.pr?G:R }}>{r.pr?'↑ PR':'↓ OFF'}</div>}
                     </div>
                   </div>
                 ))}
@@ -697,14 +697,14 @@ export default function Home() {
             )}
 
             <div style={{ display:'flex', gap:8, marginTop:12 }}>
-              <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>ð½ï¸ Generate Meal Plan</button>
-              <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>ðï¸ Generate Workout</button>
+              <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
+              <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
             </div>
           </div>
         );
       })()}
 
-      {/* âââ PLANS âââ */}
+      {/* ═══ PLANS ═══ */}
       {tab === 'plans' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:4 }}>Athlete Plans</div>
@@ -712,7 +712,7 @@ export default function Home() {
 
           <select style={{ ...input, marginBottom:12 }} value="" onChange={e => { const a = rosterData.find(x => x.n === e.target.value); if(a) genPlans(a); }}>
             <option value="">Select athlete...</option>
-            {rosterData.map((a, i) => <option key={i} value={a.n}>{a.n} ({a.gn}Â·Gr{a.g}Â·{a.p1||'TBD'})</option>)}
+            {rosterData.map((a, i) => <option key={i} value={a.n}>{a.n} ({a.gn}·Gr{a.g}·{a.p1||'TBD'})</option>)}
           </select>
 
           {planLoad && <div style={{ textAlign:'center', padding:30, color:R, fontWeight:700 }}>Generating plans for {planA?.n}...</div>}
@@ -722,20 +722,20 @@ export default function Home() {
               <div style={{ background:CARD, border:`1px solid rgba(204,0,0,.25)`, borderLeft:`3px solid ${R}`, padding:'12px 14px', marginBottom:6 }}>
                 <div style={{ fontWeight:800, fontSize:'1rem', textTransform:'uppercase' }}>{planA.n}</div>
                 <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)' }}>
-                  Gr {planA.g} Â· {planA.gn==='M'?'Boys':'Girls'} Â· {planA.p1||'TBD'} Â· Phase: {dtn<=2?'SHARPEN':dtn<=5?'BUILD':'DEVELOP'}
-                  {planA.pr && planA.pr !== 'N/A' && ` Â· PR: ${planA.pr.substring(0,50)}`}
-                  {planA.inj && !['No','None','N/A','Nope','no','none',''].includes(planA.inj) && ` Â· â  ${planA.inj.substring(0,40)}`}
+                  Gr {planA.g} · {planA.gn==='M'?'Boys':'Girls'} · {planA.p1||'TBD'} · Phase: {dtn<=2?'SHARPEN':dtn<=5?'BUILD':'DEVELOP'}
+                  {planA.pr && planA.pr !== 'N/A' && ` · PR: ${planA.pr.substring(0,50)}`}
+                  {planA.inj && !['No','None','N/A','Nope','no','none',''].includes(planA.inj) && ` · ⚠ ${planA.inj.substring(0,40)}`}
                 </div>
               </div>
               {meal && (
                 <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px 14px', marginBottom:6 }}>
-                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:6 }}>ð½ï¸ Meal Plan</div>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:6 }}>🍽️ Meal Plan</div>
                   <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', lineHeight:1.7, whiteSpace:'pre-wrap' }}>{meal}</div>
                 </div>
               )}
               {work && (
                 <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px 14px', marginBottom:6 }}>
-                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:6 }}>ðï¸ Workout Plan</div>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:6 }}>🏋️ Workout Plan</div>
                   <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', lineHeight:1.7, whiteSpace:'pre-wrap' }}>{work}</div>
                 </div>
               )}
@@ -744,27 +744,27 @@ export default function Home() {
 
           {!planA && !planLoad && (
             <div style={{ textAlign:'center', padding:40, color:'#333' }}>
-              <div style={{ fontSize:'2rem', marginBottom:8 }}>ð½ï¸ðï¸</div>
+              <div style={{ fontSize:'2rem', marginBottom:8 }}>🍽️🏋️</div>
               <div style={{ fontWeight:700, textTransform:'uppercase' }}>Select an Athlete</div>
-              <div style={{ fontSize:'.75rem', color:'#444', marginTop:4 }}>Or click any name on the Roster tab â Generate Plans</div>
+              <div style={{ fontSize:'.75rem', color:'#444', marginTop:4 }}>Or click any name on the Roster tab → Generate Plans</div>
             </div>
           )}
         </div>
       )}
 
-      {/* âââ MESSAGE âââ */}
+      {/* ═══ MESSAGE ═══ */}
       {tab === 'msg' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:4 }}>Team Messaging</div>
-          <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>Compose a message, then copy it to TeamReach (MASH TRACK 2026 Â· Code: M7155705718)</div>
+          <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', marginBottom:12 }}>Compose a message, then copy it to TeamReach (MASH TRACK 2026 · Code: M7155705718)</div>
 
           <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'12px', marginBottom:10 }}>
             <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', color:R, marginBottom:6 }}>Quick Templates</div>
             {[
-              ['ð Meet Day Bus Reminder', `Meet Day Reminder\n\nWe have a meet tomorrow at [LOCATION]. Bus leaves at [TIME] from the school.\n\nBring: uniform, spikes, water bottle, snacks\nBe ready 15 minutes before departure.\n\nE+R=O. Let's compete! ð`],
-              ['ð Practice Update', `Practice Update\n\n[DAY] practice:\nâ¢ Warm-up 3:30\nâ¢ Group work 3:45-5:00\nâ¢ Cool down + stretch\n\nWednesday reminder: ends at 5:00 PM\n\n1% Better Every Day.`],
-              ['ð Week Preview', `MASH Track Week Preview\n\nMon â Practice 3:30-5:30\nTue â [MEET/PRACTICE]\nWed â Practice 3:30-5:00 (ends early)\nThu â [MEET/PRACTICE]\nFri â [MEET/PRACTICE]\n\nGo Raiders! ð´`],
-              ['â¡ Competition Mindset', `Competition Day Mindset\n\nRemember:\nâ¢ E + R = O (Event + Response = Outcome)\nâ¢ Control what you can control\nâ¢ Compete against YOUR last performance\nâ¢ Support your teammates\n\n1% Better Every Day. Let's go Raiders!`],
+              ['🚌 Meet Day Bus Reminder', `Meet Day Reminder\n\nWe have a meet tomorrow at [LOCATION]. Bus leaves at [TIME] from the school.\n\nBring: uniform, spikes, water bottle, snacks\nBe ready 15 minutes before departure.\n\nE+R=O. Let's compete! 🏃`],
+              ['📋 Practice Update', `Practice Update\n\n[DAY] practice:\n• Warm-up 3:30\n• Group work 3:45-5:00\n• Cool down + stretch\n\nWednesday reminder: ends at 5:00 PM\n\n1% Better Every Day.`],
+              ['📅 Week Preview', `MASH Track Week Preview\n\nMon — Practice 3:30-5:30\nTue — [MEET/PRACTICE]\nWed — Practice 3:30-5:00 (ends early)\nThu — [MEET/PRACTICE]\nFri — [MEET/PRACTICE]\n\nGo Raiders! 🔴`],
+              ['⚡ Competition Mindset', `Competition Day Mindset\n\nRemember:\n• E + R = O (Event + Response = Outcome)\n• Control what you can control\n• Compete against YOUR last performance\n• Support your teammates\n\n1% Better Every Day. Let's go Raiders!`],
             ].map(([label, body], i) => (
               <div key={i} onClick={() => setMsgBody(body)} style={{ padding:'8px 10px', borderBottom:`1px solid ${BDR}`, cursor:'pointer', fontSize:'.78rem' }}>
                 <span style={{ color:R, fontWeight:700 }}>{label}</span>
@@ -781,7 +781,7 @@ export default function Home() {
 
           <div style={{ display:'flex', gap:8 }}>
             <button onClick={copyMsg} style={btn}>
-              {copied ? 'â Copied!' : 'ð Copy for TeamReach'}
+              {copied ? '✓ Copied!' : '📋 Copy for TeamReach'}
             </button>
             <button onClick={() => setMsgBody('')} style={btnO}>Clear</button>
           </div>
@@ -791,7 +791,7 @@ export default function Home() {
             <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', lineHeight:1.6 }}>
               1. Compose or select template above<br/>
               2. Click &ldquo;Copy for TeamReach&rdquo;<br/>
-              3. Open TeamReach app â MASH TRACK 2026<br/>
+              3. Open TeamReach app → MASH TRACK 2026<br/>
               4. Paste and send<br/><br/>
               Join code: <strong style={{color:'#fff'}}>M7155705718</strong>
             </div>
@@ -799,13 +799,13 @@ export default function Home() {
         </div>
       )}
 
-      {/* âââ AI COACH âââ */}
+      {/* ═══ AI COACH ═══ */}
       {tab === 'ai' && (
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto', display:'flex', flexDirection:'column', height:'calc(100vh - 90px)' }}>
           <div style={{ flex:1, overflowY:'auto', marginBottom:10 }} ref={chatRef}>
             {aiMsgs.length === 0 && (
               <div style={{ textAlign:'center', padding:'30px 20px' }}>
-                <div style={{ fontSize:'2rem', marginBottom:8 }}>ð¤</div>
+                <div style={{ fontSize:'2rem', marginBottom:8 }}>🤖</div>
                 <div style={{ fontWeight:800, fontSize:'1rem', textTransform:'uppercase', marginBottom:8 }}>AI Coaching Assistant</div>
                 <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)', maxWidth:400, margin:'0 auto 16px' }}>
                   Full program knowledge loaded. Knows every athlete&apos;s PRs, injuries, goals, and event preferences.
