@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -63,6 +63,9 @@ export default function Home() {
   const [resMeet, setResMeet] = useState(RESULTS?.length ? RESULTS[0].date : '');
   const [resView, setResView] = useState('summary');
   const [meetView, setMeetView] = useState(null);
+  const [notesFilter, setNotesFilter] = useState('all');
+  const [openNote, setOpenNote] = useState(null);
+  const [expandNotes, setExpandNotes] = useState(false);
 
   const NOW = new Date();
   const nm = MEETS.find(m => new Date(m.date) >= NOW);
@@ -255,6 +258,47 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+
+          {/* HOLY COW INVITATIONAL — ATHLETE MEET NOTES */}
+          {HOLYCOW_NOTES && HOLYCOW_NOTES.length > 0 && (
+            <div style={{ background:'linear-gradient(135deg,#1a0a00,#0a0a0a)', border:`2px solid ${Y}`, padding:'14px', marginBottom:14 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+                <div>
+                  <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:Y }}>Today&apos;s Meet</div>
+                  <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', letterSpacing:'.06em' }}>Holy Cow Invitational — Athlete Notes</div>
+                  <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)', marginTop:2 }}>Stratford · {HOLYCOW_NOTES.length} athletes · Personalized coaching notes</div>
+                </div>
+                <div style={{ fontSize:'1.6rem' }}>🐄</div>
+              </div>
+              <div style={{ display:'flex', gap:4, marginBottom:10 }}>
+                <button onClick={() => setNotesFilter('all')} style={btnS(notesFilter==='all')}>All ({HOLYCOW_NOTES.length})</button>
+                <button onClick={() => setNotesFilter('B')} style={btnS(notesFilter==='B')}>Boys ({HOLYCOW_NOTES.filter(x=>x.g==='B').length})</button>
+                <button onClick={() => setNotesFilter('G')} style={btnS(notesFilter==='G')}>Girls ({HOLYCOW_NOTES.filter(x=>x.g==='G').length})</button>
+              </div>
+              <div style={{ maxHeight: expandNotes ? 'none' : 320, overflow:'hidden', position:'relative' }}>
+                {HOLYCOW_NOTES.filter(x => notesFilter==='all' || x.g===notesFilter).map((ath, i) => (
+                  <div key={i} onClick={() => setOpenNote(openNote===i?null:i)} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${ath.g==='B'?B:'#e84393'}`, padding:'10px 12px', marginBottom:3, cursor:'pointer' }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                      <div>
+                        <span style={{ fontWeight:700, fontSize:'.82rem' }}>{ath.n}</span>
+                        <span style={{ fontSize:'.6rem', color:'#555', marginLeft:6 }}>{ath.g==='B'?'Boys':'Girls'}</span>
+                      </div>
+                      <div style={{ fontSize:'.6rem', color:'#555', fontWeight:700 }}>{openNote===i?'▼':'▶'}</div>
+                    </div>
+                    {openNote===i && (
+                      <div style={{ marginTop:8 }}>
+                        <div style={{ fontSize:'.65rem', color:Y, fontWeight:700, marginBottom:4 }}>{ath.ev}</div>
+                        <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.7)', lineHeight:1.5 }}>{ath.note}</div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {!expandNotes && <div style={{ position:'absolute', bottom:0, left:0, right:0, height:60, background:'linear-gradient(transparent,#0a0a0a)' }} />}
+              </div>
+              <button onClick={() => setExpandNotes(!expandNotes)} style={{ ...btnO, width:'100%', marginTop:8, fontSize:'.6rem' }}>{expandNotes ? 'Collapse Notes' : 'Show All Athlete Notes'}</button>
+            </div>
+          )}
 
           <WxWidget data={wx} title="Medford (54451) — 7-Day Forecast" />
           {mWx && nm && <WxWidget data={mWx.d} title={`${nm.name} @ ${mWx.loc}`} />}
