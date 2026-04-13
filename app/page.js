@@ -265,7 +265,7 @@ export default function Home() {
             <div style={{ background:'linear-gradient(135deg,#1a0a00,#0a0a0a)', border:`2px solid ${Y}`, padding:'14px', marginBottom:14 }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
                 <div>
-                  <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:Y }}>Today&apos;s Meet</div>
+                  <div style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:Y }}>Tomorrow&apos;s Meet</div>
                   <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1rem', textTransform:'uppercase', letterSpacing:'.06em' }}>Holy Cow Invitational — Athlete Notes</div>
                   <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)', marginTop:2 }}>Stratford · {HOLYCOW_NOTES.length} athletes · Personalized coaching notes</div>
                 </div>
