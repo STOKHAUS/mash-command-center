@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -30,6 +30,12 @@ function getLineups(meetId) {
   }
   if (meetId === 7 && HOLYCOW_BOYS && HOLYCOW_GIRLS) {
     return [{ label: 'Boys Entries', data: HOLYCOW_BOYS, gender: 'B' }, { label: 'Girls Entries', data: HOLYCOW_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 8 && MEDFORD2_BOYS && MEDFORD2_GIRLS) {
+    return [{ label: 'Boys Entries', data: MEDFORD2_BOYS, gender: 'B' }, { label: 'Girls Entries', data: MEDFORD2_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 9 && SPENCER_BOYS && SPENCER_GIRLS) {
+    return [{ label: 'Boys Entries', data: SPENCER_BOYS, gender: 'B' }, { label: 'Girls Entries', data: SPENCER_GIRLS, gender: 'G' }];
   }
   return null;
 }
@@ -807,6 +813,130 @@ export default function Home() {
                         <div style={{ flex:1 }}>
                           <div style={{ fontWeight:700, fontSize:'.82rem' }}>{ev.event}</div>
                           <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)' }}>{ev.posLabel} · <span style={bd(evBg)}>{ev.type}</span></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()}
+            {/* ── MEDFORD HOME INVITE #2 EVENT DRILL-DOWN ── */}
+            {(() => {
+              const m2Src = selectedAth.gn === 'F' ? MEDFORD2_GIRLS : MEDFORD2_BOYS;
+              const m2Events = [];
+              if (m2Src) {
+                for (const evt of m2Src) {
+                  const lastName = selectedAth.n.split(' ')[1]?.toLowerCase() || '___';
+                  const idx = evt.a.findIndex(name => name && name.toLowerCase().includes(lastName));
+                  const exactIdx = evt.a.indexOf(selectedAth.n);
+                  const matchIdx = exactIdx !== -1 ? exactIdx : idx;
+                  if (matchIdx !== -1 && evt.a[matchIdx]) {
+                    const isRelay = evt.e.includes('Relay');
+                    const isField = ['High Jump','Long Jump','Triple Jump','Pole Vault','Discus','Shot Put'].some(f => evt.e.includes(f));
+                    const isAlt = evt.n && evt.n.toLowerCase().includes('alt') && evt.a[matchIdx] === evt.a[evt.a.length-1] && matchIdx === evt.a.length-1;
+                    m2Events.push({
+                      event: evt.e,
+                      seed: evt.seed ? evt.seed[matchIdx] : null,
+                      posLabel: isAlt ? 'Alt' : isRelay ? 'Leg ' + (matchIdx+1) : 'Entry ' + (matchIdx+1),
+                      type: isField ? 'field' : isRelay ? 'relay' : 'running',
+                      isAlt,
+                    });
+                  }
+                }
+              }
+              const m2Run = m2Events.filter(e => (e.type==='running'||e.type==='relay') && !e.isAlt).length;
+              const m2Field = m2Events.filter(e => e.type==='field' && !e.isAlt).length;
+              const m2Active = m2Events.filter(e => !e.isAlt).length;
+              const m2Max = m2Active >= 4;
+              if (m2Events.length === 0) return null;
+              return (
+                <>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:4 }}>Medford Home Invite #2 Lineup ({m2Active} Events)</div>
+                  <div style={{ display:'flex', gap:8, marginBottom:10 }}>
+                    <div style={{ background:CARD, border:'1px solid ' + BDR, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>Events</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.4rem', color:m2Max?R:G }}>{m2Active}/4</div>
+                      {m2Max && <div style={{ fontSize:'.55rem', color:R, fontWeight:700 }}>AT MAX</div>}
+                    </div>
+                    <div style={{ background:CARD, border:'1px solid ' + BDR, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>WIAA Check</div>
+                      <div style={{ fontSize:'.75rem', marginTop:4 }}>
+                        <span style={{ color:m2Run<=3?G:R }}>Run: {m2Run}/3</span>
+                        <span style={{ color:'#333' }}> · </span>
+                        <span style={{ color:m2Field<=3?G:R }}>Fld: {m2Field}/3</span>
+                      </div>
+                    </div>
+                  </div>
+                  {m2Events.map((ev, i) => {
+                    const evBg = ev.isAlt ? '#555' : ev.type==='field' ? R : ev.type==='relay' ? B : Y;
+                    return (
+                      <div key={i} style={{ display:'flex', gap:10, padding:'8px 12px', background:CARD, border:'1px solid ' + BDR, borderLeft:'3px solid ' + evBg, marginBottom:2, opacity:ev.isAlt?0.6:1 }}>
+                        <div style={{ background:evBg, color:'#fff', padding:'4px 8px', borderRadius:2, fontWeight:700, fontSize:'.58rem', minWidth:70, textAlign:'center', alignSelf:'flex-start' }}>{ev.seed || '—'}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:700, fontSize:'.82rem' }}>{ev.event}</div>
+                          <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)' }}>{ev.posLabel} · <span style={bd(evBg)}>{ev.isAlt?'alt':ev.type}</span></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()}
+            {/* ── SPENCER INVITATIONAL EVENT DRILL-DOWN ── */}
+            {(() => {
+              const spSrc = selectedAth.gn === 'F' ? SPENCER_GIRLS : SPENCER_BOYS;
+              const spEvents = [];
+              if (spSrc) {
+                for (const evt of spSrc) {
+                  const lastName = selectedAth.n.split(' ')[1]?.toLowerCase() || '___';
+                  const idx = evt.a.findIndex(name => name && name.toLowerCase().includes(lastName));
+                  const exactIdx = evt.a.indexOf(selectedAth.n);
+                  const matchIdx = exactIdx !== -1 ? exactIdx : idx;
+                  if (matchIdx !== -1 && evt.a[matchIdx]) {
+                    const isRelay = evt.e.includes('Relay');
+                    const isField = ['High Jump','Long Jump','Triple Jump','Pole Vault','Discus','Shot Put'].some(f => evt.e.includes(f));
+                    const isAlt = evt.n && evt.n.toLowerCase().includes('alt') && evt.a[matchIdx] === evt.a[evt.a.length-1] && matchIdx === evt.a.length-1;
+                    spEvents.push({
+                      event: evt.e,
+                      seed: evt.seed ? evt.seed[matchIdx] : null,
+                      posLabel: isAlt ? 'Alt' : isRelay ? 'Leg ' + (matchIdx+1) : 'Entry ' + (matchIdx+1),
+                      type: isField ? 'field' : isRelay ? 'relay' : 'running',
+                      isAlt,
+                    });
+                  }
+                }
+              }
+              const spRun = spEvents.filter(e => (e.type==='running'||e.type==='relay') && !e.isAlt).length;
+              const spField = spEvents.filter(e => e.type==='field' && !e.isAlt).length;
+              const spActive = spEvents.filter(e => !e.isAlt).length;
+              const spMax = spActive >= 4;
+              if (spEvents.length === 0) return null;
+              return (
+                <>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:16, marginBottom:4 }}>Spencer Invitational Lineup ({spActive} Events)</div>
+                  <div style={{ display:'flex', gap:8, marginBottom:10 }}>
+                    <div style={{ background:CARD, border:'1px solid ' + BDR, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>Events</div>
+                      <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.4rem', color:spMax?R:G }}>{spActive}/4</div>
+                      {spMax && <div style={{ fontSize:'.55rem', color:R, fontWeight:700 }}>AT MAX</div>}
+                    </div>
+                    <div style={{ background:CARD, border:'1px solid ' + BDR, padding:'8px 14px', flex:1 }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:700, textTransform:'uppercase', color:'#555' }}>WIAA Check</div>
+                      <div style={{ fontSize:'.75rem', marginTop:4 }}>
+                        <span style={{ color:spRun<=3?G:R }}>Run: {spRun}/3</span>
+                        <span style={{ color:'#333' }}> · </span>
+                        <span style={{ color:spField<=3?G:R }}>Fld: {spField}/3</span>
+                      </div>
+                    </div>
+                  </div>
+                  {spEvents.map((ev, i) => {
+                    const evBg = ev.isAlt ? '#555' : ev.type==='field' ? R : ev.type==='relay' ? B : Y;
+                    return (
+                      <div key={i} style={{ display:'flex', gap:10, padding:'8px 12px', background:CARD, border:'1px solid ' + BDR, borderLeft:'3px solid ' + evBg, marginBottom:2, opacity:ev.isAlt?0.6:1 }}>
+                        <div style={{ background:evBg, color:'#fff', padding:'4px 8px', borderRadius:2, fontWeight:700, fontSize:'.58rem', minWidth:70, textAlign:'center', alignSelf:'flex-start' }}>{ev.seed || '—'}</div>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:700, fontSize:'.82rem' }}>{ev.event}</div>
+                          <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.4)' }}>{ev.posLabel} · <span style={bd(evBg)}>{ev.isAlt?'alt':ev.type}</span></div>
                         </div>
                       </div>
                     );
