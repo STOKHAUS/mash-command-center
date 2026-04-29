@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -941,6 +941,53 @@ export default function Home() {
                       </div>
                     );
                   })}
+                </>
+              );
+            })()}
+            {/* ── SPENCER GAME PLAN — WHO TO BEAT + PRACTICE ── */}
+            {(() => {
+              const intel = SPENCER_INTEL && SPENCER_INTEL[selectedAth.n];
+              if (!intel || intel.length === 0) return null;
+              const confColor = (c) => c === 'green' ? G : c === 'yellow' ? Y : c === 'red' ? '#888' : B;
+              return (
+                <>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:20, marginBottom:6 }}>🎯 Spencer Game Plan — Who To Beat</div>
+                  {intel.map((ev, i) => (
+                    <div key={i} style={{ background:CARD, border:'1px solid ' + BDR, padding:'12px 14px', marginBottom:10, borderLeft:'3px solid ' + confColor(ev.confidence) }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:8 }}>
+                        <div style={{ fontWeight:800, fontSize:'.95rem' }}>{ev.e}{ev.leg ? ' — ' + ev.leg : ''}</div>
+                        <div style={{ display:'flex', gap:8, alignItems:'baseline' }}>
+                          {ev.seed && <span style={{ fontSize:'.65rem', color:'#999' }}>Seed: {ev.seed}</span>}
+                          {ev.place && <span style={{ fontSize:'.65rem', fontWeight:700, color:confColor(ev.confidence), padding:'2px 6px', border:'1px solid ' + confColor(ev.confidence), borderRadius:2 }}>{ev.place}</span>}
+                        </div>
+                      </div>
+                      {ev.team && <div style={{ fontSize:'.65rem', color:'#999', marginBottom:6 }}>Team projection: {ev.team}</div>}
+                      {ev.field && ev.field.length > 0 && (
+                        <div style={{ marginBottom:8 }}>
+                          {ev.field.map((row, j) => (
+                            <div key={j} style={{ display:'flex', gap:8, padding:'4px 6px', background:row.you ? 'rgba(255,200,0,.08)' : 'transparent', borderLeft: row.you ? '2px solid ' + Y : '2px solid transparent', fontSize:'.72rem', alignItems:'baseline' }}>
+                              <span style={{ minWidth:36, fontWeight:700, color:row.you ? Y : '#888' }}>{row.p === 'You' ? 'YOU' : '#' + row.p}</span>
+                              <span style={{ flex:1, fontWeight: row.you ? 700 : 400 }}>{row.a}{row.t && row.t !== '—' ? ' · ' + row.t : ''}</span>
+                              <span style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700 }}>{row.m}</span>
+                              {row.gap && <span style={{ fontSize:'.62rem', color: row.target ? G : row.protect ? R : '#888', minWidth:50, textAlign:'right' }}>{row.gap}{row.target ? ' 🎯' : row.protect ? ' 🛡️' : ''}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {ev.race && (
+                        <div style={{ background:'rgba(255,255,255,.03)', padding:'8px 10px', borderLeft:'2px solid ' + Y, marginTop:8, fontSize:'.72rem', lineHeight:1.4 }}>
+                          <div style={{ fontSize:'.55rem', fontWeight:800, color:Y, textTransform:'uppercase', letterSpacing:'.15em', marginBottom:3 }}>Race-Day Strategy</div>
+                          {ev.race}
+                        </div>
+                      )}
+                      {ev.practice && (
+                        <div style={{ background:'rgba(0,200,100,.05)', padding:'8px 10px', borderLeft:'2px solid ' + G, marginTop:6, fontSize:'.72rem', lineHeight:1.4 }}>
+                          <div style={{ fontSize:'.55rem', fontWeight:800, color:G, textTransform:'uppercase', letterSpacing:'.15em', marginBottom:3 }}>How to Achieve in Practice</div>
+                          {ev.practice}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </>
               );
             })()}
