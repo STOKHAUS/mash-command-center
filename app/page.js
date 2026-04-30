@@ -661,6 +661,13 @@ export default function Home() {
               <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
               <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}</div>
             </div>
+            {selectedAth.apTesting && (
+              <div style={{ background:'rgba(245,158,11,.12)', border:'1px solid rgba(245,158,11,.45)', borderLeft:'3px solid #F59E0B', padding:'12px 14px', marginBottom:10 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.15em', color:'#F59E0B', marginBottom:4 }}>⚠️ AP Testing Conflict</div>
+                <div style={{ fontWeight:700, fontSize:'.92rem', color:'#FCD34D' }}>{selectedAth.apTesting.exam}</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', marginTop:2 }}>{selectedAth.apTesting.date} @ {selectedAth.apTesting.time} · Dismissal: {selectedAth.apTesting.dismissal}</div>
+              </div>
+            )}
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
               {[['Contact',`📱 ${selectedAth.ph||'No phone'}\n🚨 ${selectedAth.em||'No emergency contact'}`],['Personal Records',selectedAth.pr||'None recorded'],['Health / Injuries',selectedAth.inj||'None reported'],['Season Goal',selectedAth.goal||'Not specified'],['R.A.I.D.E.R.S. Focus',selectedAth.rv||'Not specified'],['Schedule Conflicts',selectedAth.conf||'None']].map(([l,v],i) => (
                 <div key={i} style={{ background:CARD, border:`1px solid ${l==='Health / Injuries'&&selectedAth.inj&&!['No','None','N/A','Nope','no','none','','No no no'].includes(selectedAth.inj)?'rgba(204,0,0,.3)':BDR}`, padding:'12px' }}>
