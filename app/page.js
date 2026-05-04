@@ -589,8 +589,8 @@ export default function Home() {
               <div style={{ marginTop:14 }}>
                 <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>⚠️ Open Decisions — Resolve Tonight</div>
                 {LAKELAND_FLAGS.map((f, fi) => {
-                  const sevColor = f.sev === 'critical' ? R : f.sev === 'high' ? Y : '#888';
-                  const sevBg = f.sev === 'critical' ? 'rgba(204,0,0,.10)' : f.sev === 'high' ? 'rgba(212,168,67,.08)' : 'rgba(255,255,255,.03)';
+                  const sevColor = f.sev === 'info' ? G : f.sev === 'critical' ? R : f.sev === 'high' ? Y : '#888';
+                  const sevBg = f.sev === 'info' ? 'rgba(34,197,94,.08)' : f.sev === 'critical' ? 'rgba(204,0,0,.10)' : f.sev === 'high' ? 'rgba(212,168,67,.08)' : 'rgba(255,255,255,.03)';
                   return (
                     <div key={fi} style={{ background:sevBg, border:`1px solid ${BDR}`, borderLeft:`3px solid ${sevColor}`, padding:'10px 14px', marginBottom:4 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
@@ -1048,7 +1048,7 @@ export default function Home() {
                   {flagsForAthlete.length > 0 && (
                     <div style={{ marginTop:10 }}>
                       {flagsForAthlete.map((f, i) => {
-                        const sevColor = f.sev === 'critical' ? R : f.sev === 'high' ? Y : '#888';
+                        const sevColor = f.sev === 'info' ? G : f.sev === 'critical' ? R : f.sev === 'high' ? Y : '#888';
                         return (
                           <div key={i} style={{ background:'rgba(204,0,0,.08)', border:'1px solid ' + BDR, borderLeft:'3px solid ' + sevColor, padding:'8px 12px', marginBottom:4 }}>
                             <div style={{ fontSize:'.55rem', fontWeight:800, color:sevColor, textTransform:'uppercase', letterSpacing:'.1em', marginBottom:3 }}>⚠ {f.sev} flag for this athlete</div>
