@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL } from '@/lib/data';
+import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -36,6 +36,9 @@ function getLineups(meetId) {
   }
   if (meetId === 9 && SPENCER_BOYS && SPENCER_GIRLS) {
     return [{ label: 'Boys Entries', data: SPENCER_BOYS, gender: 'B' }, { label: 'Girls Entries', data: SPENCER_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 10 && LAKELAND_BOYS && LAKELAND_GIRLS) {
+    return [{ label: 'Boys Entries', data: LAKELAND_BOYS, gender: 'B' }, { label: 'Girls Entries', data: LAKELAND_GIRLS, gender: 'G' }];
   }
   return null;
 }
@@ -582,6 +585,44 @@ export default function Home() {
               )}
             </div>
 
+            {meetView === 10 && LAKELAND_FLAGS && LAKELAND_FLAGS.length > 0 && (
+              <div style={{ marginTop:14 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>⚠️ Open Decisions — Resolve Tonight</div>
+                {LAKELAND_FLAGS.map((f, fi) => {
+                  const sevColor = f.sev === 'critical' ? R : f.sev === 'high' ? Y : '#888';
+                  const sevBg = f.sev === 'critical' ? 'rgba(204,0,0,.10)' : f.sev === 'high' ? 'rgba(212,168,67,.08)' : 'rgba(255,255,255,.03)';
+                  return (
+                    <div key={fi} style={{ background:sevBg, border:`1px solid ${BDR}`, borderLeft:`3px solid ${sevColor}`, padding:'10px 14px', marginBottom:4 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:4 }}>
+                        <span style={{ fontSize:'.55rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.1em', color:sevColor, padding:'2px 6px', border:`1px solid ${sevColor}`, borderRadius:2 }}>{f.sev}</span>
+                        <span style={{ fontWeight:700, fontSize:'.85rem' }}>{f.title}</span>
+                      </div>
+                      <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.7)', lineHeight:1.4 }}>{f.body}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {meetView === 9 && SPENCER_TEAM_SCORES && (
+              <div style={{ marginTop:14 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:G, marginBottom:8 }}>🏆 Final Team Scores</div>
+                {[{label:'Boys Varsity',data:SPENCER_TEAM_SCORES.boys},{label:'Girls Varsity',data:SPENCER_TEAM_SCORES.girls}].map((blk, bi) => (
+                  <div key={bi} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${blk.label.includes('Girls')?Y:R}`, padding:'10px 14px', marginBottom:8 }}>
+                    <div style={{ fontSize:'.7rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.15em', color:blk.label.includes('Girls')?Y:R, marginBottom:6 }}>{blk.label} — Medford {blk.data.medfordPlace === 1 ? '🥇' : blk.data.medfordPlace === 2 ? '🥈' : blk.data.medfordPlace === 3 ? '🥉' : `${blk.data.medfordPlace}th`} ({blk.data.medfordPts} pts)</div>
+                    {blk.data.table.map((row, ri) => (
+                      <div key={ri} style={{ display:'flex', justifyContent:'space-between', padding:'3px 0', fontSize:'.78rem', color:row.highlight?'#fff':'rgba(255,255,255,.55)', fontWeight:row.highlight?700:400, borderBottom:ri < blk.data.table.length-1 ? '1px solid rgba(255,255,255,.04)' : 'none' }}>
+                        <span>{row.place}. {row.team}</span>
+                        <span style={{ fontFamily:"'Oswald',sans-serif" }}>{row.pts}</span>
+                      </div>
+                    ))}
+                    {blk.data.note && <div style={{ fontSize:'.7rem', color:'rgba(255,255,255,.5)', marginTop:6, fontStyle:'italic' }}>{blk.data.note}</div>}
+                  </div>
+                ))}
+                {SPENCER_TEAM_SCORES.meetUrl && <button onClick={() => window.open(SPENCER_TEAM_SCORES.meetUrl, '_blank')} style={{ ...btnO, fontSize:'.65rem', padding:'6px 12px', marginTop:4 }}>📊 Full Results on Athletic.net</button>}
+              </div>
+            )}
+
             {lineups && lineups.map((group, gi) => (
               <div key={gi}>
                 <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:group.gender==='G'?Y:R, marginTop:16, marginBottom:8 }}>{group.label}</div>
@@ -605,6 +646,18 @@ export default function Home() {
                 ))}
               </div>
             ))}
+
+            {meetView === 10 && LAKELAND_NOTES && LAKELAND_NOTES.length > 0 && (
+              <div style={{ marginTop:16 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:B, marginBottom:8 }}>📋 Meet Logistics</div>
+                {LAKELAND_NOTES.map((nt, ni) => (
+                  <div key={ni} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${B}`, padding:'8px 14px', marginBottom:3, display:'flex', gap:10 }}>
+                    <span style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.1em', color:B, minWidth:90, flexShrink:0, paddingTop:2 }}>{nt.label}</span>
+                    <span style={{ fontSize:'.78rem', color:'rgba(255,255,255,.75)', lineHeight:1.4 }}>{nt.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {!lineups && !meetResults && (
               <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'20px', textAlign:'center' }}>
