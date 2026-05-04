@@ -1004,50 +1004,61 @@ export default function Home() {
                 </>
               );
             })()}
-            {/* ── SPENCER GAME PLAN — WHO TO BEAT + PRACTICE ── */}
+            {/* ── LAKELAND TOMORROW — Athlete's events from submitted entries ── */}
             {(() => {
-              const intel = SPENCER_INTEL && SPENCER_INTEL[selectedAth.n];
-              if (!intel || intel.length === 0) return null;
-              const confColor = (c) => c === 'green' ? G : c === 'yellow' ? Y : c === 'red' ? '#888' : B;
+              const lakelandSrc = selectedAth.gn === 'F' ? LAKELAND_GIRLS : LAKELAND_BOYS;
+              if (!lakelandSrc) return null;
+              const flagsForAthlete = (LAKELAND_FLAGS || []).filter(f => f.title.toLowerCase().includes(selectedAth.n.split(' ').slice(-1)[0].toLowerCase()));
+              const myEvents = [];
+              for (const evt of lakelandSrc) {
+                const idx = evt.a.findIndex(name => name && name.trim() === selectedAth.n);
+                if (idx !== -1) {
+                  const isRelay = evt.e.toLowerCase().includes('relay');
+                  const isAlt = isRelay && idx === 4;
+                  myEvents.push({
+                    event: evt.e,
+                    pos: idx + 1,
+                    posLabel: isRelay ? (isAlt ? 'Alt' : 'Leg ' + (idx + 1)) : (idx === 0 ? 'Entry 1' : 'Entry ' + (idx + 1)),
+                    seed: evt.seed && evt.seed[idx] ? evt.seed[idx] : (isRelay ? evt.seed[3] : ''),
+                    note: evt.n || '',
+                    isRelay,
+                    isAlt,
+                  });
+                }
+              }
+              if (myEvents.length === 0) return null;
               return (
                 <>
-                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginTop:20, marginBottom:6 }}>🎯 Spencer Game Plan — Who To Beat</div>
-                  {intel.map((ev, i) => (
-                    <div key={i} style={{ background:CARD, border:'1px solid ' + BDR, padding:'12px 14px', marginBottom:10, borderLeft:'3px solid ' + confColor(ev.confidence) }}>
-                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:8 }}>
-                        <div style={{ fontWeight:800, fontSize:'.95rem' }}>{ev.e}{ev.leg ? ' — ' + ev.leg : ''}</div>
-                        <div style={{ display:'flex', gap:8, alignItems:'baseline' }}>
-                          {ev.seed && <span style={{ fontSize:'.65rem', color:'#999' }}>Seed: {ev.seed}</span>}
-                          {ev.place && <span style={{ fontSize:'.65rem', fontWeight:700, color:confColor(ev.confidence), padding:'2px 6px', border:'1px solid ' + confColor(ev.confidence), borderRadius:2 }}>{ev.place}</span>}
+                  <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginTop:20, marginBottom:6 }}>
+                    <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R }}>📋 Lakeland Tomorrow ({myEvents.length} {myEvents.length === 1 ? 'event' : 'events'})</div>
+                    <div style={{ fontSize:'.6rem', color:'#666' }}>Tue 5/5 · Bus 1:15 PM</div>
+                  </div>
+                  {myEvents.map((ev, i) => (
+                    <div key={i} style={{ background:CARD, border:'1px solid ' + BDR, padding:'10px 14px', marginBottom:6, borderLeft:'3px solid ' + (ev.isAlt ? '#666' : ev.isRelay ? B : R) }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:4 }}>
+                        <div style={{ fontWeight:700, fontSize:'.9rem' }}>{ev.event}</div>
+                        <div style={{ display:'flex', gap:6, alignItems:'baseline' }}>
+                          <span style={{ fontSize:'.6rem', fontWeight:700, color:ev.isAlt ? '#888' : ev.isRelay ? B : R, padding:'2px 6px', border:'1px solid ' + (ev.isAlt ? '#666' : ev.isRelay ? B : R), borderRadius:2 }}>{ev.posLabel}</span>
+                          {ev.seed && <span style={{ fontSize:'.78rem', fontFamily:"'Oswald',sans-serif", fontWeight:700, color:'rgba(255,255,255,.85)' }}>{ev.seed}</span>}
                         </div>
                       </div>
-                      {ev.team && <div style={{ fontSize:'.65rem', color:'#999', marginBottom:6 }}>Team projection: {ev.team}</div>}
-                      {ev.field && ev.field.length > 0 && (
-                        <div style={{ marginBottom:8 }}>
-                          {ev.field.map((row, j) => (
-                            <div key={j} style={{ display:'flex', gap:8, padding:'4px 6px', background:row.you ? 'rgba(255,200,0,.08)' : 'transparent', borderLeft: row.you ? '2px solid ' + Y : '2px solid transparent', fontSize:'.72rem', alignItems:'baseline' }}>
-                              <span style={{ minWidth:36, fontWeight:700, color:row.you ? Y : '#888' }}>{row.p === 'You' ? 'YOU' : '#' + row.p}</span>
-                              <span style={{ flex:1, fontWeight: row.you ? 700 : 400 }}>{row.a}{row.t && row.t !== '—' ? ' · ' + row.t : ''}</span>
-                              <span style={{ fontFamily:"'Oswald',sans-serif", fontWeight:700 }}>{row.m}</span>
-                              {row.gap && <span style={{ fontSize:'.62rem', color: row.target ? G : row.protect ? R : '#888', minWidth:50, textAlign:'right' }}>{row.gap}{row.target ? ' 🎯' : row.protect ? ' 🛡️' : ''}</span>}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {ev.race && (
-                        <div style={{ background:'rgba(255,255,255,.03)', padding:'8px 10px', borderLeft:'2px solid ' + Y, marginTop:8, fontSize:'.72rem', lineHeight:1.4 }}>
-                          <div style={{ fontSize:'.55rem', fontWeight:800, color:Y, textTransform:'uppercase', letterSpacing:'.15em', marginBottom:3 }}>Race-Day Strategy</div>
-                          {ev.race}
-                        </div>
-                      )}
-                      {ev.practice && (
-                        <div style={{ background:'rgba(0,200,100,.05)', padding:'8px 10px', borderLeft:'2px solid ' + G, marginTop:6, fontSize:'.72rem', lineHeight:1.4 }}>
-                          <div style={{ fontSize:'.55rem', fontWeight:800, color:G, textTransform:'uppercase', letterSpacing:'.15em', marginBottom:3 }}>How to Achieve in Practice</div>
-                          {ev.practice}
-                        </div>
-                      )}
+                      {ev.note && <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.45)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
                     </div>
                   ))}
+                  {flagsForAthlete.length > 0 && (
+                    <div style={{ marginTop:10 }}>
+                      {flagsForAthlete.map((f, i) => {
+                        const sevColor = f.sev === 'critical' ? R : f.sev === 'high' ? Y : '#888';
+                        return (
+                          <div key={i} style={{ background:'rgba(204,0,0,.08)', border:'1px solid ' + BDR, borderLeft:'3px solid ' + sevColor, padding:'8px 12px', marginBottom:4 }}>
+                            <div style={{ fontSize:'.55rem', fontWeight:800, color:sevColor, textTransform:'uppercase', letterSpacing:'.1em', marginBottom:3 }}>⚠ {f.sev} flag for this athlete</div>
+                            <div style={{ fontSize:'.78rem', fontWeight:700, marginBottom:2 }}>{f.title}</div>
+                            <div style={{ fontSize:'.7rem', color:'rgba(255,255,255,.7)', lineHeight:1.4 }}>{f.body}</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </>
               );
             })()}
