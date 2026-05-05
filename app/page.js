@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FORM_DATA, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS } from '@/lib/data';
+import { FORM_DATA, FEES_OWED, ownsFee, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -696,6 +696,7 @@ export default function Home() {
                 {athResults.length > 0 && <span style={bd(B)}>{athResults.length} results</span>}
                 <span style={{ color:'#555', fontSize:'.7rem' }}>{a.gn}·{a.g}·{a.p1||'TBD'}</span>
                 {a.inj && !['No','None','N/A','Nope','no','none','No no no',''].includes(a.inj) && <span style={bd(R)}>⚠</span>}
+                {ownsFee(a.n) && <span style={bd(R)}>$ OWED</span>}
                 <select value={st} onClick={e => e.stopPropagation()} onChange={e => setStatuses(p => ({...p,[a.n]:e.target.value}))} style={{ background:'#222', border:`1px solid ${BDR}`, color:'#fff', padding:'3px 6px', fontSize:'.65rem' }}>
                   {['available','modified','limited','injured','unavailable'].map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
@@ -714,6 +715,12 @@ export default function Home() {
               <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{selectedAth.n}</div>
               <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.5)', marginTop:4 }}>Grade {selectedAth.g} · {selectedAth.gn==='M'?'Boys':'Girls'} · Primary: {selectedAth.p1||'TBD'} · Secondary: {selectedAth.p2||'TBD'}</div>
             </div>
+            {ownsFee(selectedAth.n) && (
+              <div style={{ background:'rgba(204,0,0,.12)', border:'1px solid rgba(204,0,0,.45)', borderLeft:'3px solid #cc0000', padding:'12px 14px', marginBottom:10 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.15em', color:'#ff4444', marginBottom:4 }}>⚠️ Spring Sports Fee Owed</div>
+                <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', marginTop:2 }}>Please take care of this ASAP. Questions → Coach Stokes.</div>
+              </div>
+            )}
             {selectedAth.apTesting && (
               <div style={{ background:'rgba(245,158,11,.12)', border:'1px solid rgba(245,158,11,.45)', borderLeft:'3px solid #F59E0B', padding:'12px 14px', marginBottom:10 }}>
                 <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.15em', color:'#F59E0B', marginBottom:4 }}>⚠️ AP Testing Conflict</div>
