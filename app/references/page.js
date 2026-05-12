@@ -19,6 +19,13 @@ const documents = [
       { type: 'markdown', url: '/meet-setup.md', label: 'View (Markdown)' },
       { type: 'pdf', url: '/meet-setup.pdf', label: 'Download (PDF)' }
     ]
+  },
+  {
+    title: 'Marathon Meet — Tue 5/12',
+    description: 'Tonight\'s lineup, open decisions, and athlete index',
+    files: [
+      { type: 'markdown', url: '/marathon-meet-5-12.md', label: 'View (Markdown)' }
+    ]
   }
 ];
 
