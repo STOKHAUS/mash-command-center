@@ -673,29 +673,44 @@ export default function Home() {
               </div>
             )}
 
-            {lineups && lineups.map((group, gi) => (
-              <div key={gi}>
-                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:group.gender==='G'?Y:R, marginTop:16, marginBottom:8 }}>{group.label}</div>
-                {group.data.map((ev, ei) => (
-                  <div key={ei} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${group.gender==='G'?Y:R}`, padding:'10px 14px', marginBottom:4 }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
-                      <span style={{ fontWeight:700, fontSize:'.85rem' }}>{ev.e}</span>
-                      {ev.a.some(a => a.includes('WC')) && <span style={bd(B)}>Wildcard</span>}
+            {lineups && (() => {
+              const shown = new Set();
+              return lineups.map((group, gi) => (
+                <div key={gi}>
+                  <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:group.gender==='G'?Y:R, marginTop:16, marginBottom:8 }}>{group.label}</div>
+                  {group.data.map((ev, ei) => (
+                    <div key={ei} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${group.gender==='G'?Y:R}`, padding:'10px 14px', marginBottom:4 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+                        <span style={{ fontWeight:700, fontSize:'.85rem' }}>{ev.e}</span>
+                        {ev.a.some(a => a.includes('WC')) && <span style={bd(B)}>Wildcard</span>}
+                      </div>
+                      <div style={{ marginTop:4 }}>
+                        {ev.a.map((a, ai) => {
+                          const showNote = meetView === 14 && GNC_ATHLETE_NOTES && GNC_ATHLETE_NOTES[a] && !shown.has(a);
+                          if (showNote) shown.add(a);
+                          return (
+                            <div key={ai}>
+                              <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', padding:'2px 0', display:'flex', justifyContent:'space-between' }}>
+                                <span>{a}</span>
+                                {ev.seed && ev.seed[ai] && <span style={{ color:'rgba(255,255,255,.4)', fontSize:'.72rem' }}>{ev.seed[ai]}</span>}
+                              </div>
+                              {showNote && (
+                                <div style={{ marginTop:6, marginBottom:6, padding:'10px 12px', background:'rgba(212,168,67,0.06)', borderLeft:`2px solid ${Y}`, borderRadius:'4px' }}>
+                                  <div style={{ fontSize:'.72rem', color:'rgba(255,255,255,.88)', lineHeight:1.55 }}>{GNC_ATHLETE_NOTES[a].today}</div>
+                                  <div style={{ fontSize:'.7rem', color:Y, fontStyle:'italic', marginTop:8, lineHeight:1.4 }}>&ldquo;{GNC_ATHLETE_NOTES[a].quote}&rdquo;</div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {ev.note && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
+                      {ev.n && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.n}</div>}
                     </div>
-                    <div style={{ marginTop:4 }}>
-                      {ev.a.map((a, ai) => (
-                        <div key={ai} style={{ fontSize:'.78rem', color:'rgba(255,255,255,.7)', padding:'2px 0', display:'flex', justifyContent:'space-between' }}>
-                          <span>{a}</span>
-                          {ev.seed && ev.seed[ai] && <span style={{ color:'rgba(255,255,255,.4)', fontSize:'.72rem' }}>{ev.seed[ai]}</span>}
-                        </div>
-                      ))}
-                    </div>
-                    {ev.note && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
-                    {ev.n && <div style={{ fontSize:'.68rem', color:'rgba(255,255,255,.35)', marginTop:4, fontStyle:'italic' }}>{ev.n}</div>}
-                  </div>
-                ))}
-              </div>
-            ))}
+                  ))}
+                </div>
+              ));
+            })()}
 
             {meetView === 10 && LAKELAND_NOTES && LAKELAND_NOTES.length > 0 && (
               <div style={{ marginTop:16 }}>
