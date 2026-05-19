@@ -1158,6 +1158,59 @@ export default function Home() {
                 </>
               );
             })()}
+            {/* ── GNC CONFERENCE TODAY — Athlete's events from locked heat sheets ── */}
+            {(() => {
+              const gncSrc = selectedAth.gn === 'F' ? GNC_GIRLS : GNC_BOYS;
+              if (!gncSrc) return null;
+              const myEvents = [];
+              for (const evt of gncSrc) {
+                const idx = evt.a.findIndex(name => name && name.trim() === selectedAth.n);
+                if (idx !== -1) {
+                  const isRelay = evt.e.toLowerCase().includes('relay');
+                  myEvents.push({
+                    event: evt.e,
+                    pos: idx + 1,
+                    posLabel: isRelay ? ('Leg ' + (idx + 1)) : (idx === 0 ? 'Entry 1' : 'Entry ' + (idx + 1)),
+                    seed: evt.seed && evt.seed[idx] ? evt.seed[idx] : (isRelay ? (evt.seed[3] || '') : ''),
+                    note: evt.n || '',
+                    isRelay,
+                  });
+                }
+              }
+              if (myEvents.length === 0) return null;
+              const athleteNote = GNC_ATHLETE_NOTES && GNC_ATHLETE_NOTES[selectedAth.n];
+              const runCount = myEvents.filter(e => !e.event.toLowerCase().match(/jump|put|discus|vault/)).length;
+              const fldCount = myEvents.length - runCount;
+              const atCap = myEvents.length >= 4;
+              return (
+                <>
+                  <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginTop:20, marginBottom:6 }}>
+                    <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:Y }}>🏆 GNC Conference Today ({myEvents.length} {myEvents.length === 1 ? 'event' : 'events'}{atCap ? ' · AT CAP' : ''})</div>
+                    <div style={{ fontSize:'.6rem', color:'#666' }}>Tue 5/19 · Rhinelander · 4:00 PM</div>
+                  </div>
+                  <div style={{ fontSize:'.6rem', color:'rgba(255,255,255,.5)', marginBottom:8 }}>WIAA: Run {runCount}/3 · Fld {fldCount}/3 · Total {myEvents.length}/4</div>
+                  {athleteNote && (
+                    <div style={{ marginTop:6, marginBottom:10, padding:'12px 14px', background:'rgba(212,168,67,0.08)', borderLeft:`3px solid ${Y}`, borderRadius:'4px' }}>
+                      <div style={{ fontSize:'.55rem', fontWeight:800, color:Y, textTransform:'uppercase', letterSpacing:'.12em', marginBottom:6 }}>Today's Note · Coach Stokes</div>
+                      <div style={{ fontSize:'.78rem', color:'rgba(255,255,255,.9)', lineHeight:1.6 }}>{athleteNote.today}</div>
+                      <div style={{ fontSize:'.75rem', color:Y, fontStyle:'italic', marginTop:8, lineHeight:1.4 }}>&ldquo;{athleteNote.quote}&rdquo;</div>
+                    </div>
+                  )}
+                  {myEvents.map((ev, i) => (
+                    <div key={i} style={{ background:CARD, border:'1px solid ' + BDR, padding:'10px 14px', marginBottom:6, borderLeft:'3px solid ' + (ev.isRelay ? B : Y) }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:4 }}>
+                        <div style={{ fontWeight:700, fontSize:'.9rem' }}>{ev.event}</div>
+                        <div style={{ display:'flex', gap:6, alignItems:'baseline' }}>
+                          <span style={{ fontSize:'.6rem', fontWeight:700, color:ev.isRelay ? B : Y, padding:'2px 6px', border:'1px solid ' + (ev.isRelay ? B : Y), borderRadius:2 }}>{ev.posLabel}</span>
+                          {ev.seed && <span style={{ fontSize:'.78rem', fontFamily:"'Oswald',sans-serif", fontWeight:700, color:'rgba(255,255,255,.85)' }}>{ev.seed}</span>}
+                        </div>
+                      </div>
+                      {ev.note && <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.45)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
+                    </div>
+                  ))}
+                </>
+              );
+            })()}
             <div style={{ display:'flex', gap:8, marginTop:12 }}>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={btn}>🍽️ Generate Meal Plan</button>
               <button onClick={() => { setTab('plans'); genPlans(selectedAth); }} style={{ ...btn, background:'#222' }}>🏋️ Generate Workout</button>
