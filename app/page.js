@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FORM_DATA, FEES_OWED, ownsFee, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS, OTTOBACHER_BOYS, OTTOBACHER_GIRLS, OTTOBACHER_NOTES, OTTOBACHER_FLAGS, MARATHON_BOYS, MARATHON_GIRLS, MARATHON_NOTES, MARATHON_FLAGS, MARSHFIELD_BOYS, MARSHFIELD_GIRLS, GNC_BOYS, GNC_GIRLS, GNC_NOTES, GNC_ATHLETE_NOTES } from '@/lib/data';
+import { FORM_DATA, FEES_OWED, ownsFee, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS, OTTOBACHER_BOYS, OTTOBACHER_GIRLS, OTTOBACHER_NOTES, OTTOBACHER_FLAGS, MARATHON_BOYS, MARATHON_GIRLS, MARATHON_NOTES, MARATHON_FLAGS, MARSHFIELD_BOYS, MARSHFIELD_GIRLS, GNC_BOYS, GNC_GIRLS, GNC_NOTES, GNC_ATHLETE_NOTES, REGIONAL_BOYS, REGIONAL_GIRLS, REGIONAL_NOTES } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -51,6 +51,9 @@ function getLineups(meetId) {
   }
   if (meetId === 14 && GNC_BOYS && GNC_GIRLS) {
     return [{ label: 'Boys Entries', data: GNC_BOYS, gender: 'B' }, { label: 'Girls Entries', data: GNC_GIRLS, gender: 'G' }];
+  }
+  if (meetId === 15 && REGIONAL_BOYS && REGIONAL_GIRLS) {
+    return [{ label: 'Boys Entries', data: REGIONAL_BOYS, gender: 'B' }, { label: 'Girls Entries', data: REGIONAL_GIRLS, gender: 'G' }];
   }
   return null;
 }
@@ -748,6 +751,17 @@ export default function Home() {
               </div>
             )}
 
+            {meetView === 15 && REGIONAL_NOTES && REGIONAL_NOTES.length > 0 && (
+              <div style={{ marginTop:16 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:B, marginBottom:8 }}>📋 Regional Briefing</div>
+                {REGIONAL_NOTES.map((nt, ni) => (
+                  <div key={ni} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${B}`, padding:'8px 14px', marginBottom:3, display:'flex', gap:10 }}>
+                    <span style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.1em', color:B, minWidth:96, flexShrink:0, paddingTop:2 }}>{nt.label}</span>
+                    <span style={{ fontSize:'.78rem', color:'rgba(255,255,255,.75)', lineHeight:1.4 }}>{nt.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             {!lineups && !meetResults && (
               <div style={{ background:CARD, border:`1px solid ${BDR}`, padding:'20px', textAlign:'center' }}>
                 <div style={{ fontSize:'.8rem', color:'rgba(255,255,255,.4)' }}>No lineup or entries loaded for this meet yet.</div>
@@ -1202,6 +1216,50 @@ export default function Home() {
                         <div style={{ fontWeight:700, fontSize:'.9rem' }}>{ev.event}</div>
                         <div style={{ display:'flex', gap:6, alignItems:'baseline' }}>
                           <span style={{ fontSize:'.6rem', fontWeight:700, color:ev.isRelay ? B : Y, padding:'2px 6px', border:'1px solid ' + (ev.isRelay ? B : Y), borderRadius:2 }}>{ev.posLabel}</span>
+                          {ev.seed && <span style={{ fontSize:'.78rem', fontFamily:"'Oswald',sans-serif", fontWeight:700, color:'rgba(255,255,255,.85)' }}>{ev.seed}</span>}
+                        </div>
+                      </div>
+                      {ev.note && <div style={{ fontSize:'.65rem', color:'rgba(255,255,255,.45)', marginTop:4, fontStyle:'italic' }}>{ev.note}</div>}
+                    </div>
+                  ))}
+                </>
+              );
+            })()}
+            {/* ── WIAA REGIONAL 1B — Athlete's events + advancement ── */}
+            {(() => {
+              const regSrc = selectedAth.gn === 'F' ? REGIONAL_GIRLS : REGIONAL_BOYS;
+              if (!regSrc) return null;
+              const myEvents = [];
+              for (const evt of regSrc) {
+                const idx = evt.a.findIndex(name => name && name.trim() === selectedAth.n);
+                if (idx !== -1) {
+                  const isRelay = evt.e.toLowerCase().includes('relay');
+                  myEvents.push({
+                    event: evt.e,
+                    posLabel: isRelay ? ('Leg ' + (idx + 1)) : (idx === 0 ? 'Entry 1' : 'Entry ' + (idx + 1)),
+                    seed: evt.seed && evt.seed[idx] ? evt.seed[idx] : (isRelay ? (evt.seed[3] || '') : ''),
+                    note: evt.n || '',
+                    isRelay,
+                  });
+                }
+              }
+              if (myEvents.length === 0) return null;
+              const runCount = myEvents.filter(e => !e.event.toLowerCase().match(/jump|put|discus|vault/)).length;
+              const fldCount = myEvents.length - runCount;
+              const atCap = myEvents.length >= 4;
+              return (
+                <>
+                  <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginTop:20, marginBottom:6 }}>
+                    <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:G }}>🏆 Regional 1B ({myEvents.length} {myEvents.length === 1 ? 'event' : 'events'}{atCap ? ' · AT CAP' : ''})</div>
+                    <div style={{ fontSize:'.6rem', color:'#666' }}>Tue 5/26 · Medford (HOME) · Top 4 advance</div>
+                  </div>
+                  <div style={{ fontSize:'.6rem', color:'rgba(255,255,255,.5)', marginBottom:8 }}>WIAA: Run {runCount}/3 · Fld {fldCount}/3 · Total {myEvents.length}/4</div>
+                  {myEvents.map((ev, i) => (
+                    <div key={i} style={{ background:CARD, border:'1px solid ' + BDR, padding:'10px 14px', marginBottom:6, borderLeft:'3px solid ' + (ev.isRelay ? B : G) }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:4 }}>
+                        <div style={{ fontWeight:700, fontSize:'.9rem' }}>{ev.event}</div>
+                        <div style={{ display:'flex', gap:6, alignItems:'baseline' }}>
+                          <span style={{ fontSize:'.6rem', fontWeight:700, color:ev.isRelay ? B : G, padding:'2px 6px', border:'1px solid ' + (ev.isRelay ? B : G), borderRadius:2 }}>{ev.posLabel}</span>
                           {ev.seed && <span style={{ fontSize:'.78rem', fontFamily:"'Oswald',sans-serif", fontWeight:700, color:'rgba(255,255,255,.85)' }}>{ev.seed}</span>}
                         </div>
                       </div>
