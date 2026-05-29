@@ -91,8 +91,10 @@ export default function Home() {
   const [meetView, setMeetView] = useState(null);
 
   const NOW = new Date();
-  const nm = MEETS.find(m => new Date(m.date) >= NOW);
-  const dtn = nm ? Math.ceil((new Date(nm.date) - NOW) / 86400000) : null;
+  const TODAY_MS = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate()).getTime();
+  const meetMs = (d) => { const [y,mo,da] = d.split('-').map(Number); return new Date(y, mo-1, da).getTime(); };
+  const nm = MEETS.find(m => meetMs(m.date) >= TODAY_MS);
+  const dtn = nm ? Math.round((meetMs(nm.date) - TODAY_MS) / 86400000) : null;
   const getSt = n => statuses[n] || KNOWN_STATUS[n] || 'available';
   const stCol = s => s === 'available' ? G : s === 'injured' || s === 'unavailable' ? R : Y;
 
@@ -271,7 +273,22 @@ export default function Home() {
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R }}>Command Center</div>
           <div style={{ fontWeight:800, fontSize:'1.2rem', textTransform:'uppercase' }}>{NOW.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div>
-          <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)' }}>{nm ? `${nm.name} (${nm.g}) in ${dtn}d` : ''}</div>
+          <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.5)' }}>{nm ? (dtn === 0 ? `${nm.name} — TODAY` : `${nm.name} (${nm.g}) in ${dtn}d`) : ''}</div>
+
+          {nm && dtn === 0 && (
+            <div onClick={() => { setTab('meets'); setMeetView(nm.id); }} style={{ background:'linear-gradient(135deg,#1a0505,#3a0a0a)', border:`2px solid ${R}`, padding:'18px 18px', margin:'14px 0', cursor:'pointer' }}>
+              <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.22em', color:R, marginBottom:6 }}>🏆 Today · {nm.type === 'sectional' ? 'State Qualifier' : 'Meet Day'}</div>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontWeight:800, fontSize:'1.25rem', textTransform:'uppercase', color:'#fff', lineHeight:1.15, marginBottom:4 }}>{nm.name}</div>
+              <div style={{ fontSize:'.75rem', color:'rgba(255,255,255,.75)', marginBottom:10 }}>{nm.loc}{nm.address ? ` · ${nm.address}` : ''}</div>
+              <div style={{ display:'flex', gap:14, flexWrap:'wrap', fontSize:'.7rem', color:'rgba(255,255,255,.85)' }}>
+                {nm.dismiss && <span><strong style={{color:R}}>DISMISS</strong> {nm.dismiss}</span>}
+                {nm.bus && <span><strong style={{color:R}}>BUS</strong> {nm.bus}</span>}
+                {nm.start && <span><strong style={{color:R}}>FIELD</strong> {nm.start}</span>}
+                {nm.returnEst && <span><strong style={{color:R}}>RETURN</strong> {nm.returnEst}</span>}
+              </div>
+              <div style={{ marginTop:10, fontSize:'.65rem', color:R, fontWeight:700, letterSpacing:'.1em' }}>TAP FOR FULL BRIEFING →</div>
+            </div>
+          )}
 
           <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:1, background:BDR, margin:'12px 0' }}>
             {[[dtn+'d','Next Meet',R],[rosterData.length,'Athletes','#fff'],[alerts.length,'Alerts',alerts.length?R:G],[MEETS.length,'Meets','#fff']].map(([v,l,c],i) => (
@@ -541,7 +558,7 @@ export default function Home() {
         <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
           <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>Schedule</div>
           {MEETS.map(m => {
-            const d = Math.ceil((new Date(m.date)-NOW)/86400000);
+            const d = Math.round((meetMs(m.date) - TODAY_MS) / 86400000);
             const hasResults = RESULTS?.some(r => r.id === m.id);
             const hasGuide = GUIDE_URLS && GUIDE_URLS[m.id];
             const hasLineup = m.hasLineup;
@@ -575,7 +592,7 @@ export default function Home() {
         const meetResults = RESULTS?.find(r => r.id === meetView);
         const guideUrl = GUIDE_URLS && GUIDE_URLS[meetView];
         const resultsPageUrl = getResultsUrl(meetView);
-        const d = Math.ceil((new Date(m.date)-NOW)/86400000);
+        const d = Math.round((meetMs(m.date) - TODAY_MS) / 86400000);
 
         return (
           <div style={{ padding:'14px 16px', maxWidth:960, margin:'0 auto' }}>
