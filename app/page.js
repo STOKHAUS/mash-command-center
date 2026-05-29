@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FORM_DATA, FEES_OWED, ownsFee, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS, OTTOBACHER_BOYS, OTTOBACHER_GIRLS, OTTOBACHER_NOTES, OTTOBACHER_FLAGS, MARATHON_BOYS, MARATHON_GIRLS, MARATHON_NOTES, MARATHON_FLAGS, MARSHFIELD_BOYS, MARSHFIELD_GIRLS, GNC_BOYS, GNC_GIRLS, GNC_NOTES, GNC_ATHLETE_NOTES, REGIONAL_BOYS, REGIONAL_GIRLS, REGIONAL_NOTES } from '@/lib/data';
+import { FORM_DATA, FEES_OWED, ownsFee, MEETS, LOCATIONS, ACTIONS, KNOWN_STATUS, RESULTS, CONFLICTS, GUIDE_URLS, RESULTS_URLS, BADGER_BOYS, BADGER_GIRLS, STOUT_BOYS, STOUT_GIRLS, UWSP_BOYS, UWSP_GIRLS, EARLYBIRD_BOYS, EARLYBIRD_GIRLS, EARLYBIRD_SCHEDULE, MEET_LINKS, HOLYCOW_BOYS, HOLYCOW_GIRLS, HOLYCOW_NOTES, MEDFORD2_BOYS, MEDFORD2_GIRLS, SPENCER_BOYS, SPENCER_GIRLS, SPENCER_NOTES, SPENCER_INTEL, SPENCER_TEAM_SCORES, LAKELAND_BOYS, LAKELAND_GIRLS, LAKELAND_NOTES, LAKELAND_FLAGS, OTTOBACHER_BOYS, OTTOBACHER_GIRLS, OTTOBACHER_NOTES, OTTOBACHER_FLAGS, MARATHON_BOYS, MARATHON_GIRLS, MARATHON_NOTES, MARATHON_FLAGS, MARSHFIELD_BOYS, MARSHFIELD_GIRLS, GNC_BOYS, GNC_GIRLS, GNC_NOTES, GNC_ATHLETE_NOTES, REGIONAL_BOYS, REGIONAL_GIRLS, REGIONAL_NOTES, SECTIONAL_NOTES } from '@/lib/data';
 
 const R='#cc0000',G='#22c55e',Y='#d4a843',B='#4a9eff',CARD='#131313',BDR='rgba(255,255,255,0.06)';
 
@@ -758,6 +758,18 @@ export default function Home() {
                   <div key={ni} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${B}`, padding:'8px 14px', marginBottom:3, display:'flex', gap:10 }}>
                     <span style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.1em', color:B, minWidth:96, flexShrink:0, paddingTop:2 }}>{nt.label}</span>
                     <span style={{ fontSize:'.78rem', color:'rgba(255,255,255,.75)', lineHeight:1.4 }}>{nt.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {meetView === 16 && SECTIONAL_NOTES && SECTIONAL_NOTES.length > 0 && (
+              <div style={{ marginTop:16 }}>
+                <div style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.2em', color:R, marginBottom:8 }}>🏆 Sectional Briefing — State Qualifier</div>
+                {SECTIONAL_NOTES.map((nt, ni) => (
+                  <div key={ni} style={{ background:CARD, border:`1px solid ${BDR}`, borderLeft:`3px solid ${R}`, padding:'8px 14px', marginBottom:3, display:'flex', gap:10 }}>
+                    <span style={{ fontSize:'.6rem', fontWeight:800, textTransform:'uppercase', letterSpacing:'.1em', color:R, minWidth:96, flexShrink:0, paddingTop:2 }}>{nt.label}</span>
+                    <span style={{ fontSize:'.78rem', color:'rgba(255,255,255,.85)', lineHeight:1.4 }}>{nt.value}</span>
                   </div>
                 ))}
               </div>

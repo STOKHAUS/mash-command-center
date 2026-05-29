@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Medford T&amp;F — Regional Sharpener · Sun 5/24 · 4:00 PM</title>
+<style>
+  :root{
+    --bg:#0a0a0a; --card:#131313; --bdr:rgba(255,255,255,.06);
+    --text:#ffffff; --mute:#cccccc; --dim:#999999;
+    --R:#ff4444; --G:#22c55e; --Y:#ffcc44; --B:#4a9eff;
+    --ff-head:'Oswald','Impact',sans-serif;
+    --ff-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box !important;margin:0;padding:0}
+  body{background:var(--bg) !important;color:#ffffff !important;font-family:var(--ff-body);line-height:1.5;padding:24px}
+  .wrap, .wrap *{color:#ffffff !important}
+  .wrap{max-width:1000px;margin:0 auto}
+  .title{font-family:var(--ff-head) !important;font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:2.2rem;line-height:1.05;margin-bottom:4px;color:#ffffff !important}
+  .sub{font-size:.7rem;color:#cccccc !important;text-transform:uppercase;letter-spacing:.15em;margin-bottom:20px}
+  .meta{display:flex;flex-wrap:wrap;gap:14px;font-size:.72rem;color:#cccccc !important;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--bdr)}
+  .meta span{color:#cccccc !important}
+  .meta b{color:#ffffff !important;font-weight:600}
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:8px 0 28px}
+  @media (max-width:720px){.btn-row{grid-template-columns:1fr}}
+  .mash-btn, .live-btn{display:block;width:100%;text-align:center;text-decoration:none !important;color:#ffffff !important;padding:22px 24px;border-radius:4px;font-family:var(--ff-head) !important;font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:1.25rem;transition:transform .15s ease, box-shadow .15s ease;}
+  .mash-btn{background:linear-gradient(135deg,#ff4444 0%,#cc0000 100%) !important;border:2px solid #ff4444;box-shadow:0 8px 24px rgba(255,68,68,.25), inset 0 0 0 1px rgba(255,255,255,.08);}
+  .mash-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,68,68,.45)}
+  .live-btn{background:linear-gradient(135deg,#4a9eff 0%,#1a5fb4 100%) !important;border:2px solid #4a9eff;box-shadow:0 8px 24px rgba(74,158,255,.25), inset 0 0 0 1px rgba(255,255,255,.08);}
+  .live-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(74,158,255,.45)}
+  .mash-btn .arrow, .live-btn .arrow{display:inline-block;margin-left:10px;font-weight:900}
+  .mash-btn .label, .live-btn .label{display:block;font-size:.6rem;font-weight:600;letter-spacing:.25em;margin-bottom:6px}
+  .mash-btn .label{color:#ffd9d9 !important}
+  .live-btn .label{color:#d6e9ff !important}
+  .section{margin:28px 0}
+  .eyebrow{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.22em;color:#ff4444 !important;margin-bottom:10px}
+  .h2{font-family:var(--ff-head) !important;font-weight:700;font-size:1.3rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;color:#ffffff !important}
+  .h3{font-family:var(--ff-head) !important;font-weight:700;font-size:1rem;text-transform:uppercase;letter-spacing:.08em;color:#ffffff !important;margin:18px 0 8px}
+  table{width:100%;border-collapse:collapse;background:var(--card) !important;border:1px solid var(--bdr);font-size:.84rem;color:#ffffff !important;margin-bottom:6px}
+  th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--bdr);color:#ffffff !important;background:transparent !important;vertical-align:top}
+  th{font-size:.58rem;text-transform:uppercase;letter-spacing:.14em;color:#cccccc !important;font-weight:600;background:#0f0f0f !important}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;padding:2px 8px;font-size:.56rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;border-radius:2px;white-space:nowrap}
+  .tag-adv{background:#22c55e !important;color:#000000 !important}
+  .tag-bub{background:#ffcc44 !important;color:#000000 !important}
+  .tag-dev{background:#2a2a2a !important;color:#cccccc !important;border:1px solid rgba(255,255,255,.12)}
+  .headline{background:linear-gradient(135deg,#1a0000 0%,#130707 100%) !important;border-left:3px solid var(--R);padding:16px 20px;margin:16px 0 24px;font-size:.95rem;color:#ffffff !important}
+  .headline b{color:#ffcc44 !important}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:8px}
+  @media (max-width:720px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--card) !important;border:1px solid var(--bdr);padding:14px;text-align:center;border-radius:2px}
+  .stat .num{font-family:var(--ff-head) !important;font-weight:800;font-size:1.8rem;color:#22c55e !important;line-height:1}
+  .stat .num.y{color:#ffcc44 !important}
+  .stat .num.r{color:#ff4444 !important}
+  .stat .num.b{color:#4a9eff !important}
+  .stat .lbl{font-size:.56rem;text-transform:uppercase;letter-spacing:.13em;color:#cccccc !important;margin-top:6px}
+
+  /* run-of-show timeline */
+  .ros{background:var(--card) !important;border:1px solid var(--bdr);border-radius:2px;overflow:hidden}
+  .ros-row{display:flex;gap:0;border-bottom:1px solid var(--bdr)}
+  .ros-row:last-child{border-bottom:none}
+  .ros-time{flex-shrink:0;width:120px;background:#0f0f0f !important;padding:12px 14px;font-family:var(--ff-head) !important;font-weight:800;font-size:.92rem;color:#4a9eff !important;letter-spacing:.04em;border-right:1px solid var(--bdr)}
+  .ros-time small{display:block;font-family:var(--ff-body) !important;font-weight:400;font-size:.56rem;color:#999 !important;letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+  .ros-body{padding:12px 16px;font-size:.82rem}
+  .ros-body .ros-h{font-weight:700;color:#ffffff !important;margin-bottom:3px}
+  .ros-body .ros-d{font-size:.76rem;color:#cccccc !important}
+
+  /* athlete cards */
+  .grp-head{display:flex;align-items:baseline;gap:12px;margin:24px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+  .grp-head .gn{font-family:var(--ff-head) !important;font-weight:800;font-size:1.15rem;text-transform:uppercase;letter-spacing:.05em;color:#ffffff !important}
+  .grp-head .gt{font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:#999 !important}
+  .acards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:720px){.acards{grid-template-columns:1fr}}
+  .ac{background:var(--card) !important;border:1px solid var(--bdr);border-left:3px solid var(--B);padding:13px 15px;border-radius:2px}
+  .ac.adv{border-left-color:var(--G)}
+  .ac.bub{border-left-color:var(--Y)}
+  .ac.dev{border-left-color:#555}
+  .ac .arow{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+  .ac .nm{font-family:var(--ff-head) !important;font-weight:800;font-size:1.05rem;color:#ffffff !important;line-height:1.1}
+  .ac .ev{font-size:.58rem;text-transform:uppercase;letter-spacing:.12em;color:#4a9eff !important;font-weight:700;margin-top:3px}
+  .ac .line{font-size:.76rem;color:#cccccc !important;margin:5px 0;line-height:1.45}
+  .ac .line b{color:#ffffff !important}
+  .ac .gate{background:#0f0f0f !important;border:1px solid var(--bdr);border-radius:2px;padding:7px 10px;margin:7px 0;font-size:.74rem}
+  .ac .gate .gl{font-size:.54rem;text-transform:uppercase;letter-spacing:.13em;color:#999 !important;display:block;margin-bottom:2px}
+  .ac .gate .gv{font-weight:700;color:#ffffff !important}
+  .ac .gate .gv .seed{color:#cccccc !important;font-weight:400}
+  .ac .gate.adv .gv b{color:#22c55e !important}
+  .ac .gate.bub .gv b{color:#ffcc44 !important}
+  .ac .gate.dev .gv b{color:#ff8888 !important}
+  .ac .todo{font-size:.76rem;color:#cccccc !important;line-height:1.5}
+  .ac .todo b{color:#ffffff !important}
+  .ac .cue{margin-top:7px;font-size:.72rem;font-style:italic;color:#ffcc44 !important;border-top:1px dashed rgba(255,255,255,.1);padding-top:6px}
+
+  .note{background:linear-gradient(135deg,#001a00 0%,#071307 100%) !important;border-left:3px solid var(--G);padding:14px 18px;font-size:.84rem;margin:8px 0;color:#ffffff !important}
+  .note b{color:#22c55e !important}
+  .warn{background:linear-gradient(135deg,#1a1000 0%,#130b00 100%) !important;border-left:3px solid var(--Y);padding:14px 18px;font-size:.84rem;margin:10px 0;color:#ffffff !important}
+  .warn b{color:#ffcc44 !important}
+  .logi{background:var(--card) !important;border:1px solid var(--bdr);border-left:3px solid var(--B);padding:8px 14px;margin-bottom:3px;display:flex;gap:10px}
+  .logi .l{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#4a9eff !important;min-width:96px;flex-shrink:0;padding-top:2px}
+  .logi .v{font-size:.78rem;color:rgba(255,255,255,.8) !important;line-height:1.45}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.66rem;color:#cccccc !important;margin:10px 0 16px}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--bdr);font-size:.62rem;color:#777 !important;line-height:1.6}
+  a.inline{color:#4a9eff !important;text-decoration:underline !important;word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="title">Regional Sharpener &mdash; Sunday Session</div>
+  <div class="sub">Medford Track &amp; Field &middot; 48 Hours Out &middot; Prime, Don't Drain</div>
+  <div class="meta">
+    <span><b>Today:</b> Sun, May 24, 2026 &middot; 4:00 PM</span>
+    <span><b>Meet:</b> WIAA D2 Regional 1B &middot; Tue 5/26 &middot; Medford (HOME)</span>
+    <span><b>Bar:</b> Finish Top 4 &rarr; Sectional</span>
+    <span><b>Sectional:</b> Fri 5/29 @ Rice Lake</span>
+  </div>
+
+  <div class="btn-row">
+    <a class="live-btn" href="https://www.performancetiming.com/2026/05/wiaa-d2-regional-medford-2026/" target="_blank" rel="noopener">
+      <span class="label">Performance Timing &middot; Heat Sheets</span>
+      Heat Sheets &amp; Final PDF <span class="arrow">&rarr;</span>
+    </a>
+    <a class="mash-btn" href="http://performance.anet.live/8lp2td" target="_blank" rel="noopener">
+      <span class="label">Live During the Meet</span>
+      Live Results <span class="arrow">&rarr;</span>
+    </a>
+  </div>
+
+  <div class="headline">
+    <b>Two days out, the work is already done.</b> Today we sharpen the system, not stress it &mdash; race-pace touches, clean technique, fast feet, then off your legs. Every athlete leaves knowing the <b>exact mark, time, or height it takes to finish top 4</b> and run on Friday.
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="num">4:00</div><div class="lbl">Start (PM)</div></div>
+    <div class="stat"><div class="num b">~80</div><div class="lbl">Minutes Total</div></div>
+    <div class="stat"><div class="num y">Light</div><div class="lbl">Load &middot; Pre-Meet</div></div>
+    <div class="stat"><div class="num r">4</div><div class="lbl">Advance / Event</div></div>
+  </div>
+
+  <!-- ===== COACH RUN OF SHOW ===== -->
+  <div class="section">
+    <div class="eyebrow">Coach Layer &middot; Run of Show</div>
+    <div class="h2">4:00 PM Session Flow</div>
+    <p style="font-size:.8rem;color:#cccccc !important;margin-bottom:12px">One whole-team warm-up, then split to event stations. Keep everyone moving but capped &mdash; the goal is freshness Tuesday. Pull anyone who looks heavy-legged; there is nothing to gain today and a lot to protect.</p>
+    <div class="ros">
+      <div class="ros-row">
+        <div class="ros-time">4:00<small>15 min</small></div>
+        <div class="ros-body"><div class="ros-h">Whole-Team Warm-Up</div><div class="ros-d">800m easy jog &middot; dynamic mobility (leg swings, lunges, hip openers) &middot; A-skip / B-skip / high knees &middot; 4&times; build-up strides to 90%. Coaches confirm timing &amp; field crews for Tuesday during this block.</div></div>
+      </div>
+      <div class="ros-row">
+        <div class="ros-time">4:15<small>5 min</small></div>
+        <div class="ros-body"><div class="ros-h">Split to Stations</div><div class="ros-d">Sprints &rarr; track straight &middot; Distance &rarr; perimeter/grass &middot; Hurdles &rarr; lane 1&ndash;2 &middot; Throws &rarr; cages &middot; Jumps &rarr; pits/runways &middot; Relays rotate in after individual work.</div></div>
+      </div>
+      <div class="ros-row">
+        <div class="ros-time">4:20<small>30 min</small></div>
+        <div class="ros-body"><div class="ros-h">Event-Specific Sharpening</div><div class="ros-d">Each athlete runs their card below &mdash; low volume, race-pace quality, full recovery. Locks: stay crisp, do not chase numbers. Bubbles: get one or two reps at the exact effort that flips them into top 4.</div></div>
+      </div>
+      <div class="ros-row">
+        <div class="ros-time">4:50<small>20 min</small></div>
+        <div class="ros-body"><div class="ros-h">Relay Exchanges (Priority Block)</div><div class="ros-d">Both sprint relays are decided by handoffs. Boys 4&times;100 / 4&times;200 and Girls 4&times;100 run 4&ndash;6 exchanges at race speed, dial timing marks. 4&times;400 / 4&times;800 + 4&times;800 girls: 2&ndash;3 clean stick passes at pace.</div></div>
+      </div>
+      <div class="ros-row">
+        <div class="ros-time">5:10<small>10 min</small></div>
+        <div class="ros-body"><div class="ros-h">Cool Down + Brief</div><div class="ros-d">Easy 600&ndash;800m jog, light static stretch, foam roll. 60-second team huddle: Monday is easy/shakeout only, hydrate, sleep. Read the room &mdash; send legs home fresh.</div></div>
+      </div>
+    </div>
+    <div class="warn"><b>Monday 5/25:</b> easy shakeout only &mdash; 10&ndash;15 min jog + a few strides, or full rest. No quality. Tuesday is the day.</div>
+  </div>
+
+  <div class="legend">
+    <span><span class="tag tag-adv">Advance</span> projected top 4 &mdash; protect it</span>
+    <span><span class="tag tag-bub">Bubble</span> 5th&ndash;6th, one good mark flips it</span>
+    <span><span class="tag tag-dev">Develop</span> outside top 4 &mdash; compete &amp; build</span>
+  </div>
+
+  <!-- ===== ATHLETE LAYER ===== -->
+  <div class="section">
+    <div class="eyebrow">Athlete Layer &middot; Your Card, Your Number</div>
+    <div class="h2">Individual Plans &amp; The Mark to Beat</div>
+    <p style="font-size:.8rem;color:#cccccc !important;margin-bottom:6px">Your "gate" = what 4th place is projected to run/throw/clear in your event. Beat the gate, you're going to Rice Lake. Seeds are seeds &mdash; placement is decided Tuesday.</p>
+
+    <!-- SPRINTS -->
+    <div class="grp-head"><span class="gn">Sprints</span><span class="gt">100 &middot; 200 &middot; 400 &mdash; Track Straight</span></div>
+    <div class="acards">
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Sawyer Hoops</div><div class="ev">400M &middot; 100M</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv">400M: <b>you're the #1 seed</b> <span class="seed">(52.50)</span> &middot; 100M: top 4 = <b>11.54</b> <span class="seed">(you 11.53, #3)</span></span></div>
+        <div class="todo"><b>Today:</b> 3 build-ups to 95%, then 2&times;150m at 400 goal-pace (full walk-back recovery) + 2&ndash;3 block starts at full effort, short. That's it.</div>
+        <div class="cue">You are the favorite in the 400. Run relaxed, not tight. Speed is in the bank.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Levi Zuleger</div><div class="ev">200M</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">200M top 4 = <b>23.27</b> <span class="seed">(you 23.90, #9)</span></span></div>
+        <div class="todo"><b>Today:</b> 3 build-ups + 2&times;120m fly at race speed, full recovery. Sharp turn mechanics off the curve.</div>
+        <div class="cue">Run for a PR Tuesday &mdash; chase the line, not the bracket.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Erik Paul</div><div class="ev">200M &middot; relays</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">200M top 4 = <b>23.27</b> <span class="seed">(you 26.50)</span></span></div>
+        <div class="todo"><b>Today:</b> build-ups + 3&ndash;4 sprint-relay exchanges (you're on the 4&times;100 card / 4&times;200 alt). Acceleration &amp; clean handoffs.</div>
+        <div class="cue">Your relay exchanges matter more than your open time this week.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Bentley Cooley</div><div class="ev">400M &middot; 4x400</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Open 400 is a reach &mdash; your <b>advance is the 4&times;400</b> (#3 team)</span></div>
+        <div class="todo"><b>Today:</b> 2&times;150m controlled + 2&ndash;3 stick handoffs at 4&times;400 race pace. Smooth, no max effort.</div>
+        <div class="cue">Senior, last home regional. Your relay leg can punch the team's ticket.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Aliyah Pilgrim</div><div class="ev">100M &middot; 4x100 &middot; 4x200</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">100M top 4 = <b>12.98</b> <span class="seed">(you 13.53)</span> &middot; <b>relays are your path</b></span></div>
+        <div class="todo"><b>Today:</b> 3 build-ups + 2 short flys at race speed, then lead off the sprint-relay exchange block. Crisp acceleration, clean handoffs.</div>
+        <div class="cue">Senior, last home regional. Your relay starts set the team up &mdash; own the exchanges.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Lucy Ulrich</div><div class="ev">100M</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">100M top 4 = <b>12.98</b> <span class="seed">(you 14.80)</span></span></div>
+        <div class="todo"><b>Today:</b> 3 build-ups + 2&times;short flys at speed, full recovery. Drive phase off the line, tall and relaxed.</div>
+        <div class="cue">Race for your season-best Tuesday &mdash; chase the clock, build the engine.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Alexis Zuleger</div><div class="ev">200M &middot; 4x100 alt</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">200M top 10 = <b>27.65</b> <span class="seed">(you 31.30)</span> &middot; relay alt</span></div>
+        <div class="todo"><b>Today:</b> build-ups + 2&times;120m relaxed at race effort + reps in the relay exchange zone in case you're called up.</div>
+        <div class="cue">Be ready as the alt &mdash; know the handoff cold and run for a PR.</div>
+      </div>
+    </div>
+
+    <!-- DISTANCE -->
+    <div class="grp-head"><span class="gn">Distance</span><span class="gt">800 &middot; 1600 &middot; 3200 &mdash; Perimeter / Grass</span></div>
+    <div class="acards">
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Judah Wipf</div><div class="ev">800M &middot; 4x400 alt</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">800M top 4 = <b>2:08.15</b> <span class="seed">(you 2:08.30, #5 &mdash; 0.15 back)</span></span></div>
+        <div class="todo"><b>Today:</b> 15-min easy + 3&times;200m descending into 800 race pace, full recovery. Feel sub-2:08 turnover in your legs.</div>
+        <div class="cue">You are fifteen-hundredths away. This is a positioning race &mdash; be top 4 at the bell.</div>
+      </div>
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Lindsay Kahn</div><div class="ev">1600M &middot; 3200M</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv">#2 seed in <b>both</b> &mdash; 1600 &amp; 3200. Advance + medal range.</span></div>
+        <div class="todo"><b>Today:</b> 15&ndash;20 min easy + 4&times;150m float at goal pace, full recovery. Keep it light &mdash; you have two races Tuesday.</div>
+        <div class="cue">Senior. You're a lock &mdash; bank the freshness, save the legs for the double.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Melanie Richter</div><div class="ev">1600M &middot; 800M &middot; 4x800</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">1600 top 4 = <b>5:42.50</b> <span class="seed">(you 5:48.04, #6)</span> &middot; 800 ~#5</span></div>
+        <div class="todo"><b>Today:</b> 12-min easy + 3&times;200m at 1600 goal pace, full recovery. Then 2&ndash;3 4&times;800 stick passes.</div>
+        <div class="cue">Six seconds off 4th. Sit on the lead pack, kick from 300 out.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Angus Hamland</div><div class="ev">1600M</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Field top 10 = <b>5:01.26</b> <span class="seed">(you 5:08.14)</span></span></div>
+        <div class="todo"><b>Today:</b> 15-min easy + 4&times;150m strides relaxed. Build rhythm, no strain.</div>
+        <div class="cue">Race the clock Tuesday &mdash; every PR is a brick in the foundation.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Nevyn Gripentrog</div><div class="ev">800M &middot; 4x800</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">800 top 4 = <b>2:08.15</b> <span class="seed">(you 2:20.86)</span> &middot; on the 4&times;800</span></div>
+        <div class="todo"><b>Today:</b> 15-min easy + 4&times;150m strides relaxed, then 2&ndash;3 4&times;800 stick passes at pace.</div>
+        <div class="cue">Run your race Tuesday, then deliver your relay split &mdash; the team needs your leg.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Willow Dassow</div><div class="ev">800M &middot; 4x800</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">800 develop &middot; <b>4&times;800 is the path</b> (#2 team, projected through)</span></div>
+        <div class="todo"><b>Today:</b> 12-min easy + 3&times;150m strides + 2&ndash;3 relay exchanges with the 4&times;800 four.</div>
+        <div class="cue">The relay is your ticket &mdash; nail your split, trust the team.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Autumn Cooley</div><div class="ev">800M &middot; 4x800</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">800 develop &middot; <b>4&times;800 leadoff</b> (#2 team, projected through)</span></div>
+        <div class="todo"><b>Today:</b> 12-min easy + 3&times;150m strides + 2&ndash;3 leadoff/exchange reps at relay pace.</div>
+        <div class="cue">Get the relay out clean and in good position &mdash; you set the tone.</div>
+      </div>
+    </div>
+
+    <!-- HURDLES -->
+    <div class="grp-head"><span class="gn">Hurdles</span><span class="gt">110/100H &middot; 300H &mdash; Lanes 1&ndash;2</span></div>
+    <div class="acards">
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Will Daniels</div><div class="ev">110H &middot; 300H</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv"><b>#1 seed in BOTH</b> &mdash; 110H (15.75) &amp; 300H (42.18). The favorite.</span></div>
+        <div class="todo"><b>Today:</b> hurdle mobility + lead/trail drills, then 2&times;3-hurdle reps at 110 race rhythm + 1&ndash;2 reps over the first few 300H hurdles for touchdown timing. Crisp, not heavy.</div>
+        <div class="cue">Senior, both #1 seeds. Sharpen the rhythm &mdash; you don't need to prove it today.</div>
+      </div>
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Luke Klapatauskas</div><div class="ev">300H &middot; 110H &middot; TJ</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv">300H: <b>#2 seed (42.78)</b> &mdash; clear. 110H top 4 = 16.34 (you 17.28, reach). TJ top 4 = 40-05.5 (you 40-00.75).</span></div>
+        <div class="todo"><b>Today:</b> prioritize 300H rhythm &mdash; 2&times;3-hurdle reps at race pace. Then a few short-approach triple-jump bounds for the bubble.</div>
+        <div class="cue">The 300H is yours &mdash; lock it in. TJ is the upside bonus.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Cora Semrau</div><div class="ev">100H &middot; 300H &middot; relay alt</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">100H top 4 = <b>17.85</b> <span class="seed">(you 18.59, #5 tie)</span> &middot; 300H develop</span></div>
+        <div class="todo"><b>Today:</b> hurdle mobility + 3-step drills over 3&ndash;4 hurdles at race rhythm. Attack the first hurdle, snap the lead leg.</div>
+        <div class="cue">0.74 off 4th in the 100H &mdash; that's a faster first hurdle and a tighter trail leg. Touchable.</div>
+      </div>
+    </div>
+
+    <!-- THROWS -->
+    <div class="grp-head"><span class="gn">Throws</span><span class="gt">Shot &middot; Discus &mdash; Cages</span></div>
+    <div class="acards">
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Rivalee Stokes</div><div class="ev">Discus &middot; Shot &middot; 100M</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv">Discus: <b>#2 (131-09)</b>, leader 137-04 &mdash; your 140 practice = WIN. Shot: <b>#4 (34-03.75)</b>, the last spot &mdash; hold it.</span></div>
+        <div class="todo"><b>Today:</b> 6&ndash;8 stand throws (disc) for positions + 4&ndash;5 controlled full throws at ~85%, big finish. A few solid shot reps. No back-blasting max efforts 2 days out.</div>
+        <div class="cue">Senior. The gold throw is on the table &mdash; seed conservative, throw it for the win Tuesday.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Logan Langdon</div><div class="ev">Discus &middot; Shot</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">Discus top 4 = <b>130-11</b> <span class="seed">(you 127-05, #7 &mdash; ~3.5 ft)</span> &middot; Shot develop (top 10 ends 41-00)</span></div>
+        <div class="todo"><b>Today:</b> disc technical focus &mdash; out-the-back, full reach across the ring. 5&ndash;6 stands + 4 competitive full throws. Find 3 feet in the finish, not the muscle.</div>
+        <div class="cue">Three and a half feet from Sectional. That's technique, not strength &mdash; reach long, finish tall.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Blake Thoreson</div><div class="ev">Shot &middot; Discus</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Shot top 10 ends 41-00 <span class="seed">(you 36-06.25)</span> &middot; Disc 95-03</span></div>
+        <div class="todo"><b>Today:</b> technical stands + 4&ndash;5 full throws each implement at controlled effort. Clean footwork.</div>
+        <div class="cue">Compete for a season-best &mdash; every foot is progress.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Jonathan Bartnik</div><div class="ev">Shot &middot; Discus</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Shot top 10 ends 41-00 <span class="seed">(you 36-02)</span> &middot; Disc 92-07</span></div>
+        <div class="todo"><b>Today:</b> technical stands + 4&ndash;5 controlled full throws each. Stay in the ring, finish balanced.</div>
+        <div class="cue">PR hunt Tuesday &mdash; build the habit of throwing your best when it counts.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Sada Carstensen</div><div class="ev">Discus &middot; Shot</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Discus <b>#7 (99-10)</b> &middot; Shot 30-07</span></div>
+        <div class="todo"><b>Today:</b> technical reps, smooth ring work, 4&ndash;5 controlled full throws. Rhythm over power.</div>
+        <div class="cue">Closest of the girls' develop throwers &mdash; a season-best moves you up the board.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Naomi Thomas &middot; Mya Matthias</div><div class="ev">Shot &middot; Discus</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Thomas Shot 25-02 &middot; Matthias Disc 74-05 &mdash; develop</span></div>
+        <div class="todo"><b>Today:</b> light technical stands + a handful of full throws. Footwork and finish position.</div>
+        <div class="cue">Throw for your PR and your experience &mdash; this is the room you want to be in.</div>
+      </div>
+    </div>
+
+    <!-- JUMPS -->
+    <div class="grp-head"><span class="gn">Jumps</span><span class="gt">PV &middot; HJ &middot; LJ &middot; TJ &mdash; Pits &amp; Runways</span></div>
+    <div class="acards">
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Jordan Lavin</div><div class="ev">Pole Vault</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv"><b>#3 seed (13-00)</b> &mdash; Medford holds the 1-2 of the vault with Losiewicz.</span></div>
+        <div class="todo"><b>Today:</b> short-approach jumps, 4&ndash;5 at a moderate bar. Drill plant timing &amp; standards. No maxing out.</div>
+        <div class="cue">You're in. Sharpen the plant, save the big bar for Tuesday.</div>
+      </div>
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Max Losiewicz</div><div class="ev">Pole Vault</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv"><b>#4 seed (12-06)</b> &mdash; the second vaulter advancing.</span></div>
+        <div class="todo"><b>Today:</b> short-approach reps, 4&ndash;5 clearances at moderate height. Consistent run, clean takeoff.</div>
+        <div class="cue">Hold your spot &mdash; consistency clears bars, not effort.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Raylin Rothmeier</div><div class="ev">Pole Vault &middot; relays</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">PV top 4 = <b>9-06</b> <span class="seed">(you 8-06, #6)</span></span></div>
+        <div class="todo"><b>Today:</b> short-approach jumps working a higher grip + 3&ndash;4 clearance reps reaching for 9-0/9-6. Then sprint-relay exchanges.</div>
+        <div class="cue">One foot to find. Bigger grip, drive the knee, get tall on the bar.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Taylor Klingbeil</div><div class="ev">High Jump &middot; 200M &middot; relays</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">HJ top 4 clears <b>4-10</b> <span class="seed">(you 4-08, #5 tie &mdash; bubble on count-back)</span></span></div>
+        <div class="todo"><b>Today:</b> short-approach HJ, 4&ndash;6 jumps working takeoff &amp; drive, attempt 4-10. Then relay exchange reps.</div>
+        <div class="cue">Two inches and a clean count-back. First-attempt clearances win ties &mdash; make them count.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Peyton Reid</div><div class="ev">High Jump &middot; relays</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">HJ field cluster at <b>5-06</b> <span class="seed">(you 5-02)</span> &middot; on 3 boys relays</span></div>
+        <div class="todo"><b>Today:</b> a few short-approach HJ reps, then heavy focus on relay exchanges &mdash; you anchor/leg multiple sprint relays.</div>
+        <div class="cue">Your relays are where you score this week &mdash; own the exchanges.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Axel Brushaber</div><div class="ev">Long Jump &middot; TJ &middot; relays</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">LJ top 10 = 19-00.25 <span class="seed">(you 18-01.75)</span> &middot; TJ 39-00 &middot; on 3 relays</span></div>
+        <div class="todo"><b>Today:</b> 4&ndash;6 short-approach LJ/TJ pop drills, then sprint-relay exchanges. Quality reps, low count.</div>
+        <div class="cue">Your handoffs swing two bubble relays &mdash; that's your highest-value rep today.</div>
+      </div>
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Jordyn Grant</div><div class="ev">Triple Jump &middot; 200M &middot; relays</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv">TJ: <b>#3 in the field (32-10.50)</b> &mdash; projected through.</span></div>
+        <div class="todo"><b>Today:</b> short-approach TJ, 4&ndash;5 reps on phase rhythm (hop-step-jump balance). Light. Then relay exchanges.</div>
+        <div class="cue">You're in the TJ &mdash; protect it, then sharpen the relay handoffs.</div>
+      </div>
+      <div class="ac dev">
+        <div class="arow"><div><div class="nm">Ellie Eckert</div><div class="ev">Long Jump</div></div><span class="tag tag-dev">Develop</span></div>
+        <div class="gate dev"><span class="gl">Gate to Advance</span><span class="gv">Outside field top 10 <span class="seed">(seed 9-06.25 &mdash; verify on Athletic.net)</span></span></div>
+        <div class="todo"><b>Today:</b> 4&ndash;6 short-approach jumps, work the board &amp; takeoff pop. Coach to confirm seed mark.</div>
+        <div class="cue">Hit the board clean and jump for a season-best &mdash; the number matters more than the place.</div>
+      </div>
+    </div>
+
+    <!-- RELAYS -->
+    <div class="grp-head"><span class="gn">Relays</span><span class="gt">Exchange Block &mdash; 4:50 PM</span></div>
+    <div class="acards">
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Boys 4&times;400</div><div class="ev">Jacobsen &middot; Cooley &middot; Reid &middot; Hoops &middot; (alt Wipf)</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv"><b>#3 team (3:40.08)</b> &mdash; projected through behind Rhinelander &amp; Northland Pines.</span></div>
+        <div class="todo"><b>Today:</b> 2&ndash;3 stick handoffs at race pace, dial the incoming/outgoing timing. Hoops anchors.</div>
+        <div class="cue">You're in &mdash; clean sticks, no dropped batons. Don't beat yourselves.</div>
+      </div>
+      <div class="ac adv">
+        <div class="arow"><div><div class="nm">Girls 4&times;800</div><div class="ev">A. Cooley &middot; Richter &middot; Dassow &middot; Kahn</div></div><span class="tag tag-adv">Advance</span></div>
+        <div class="gate adv"><span class="gl">Gate to Advance</span><span class="gv"><b>#2 team (10:46.06)</b> &mdash; projected through behind Rhinelander.</span></div>
+        <div class="todo"><b>Today:</b> 2&ndash;3 exchanges at relay pace, Kahn anchors. Keep volume low &mdash; Kahn doubles in distance.</div>
+        <div class="cue">Locked four, #2 team. Smooth exchanges, ride Kahn home.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Boys 4&times;100</div><div class="ev">Paul &middot; Satterwhite &middot; Brushaber &middot; Reid &middot; (alt Jacobsen)</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">~#4 team (46.76) &mdash; behind Rhinelander, Northland Pines, Lakeland Union. <b>Clean handoffs = qualify.</b></span></div>
+        <div class="todo"><b>Today:</b> 4&ndash;6 exchanges at race speed in the zones, lock the timing marks. This is the priority rep.</div>
+        <div class="cue">The race is won in the exchange zones &mdash; not the straights. Make them automatic.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Boys 4&times;200</div><div class="ev">Jacobsen &middot; Brushaber &middot; Reid &middot; Zuleger &middot; (alt Paul)</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">~#4 team (1:37.72) &mdash; tight with field's 3rd&ndash;4th. <b>Exchange zones decide it.</b></span></div>
+        <div class="todo"><b>Today:</b> 4&ndash;6 race-speed exchanges, dial the longer handoff timing. Quality over reps.</div>
+        <div class="cue">Inches in the zone = a place in the standings. Get them perfect.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Girls 4&times;100</div><div class="ev">Pilgrim &middot; Rothmeier &middot; Klingbeil &middot; Grant &middot; (alt A. Zuleger)</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">~#5 team (53.16) &mdash; behind Rhinelander, NP, Tomahawk, LU. <b>Sharpest exchanges advance.</b></span></div>
+        <div class="todo"><b>Today:</b> 4&ndash;6 exchanges at race speed, tighten every handoff. This relay lives or dies on the zones.</div>
+        <div class="cue">You're #5 on paper &mdash; clean sticks move you to #4. Sharpest team in the zones goes.</div>
+      </div>
+      <div class="ac bub">
+        <div class="arow"><div><div class="nm">Boys 4&times;800</div><div class="ev">Pagel &middot; Gripentrog &middot; Espinoza &middot; Newberry &middot; (alts Cooley, Hamland)</div></div><span class="tag tag-bub">Bubble</span></div>
+        <div class="gate bub"><span class="gl">Gate to Advance</span><span class="gv">~#4 team (9:37.67) &mdash; Rhinelander, Lakeland Union, Mosinee ahead. <b>Run the seed.</b></span></div>
+        <div class="todo"><b>Today:</b> easy distance warm-up + 2&ndash;3 clean stick passes at pace. Stay fresh.</div>
+        <div class="cue">Entered six-deep. Run your seed and you're in the conversation &mdash; race tough Tuesday.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WATCH NOTE -->
+  <div class="section">
+    <div class="eyebrow">Before the Gun</div>
+    <div class="h2">Coach Watch List</div>
+    <div class="warn"><b>Girls 4&times;400 is NOT entered.</b> Medford ran it at GNC (Pilgrim · Eckert · Ulrich · Salamin). If that's an oversight, it must be added by the meet director at the tent &mdash; Athletic.net entries can be scratched but <b>not added</b> after the deadline. Decide before Tuesday. With Kahn, Richter, Grant and the 800 legs on hand, this is a potential advancer left off the card.</div>
+    <div class="note"><b>Tightest bubbles to coach today:</b> Wipf 800 (+0.15 off 4th) · Langdon discus (~3.5 ft) · Klapatauskas TJ · Semrau 100H · both sprint relays. Small, specific gains flip these from watching Friday to running Friday.</div>
+  </div>
+
+  <!-- LOGISTICS / LINKS -->
+  <div class="section">
+    <div class="eyebrow">Meet Day Resources</div>
+    <div class="h2">D2 Regional 1B &mdash; Medford</div>
+    <div class="logi"><div class="l">Date</div><div class="v">Tuesday, May 26, 2026 &middot; Field events 4:00 PM, running events follow</div></div>
+    <div class="logi"><div class="l">Heat Sheets</div><div class="v">Posted now &mdash; <a class="inline" href="https://www.performancetiming.com/2026/05/wiaa-d2-regional-medford-2026/" target="_blank" rel="noopener">performancetiming.com/2026/05/wiaa-d2-regional-medford-2026</a>. Final printable PDF results post here after the meet.</div></div>
+    <div class="logi"><div class="l">Live Results</div><div class="v">During the meet, results post after each event at <a class="inline" href="http://performance.anet.live/8lp2td" target="_blank" rel="noopener">performance.anet.live/8lp2td</a></div></div>
+    <div class="logi"><div class="l">Format</div><div class="v">WIAA tournament protocol &mdash; top 4 finishers in each event advance to the Sectional</div></div>
+    <div class="logi"><div class="l">Advances To</div><div class="v">WIAA Sectional &mdash; Fri, May 29 @ Rice Lake</div></div>
+    <div class="logi"><div class="l">Share</div><div class="v">Heat sheets &amp; live-results links are public &mdash; share freely with families and fans.</div></div>
+  </div>
+
+  <div class="foot">
+    Generated for Medford Area HS Track &amp; Field &middot; MASH Command Center. Sunday 5/24 pre-meet sharpener, 48 hours out from D2 Regional 1B.<br>
+    Gates ("to advance") are projected from the regional field's 2026 season bests (top-4 / top-10 by event) per the Regional Overview. Seeds are seeds &mdash; placement is decided on the track Tuesday. Verify all entries against Athletic.net Print/SingleTeam.
+  </div>
+
+</div>
+</body>
+</html>
